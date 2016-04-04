@@ -25,6 +25,7 @@ import org.apache.juddi.v3.client.config.UDDIClient;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uddi.api_v3.BusinessInfo;
@@ -79,18 +80,23 @@ public class UDDI_130_CombineCategoryBagsFindBusinessIntegrationTest
 
 	@AfterClass
 	public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+          if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 tckTModel.deleteCreatedTModels(authInfoJoe);
 		manager.stop();
 	}
 
 	@BeforeClass
 	public static void startManager() throws ConfigurationException {
+          if (!TckPublisher.isEnabled()) return;
 		manager  = new UDDIClient();
 		manager.start();
 
 		logger.debug("Getting auth tokens..");
 		try {
-			Transport transport = manager.getTransport();
+			Transport transport = manager.getTransport("uddiv3");
 			UDDISecurityPortType security = transport.getUDDISecurityService();
 			authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(),  TckPublisher.getJoePassword());
 			//Assert.assertNotNull(authInfoJoe);
@@ -109,10 +115,12 @@ public class UDDI_130_CombineCategoryBagsFindBusinessIntegrationTest
 			logger.error(e.getMessage(), e);
 			Assert.fail("Could not obtain authInfo token.");
 		} 
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
 	}
 
 	@Test
 	public void findBusiness() {
+          Assume.assumeTrue(TckPublisher.isEnabled());
 		try {
 			tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL_XML, TOM_PUBLISHER_TMODEL_KEY);
 			tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL01_XML, TOM_PUBLISHER_TMODEL01_KEY);
@@ -176,6 +184,7 @@ public class UDDI_130_CombineCategoryBagsFindBusinessIntegrationTest
 	
 	@Test
 	public void findBusinessJUDDI545() {
+          Assume.assumeTrue(TckPublisher.isEnabled());
 		try {
 			tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL_XML, TOM_PUBLISHER_TMODEL_KEY);
 			tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL01_XML, TOM_PUBLISHER_TMODEL01_KEY);

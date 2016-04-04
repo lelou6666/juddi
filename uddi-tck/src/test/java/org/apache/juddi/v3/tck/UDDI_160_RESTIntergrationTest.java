@@ -38,7 +38,10 @@ import org.uddi.api_v3.BindingTemplate;
 import org.uddi.api_v3.BusinessEntity;
 import org.uddi.api_v3.BusinessList;
 import org.uddi.api_v3.BusinessService;
+<<<<<<< HEAD
 import org.uddi.api_v3.FindBinding;
+=======
+>>>>>>> refs/remotes/apache/master
 import org.uddi.api_v3.FindBusiness;
 import org.uddi.api_v3.FindQualifiers;
 import org.uddi.api_v3.FindService;
@@ -67,20 +70,40 @@ public class UDDI_160_RESTIntergrationTest {
         @BeforeClass
         public static void startRegistry() throws ConfigurationException {
 
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) {
+                        return;
+                }
+>>>>>>> refs/remotes/apache/master
                 manager = new UDDIClient();
                 manager.start();
 
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         inquiry = transport.getUDDIInquiryService();
                 } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
 
         @AfterClass
         public static void stopRegistry() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) {
+                        return;
+                }
+>>>>>>> refs/remotes/apache/master
                 manager.stop();
         }
 
@@ -98,6 +121,10 @@ public class UDDI_160_RESTIntergrationTest {
          }*/
         @Test
         public void InquiryREST_GET_Business() throws Exception {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isInquiryRestEnabled());
                 FindBusiness fb = new FindBusiness();
                 fb.setMaxRows(1);
@@ -114,6 +141,7 @@ public class UDDI_160_RESTIntergrationTest {
                 Assume.assumeNotNull(url);
                 HttpClient client = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(url + "?businessKey=" + findBusiness.getBusinessInfos().getBusinessInfo().get(0).getBusinessKey());
+<<<<<<< HEAD
                 HttpResponse response = client.execute(httpGet);
                 Assert.assertTrue(response.getStatusLine().getStatusCode() == 200);
                 BusinessEntity unmarshal = JAXB.unmarshal(response.getEntity().getContent(), BusinessEntity.class);
@@ -121,10 +149,26 @@ public class UDDI_160_RESTIntergrationTest {
                 Assert.assertEquals(unmarshal.getBusinessKey(), findBusiness.getBusinessInfos().getBusinessInfo().get(0).getBusinessKey());
 
 
+=======
+                logger.info("Fetching " + httpGet.getURI());
+                HttpResponse response = client.execute(httpGet);
+
+                Assert.assertTrue(response.getStatusLine().getStatusCode() == 200);
+                logger.info("Response content: " + response.getEntity().getContent());
+                BusinessEntity unmarshal = JAXB.unmarshal(response.getEntity().getContent(), BusinessEntity.class);
+                client.getConnectionManager().shutdown();
+                Assert.assertNotNull(unmarshal);
+                Assert.assertEquals(unmarshal.getBusinessKey(), findBusiness.getBusinessInfos().getBusinessInfo().get(0).getBusinessKey());
+
+>>>>>>> refs/remotes/apache/master
         }
 
         @Test
         public void InquiryREST_GET_TModel() throws Exception {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isInquiryRestEnabled());
                 FindTModel fb = new FindTModel();
                 fb.setMaxRows(1);
@@ -139,6 +183,7 @@ public class UDDI_160_RESTIntergrationTest {
                 String url = manager.getClientConfig().getHomeNode().getInquiry_REST_Url();
 
                 Assume.assumeNotNull(url);
+<<<<<<< HEAD
                 HttpClient client = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(url + "?tModelKey=" + findTModel.getTModelInfos().getTModelInfo().get(0).getTModelKey());
                 HttpResponse response = client.execute(httpGet);
@@ -148,11 +193,33 @@ public class UDDI_160_RESTIntergrationTest {
                 Assert.assertEquals(unmarshal.getTModelKey(), findTModel.getTModelInfos().getTModelInfo().get(0).getTModelKey());
 
 
+=======
+
+                HttpClient client = new DefaultHttpClient();
+
+                HttpGet httpGet = new HttpGet(url + "?tModelKey=" + findTModel.getTModelInfos().getTModelInfo().get(0).getTModelKey());
+                logger.info("Fetching " + httpGet.getURI());
+                HttpResponse response = client.execute(httpGet);
+
+                Assert.assertTrue(response.getStatusLine().getStatusCode() == 200);
+                logger.info("Response content: " + response.getEntity().getContent());
+                TModel unmarshal = JAXB.unmarshal(response.getEntity().getContent(), TModel.class);
+                client.getConnectionManager().shutdown();
+                Assert.assertNotNull(unmarshal);
+                Assert.assertEquals(unmarshal.getTModelKey(), findTModel.getTModelInfos().getTModelInfo().get(0).getTModelKey());
+
+>>>>>>> refs/remotes/apache/master
         }
 
         @Test
         public void InquiryREST_GET_Service() throws Exception {
+<<<<<<< HEAD
                 Assume.assumeTrue(TckPublisher.isInquiryRestEnabled());
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                Assume.assumeTrue(TckPublisher.isInquiryRestEnabled());
+                //find the first service via inquriy soap
+>>>>>>> refs/remotes/apache/master
                 FindService fb = new FindService();
                 fb.setMaxRows(1);
                 fb.getName().add(new Name(UDDIConstants.WILDCARD, null));
@@ -166,6 +233,7 @@ public class UDDI_160_RESTIntergrationTest {
                 String url = manager.getClientConfig().getHomeNode().getInquiry_REST_Url();
 
                 Assume.assumeNotNull(url);
+<<<<<<< HEAD
                 HttpClient client = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(url + "?serviceKey=" + findService.getServiceInfos().getServiceInfo().get(0).getServiceKey());
                 HttpResponse response = client.execute(httpGet);
@@ -175,6 +243,22 @@ public class UDDI_160_RESTIntergrationTest {
                 Assert.assertEquals(unmarshal.getServiceKey(), findService.getServiceInfos().getServiceInfo().get(0).getServiceKey());
 
 
+=======
+
+                //get the results via inquiry rest
+                HttpClient client = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url + "?serviceKey=" + findService.getServiceInfos().getServiceInfo().get(0).getServiceKey());
+                logger.info("Fetching " + httpGet.getURI());
+                HttpResponse response = client.execute(httpGet);
+
+                Assert.assertTrue(response.getStatusLine().getStatusCode() == 200);
+                logger.info("Response content: " + response.getEntity().getContent());
+                BusinessService unmarshal = JAXB.unmarshal(response.getEntity().getContent(), BusinessService.class);
+                client.getConnectionManager().shutdown();
+                Assert.assertNotNull(unmarshal);
+                Assert.assertEquals(unmarshal.getServiceKey(), findService.getServiceInfos().getServiceInfo().get(0).getServiceKey());
+
+>>>>>>> refs/remotes/apache/master
         }
 
         private BindingTemplate getFirstBindingTemplate() {
@@ -222,23 +306,45 @@ public class UDDI_160_RESTIntergrationTest {
 
         @Test
         public void InquiryREST_GET_Binding() throws Exception {
+<<<<<<< HEAD
                 Assume.assumeTrue(TckPublisher.isInquiryRestEnabled());
                 
                 BindingTemplate bt = getFirstBindingTemplate();
                 Assume.assumeTrue(bt != null);
                 
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                Assume.assumeTrue(TckPublisher.isInquiryRestEnabled());
+
+                BindingTemplate bt = getFirstBindingTemplate();
+                Assume.assumeTrue(bt != null);
+
+>>>>>>> refs/remotes/apache/master
                 String url = manager.getClientConfig().getHomeNode().getInquiry_REST_Url();
 
                 Assume.assumeNotNull(url);
                 HttpClient client = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(url + "?bindingKey=" + bt.getBindingKey());
+<<<<<<< HEAD
                 HttpResponse response = client.execute(httpGet);
                 Assert.assertTrue(response.getStatusLine().getStatusCode() == 200);
                 BindingTemplate unmarshal = JAXB.unmarshal(response.getEntity().getContent(), BindingTemplate.class);
+=======
+                logger.info("Fetching " + httpGet.getURI());
+                HttpResponse response = client.execute(httpGet);
+
+                Assert.assertTrue(response.getStatusLine().getStatusCode() == 200);
+                logger.info("Response content: " + response.getEntity().getContent());
+                BindingTemplate unmarshal = JAXB.unmarshal(response.getEntity().getContent(), BindingTemplate.class);
+                client.getConnectionManager().shutdown();
+>>>>>>> refs/remotes/apache/master
                 Assert.assertNotNull(unmarshal);
                 Assert.assertEquals(unmarshal.getServiceKey(), bt.getServiceKey());
                 Assert.assertEquals(unmarshal.getBindingKey(), bt.getBindingKey());
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/apache/master
         }
 }

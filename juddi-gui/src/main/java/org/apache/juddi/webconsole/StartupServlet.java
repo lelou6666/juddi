@@ -31,83 +31,101 @@ import javax.servlet.ServletContextEvent;
  */
 public class StartupServlet implements javax.servlet.ServletContextListener {
 
-    static final Logger log = Logger.getLogger(StartupServlet.class.getCanonicalName());
+        static final Logger log = Logger.getLogger(StartupServlet.class.getCanonicalName());
 
-    /**
-     * creates a new AES key and stores it to the properties files
-     *
-     * @param sce
-     */
-    public void contextInitialized(ServletContextEvent sce) {
-        FileOutputStream fos = null;
-        try {
-            //URL resource = sce.getServletContext().getResource("/META-INF/config.properties");
-            Properties p = new Properties();
-            InputStream is = sce.getServletContext().getResourceAsStream("/META-INF/config.properties");
-            p.load(is);
-            is.close();
-            p.remove("key");
-            log.info("Attempting to generate 256 bit AES key");
-            String key = AES.GEN(256);
-            if (key == null) {
-                log.info("FAILEd. Now attempting to generate 128 bit AES key");
-                key = AES.GEN(128);
-            }
-            if (key == null) {
-                log.log(Level.SEVERE, "128 bit key generation failed! user credentials may not be encrypted");
-            }
-            p.put("key", key);
-            fos = new FileOutputStream(sce.getServletContext().getRealPath("/META-INF/config.properties"));
+        /**
+         * creates a new AES key and stores it to the properties files
+         *
+         * @param sce
+         */
+        public void contextInitialized(ServletContextEvent sce) {
+                log.info("juddi-gui startup");
+                FileOutputStream fos = null;
+                try {
+                        //URL resource = sce.getServletContext().getResource("/META-INF/config.properties");
+                        Properties p = new Properties();
 
-            p.store(fos, "No comments");
-            fos.flush();
-            fos.close();
-        } catch (Exception ex) {
-            log.log(Level.WARNING, null, ex);
-            try {
-                if (fos != null) {
-                    fos.close();
+                        log.info("Attempting to generate 256 bit AES key");
+                        boolean ok = false;
+                        String key = AES.GEN(256);
+                        if (key == null) {
+                                ok = false;
+                        } else {
+                                if (AES.ValidateKey(key)) {
+                                        log.info("Generation of 256 bit AES key successful");
+                                        ok = true;
+                                } else {
+                                        log.warning("256 bit key validation failed. To use higher key sizes, try installing the Java Cryptographic Extensions (JCE) Unlimited Strength");
+                                }
+                        }
+                        if (!ok) {
+                                log.info("Attempting to generate 128 bit AES key");
+                                key = AES.GEN(128);
+                                if (key == null) {
+                                        log.log(Level.SEVERE, "128 bit key generation failed! user's won't be able to login!");
+                                        return;
+                                } else if (AES.ValidateKey(key)) {
+                                        log.info("Generation of 128 bit AES key successful");
+                                } else {
+                                        log.severe("128 bit key validation failed! giving up, user's won't be able to login! ");
+                                        return;
+
+                                }
+                        }
+
+                        p.put("key", key);
+                        fos = new FileOutputStream(sce.getServletContext().getRealPath("/META-INF/config.properties"));
+
+                        log.log(Level.INFO, "Storing key to " + sce.getServletContext().getRealPath("/META-INF/config.properties"));
+                        p.store(fos, "No comments");
+                        fos.flush();
+                        fos.close();
+                } catch (Exception ex) {
+                        log.log(Level.WARNING, null, ex);
+                        try {
+                                if (fos != null) {
+                                        fos.close();
+                                }
+                        } catch (Exception e) {
+                        }
                 }
-            } catch (Exception e) {
-            }
         }
-    }
 
-    /**
-     * does nothing
-     *
-     * @param sce
-     */
-    public void contextDestroyed(ServletContextEvent sce) {
-        FileOutputStream fos = null;
-        try {
-            log.info("Cleaning up juddi-gui");
-            Properties p = new Properties();
-            InputStream is = sce.getServletContext().getResourceAsStream("/META-INF/config.properties");
-            p.load(is);
-            p.remove("key");
-            is.close();
-            fos = new FileOutputStream(sce.getServletContext().getRealPath("/META-INF/config.properties"));
-            p.store(fos, "No comments");
-            fos.flush();
-            fos.close();
-        } catch (Exception ex) {
-            log.log(Level.WARNING, null, ex);
-            try {
-                if (fos != null) {
-                    fos.close();
+        /**
+         * does nothing
+         *
+         * @param sce
+         */
+        public void contextDestroyed(ServletContextEvent sce) {
+                FileOutputStream fos = null;
+                try {
+                        log.info("Cleaning up juddi-gui");
+                        Properties p = new Properties();
+                        InputStream is = sce.getServletContext().getResourceAsStream("/META-INF/config.properties");
+                        p.load(is);
+                        p.remove("key");
+                        is.close();
+                        fos = new FileOutputStream(sce.getServletContext().getRealPath("/META-INF/config.properties"));
+                        p.store(fos, "No comments");
+                        fos.flush();
+                        fos.close();
+                } catch (Exception ex) {
+                        log.log(Level.WARNING, null, ex);
+                        try {
+                                if (fos != null) {
+                                        fos.close();
+                                }
+                        } catch (Exception e) {
+                        }
                 }
-            } catch (Exception e) {
-            }
-        }
-        try {
-            sce.getServletContext().removeAttribute("username");
-            sce.getServletContext().removeAttribute("password");
-            sce.getServletContext().removeAttribute("locale");
-            sce.getServletContext().removeAttribute("hub");
-        } catch (Exception ex) {
-            log.log(Level.WARNING, null, ex);
-        }
+                try {
+                        sce.getServletContext().removeAttribute("username");
+                        sce.getServletContext().removeAttribute("password");
+                        sce.getServletContext().removeAttribute("locale");
+                        sce.getServletContext().removeAttribute("hub");
+                } catch (Exception ex) {
+                        log.log(Level.WARNING, null, ex);
+                }
 
-    }
+        }
 }

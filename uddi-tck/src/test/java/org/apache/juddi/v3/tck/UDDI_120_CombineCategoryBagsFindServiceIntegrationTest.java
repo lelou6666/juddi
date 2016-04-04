@@ -25,6 +25,7 @@ import org.apache.juddi.v3.client.config.UDDIClient;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uddi.api_v3.CategoryBag;
@@ -74,18 +75,30 @@ public class UDDI_120_CombineCategoryBagsFindServiceIntegrationTest {
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 tckTModel.deleteCreatedTModels(authInfoJoe);
                 manager.stop();
         }
 
         @BeforeClass
         public static void startManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 manager = new UDDIClient();
                 manager.start();
 
                 logger.debug("Getting auth tokens..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
                         //Assert.assertNotNull(authInfoJoe);
@@ -102,10 +115,18 @@ public class UDDI_120_CombineCategoryBagsFindServiceIntegrationTest {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
 
         @Test
         public void findServiceByCategoryBag() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 try {
                         tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL_XML, TOM_PUBLISHER_TMODEL_KEY);
                         tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL01_XML, TOM_PUBLISHER_TMODEL01_KEY);
@@ -168,6 +189,10 @@ public class UDDI_120_CombineCategoryBagsFindServiceIntegrationTest {
 
         @Test
         public void findNoServiceByCategoryBag() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 try {
                         tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL_XML, TOM_PUBLISHER_TMODEL_KEY);
                         tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL01_XML, TOM_PUBLISHER_TMODEL01_KEY);
@@ -217,6 +242,10 @@ public class UDDI_120_CombineCategoryBagsFindServiceIntegrationTest {
 
         @Test
         public void findServiceByCombinedCategoryBag() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 try {
                         tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL_XML, TOM_PUBLISHER_TMODEL_KEY);
                         tckTModel.saveTModel(authInfoJoe, TOM_PUBLISHER_TMODEL01_XML, TOM_PUBLISHER_TMODEL01_KEY);

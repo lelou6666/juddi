@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+<<<<<<< HEAD
 /**
  * <p>Java class for Node type.  Specific to juddi.
  * 
@@ -26,6 +27,12 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+=======
+package org.apache.juddi.api_v3;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+>>>>>>> refs/remotes/apache/master
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -80,9 +87,13 @@ import javax.xml.bind.annotation.XmlType;
     "factoryURLPkgs",
     "factoryNamingProvider"
 })
+<<<<<<< HEAD
 public class Node implements Serializable{
 	@XmlTransient
 	private static final long serialVersionUID = -4601378453000384721L;
+=======
+public class Node {
+>>>>>>> refs/remotes/apache/master
 
     protected String name;
     protected String clientName;

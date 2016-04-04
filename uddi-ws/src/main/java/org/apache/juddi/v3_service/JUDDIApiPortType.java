@@ -1,6 +1,28 @@
+<<<<<<< HEAD
 
 package org.apache.juddi.v3_service;
 
+=======
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package org.apache.juddi.v3_service;
+
+import java.rmi.RemoteException;
+>>>>>>> refs/remotes/apache/master
 import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -8,6 +30,10 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
+<<<<<<< HEAD
+=======
+import javax.xml.ws.Holder;
+>>>>>>> refs/remotes/apache/master
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 import org.apache.juddi.api_v3.AdminSaveBusinessWrapper;
@@ -20,6 +46,10 @@ import org.apache.juddi.api_v3.DeleteClientSubscriptionInfo;
 import org.apache.juddi.api_v3.DeleteNode;
 import org.apache.juddi.api_v3.DeletePublisher;
 import org.apache.juddi.api_v3.GetAllPublisherDetail;
+import org.apache.juddi.api_v3.GetEntityHistoryMessageRequest;
+import org.apache.juddi.api_v3.GetEntityHistoryMessageResponse;
+import org.apache.juddi.api_v3.GetFailedReplicationChangeRecordsMessageRequest;
+import org.apache.juddi.api_v3.GetFailedReplicationChangeRecordsMessageResponse;
 import org.apache.juddi.api_v3.GetPublisherDetail;
 import org.apache.juddi.api_v3.NodeDetail;
 import org.apache.juddi.api_v3.NodeList;
@@ -34,9 +64,14 @@ import org.apache.juddi.api_v3.SyncSubscriptionDetail;
 import org.apache.juddi.api_v3.ValidValues;
 import org.uddi.api_v3.DeleteTModel;
 import org.uddi.api_v3.DispositionReport;
+<<<<<<< HEAD
 import org.uddi.repl_v3.ReplicationConfiguration;
 import org.uddi.sub_v3.Subscription;
+=======
+>>>>>>> refs/remotes/apache/master
 import org.uddi.v3_service.DispositionReportFaultMessage;
+import org.uddi.repl_v3.ReplicationConfiguration;
+import org.uddi.sub_v3.Subscription;
 
 
 /**
@@ -54,7 +89,10 @@ import org.uddi.v3_service.DispositionReportFaultMessage;
 @XmlSeeAlso({
     org.uddi.repl_v3.ObjectFactory.class,
     org.apache.juddi.api_v3.ObjectFactory.class,
+<<<<<<< HEAD
     org.apache.juddi.v3_service.ObjectFactory.class,
+=======
+>>>>>>> refs/remotes/apache/master
     org.uddi.api_v3.ObjectFactory.class,
     org.uddi.custody_v3.ObjectFactory.class,
     org.uddi.policy_v3.ObjectFactory.class,
@@ -78,7 +116,11 @@ public interface JUDDIApiPortType {
     public PublisherDetail getPublisherDetail(
         @WebParam(name = "get_publisherDetail", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "parameters")
         GetPublisherDetail parameters)
+<<<<<<< HEAD
         throws DispositionReportFaultMessage
+=======
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -91,7 +133,11 @@ public interface JUDDIApiPortType {
     public void deleteClientSubscriptionInfo(
         @WebParam(name = "delete_ClientSubscriptionInfo", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
         DeleteClientSubscriptionInfo body)
+<<<<<<< HEAD
         throws DispositionReportFaultMessage
+=======
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -107,7 +153,11 @@ public interface JUDDIApiPortType {
     public PublisherDetail getAllPublisherDetail(
         @WebParam(name = "get_allPublisherDetail", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
         GetAllPublisherDetail body)
+<<<<<<< HEAD
         throws DispositionReportFaultMessage
+=======
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -122,8 +172,13 @@ public interface JUDDIApiPortType {
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
     public ClerkDetail saveClerk(
         @WebParam(name = "save_ClerkRequest", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
+<<<<<<< HEAD
         SaveClerkInfo body)
         throws DispositionReportFaultMessage
+=======
+        SaveClerk body)
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -151,8 +206,13 @@ public interface JUDDIApiPortType {
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
     public NodeDetail saveNode(
         @WebParam(name = "save_NodeRequest", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
+<<<<<<< HEAD
         SaveNodeInfo body)
         throws DispositionReportFaultMessage
+=======
+        SaveNode body)
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -168,7 +228,11 @@ public interface JUDDIApiPortType {
     public PublisherDetail savePublisher(
         @WebParam(name = "save_publisher", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
         SavePublisher body)
+<<<<<<< HEAD
         throws DispositionReportFaultMessage
+=======
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -214,7 +278,11 @@ public interface JUDDIApiPortType {
     public SyncSubscriptionDetail invokeSyncSubscription(
         @WebParam(name = "syncSubscription", targetNamespace = "urn:juddi-apache-org:api_v3")
         SyncSubscription syncSubscription)
+<<<<<<< HEAD
         throws DispositionReportFaultMessage
+=======
+        throws DispositionReportFaultMessage, RemoteException
+>>>>>>> refs/remotes/apache/master
     ;
 
     /**
@@ -235,6 +303,7 @@ public interface JUDDIApiPortType {
     public NodeList getAllNodes(
         @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
         String authInfo)
+<<<<<<< HEAD
         throws DispositionReportFaultMessage
     ;
 
@@ -480,4 +549,268 @@ public interface JUDDIApiPortType {
         throws DispositionReportFaultMessage
     ;
 
+=======
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		gets all Clerks persisted in the database, useful for replication scenarios. Clerks provide a mapping for credentials to a Node
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param authInfo
+     * @return
+     *     returns org.apache.juddi.api_v3.ClerkList
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "get_AllClerks", action = "get_AllClerks")
+    @WebResult(name = "clerkList", targetNamespace = "urn:juddi-apache-org:api_v3")
+    @RequestWrapper(localName = "get_AllClerks", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.GetAllClerks")
+    @ResponseWrapper(localName = "get_AllClerksResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.GetAllClerksResponse")
+    public ClerkList getAllClerks(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		removes a node from the database, useful for replication scenarios. 
+     * 		Note: when removing a node, all associated clerks will be removed with it.
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param body
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "delete_Node", action = "delete_Node")
+    @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+    public void deleteNode(
+        @WebParam(name = "delete_Node", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
+        DeleteNode body)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		removes a clerk from the database, useful for replication scenarios. 
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param request
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "delete_Clerk", action = "delete_Clerk")
+    @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+    public void deleteClerk(
+        @WebParam(name = "delete_Clerk", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "request")
+        DeleteClerk request)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		saves a business just like from the Publication API, however administrators can use this to perform restores from backup.
+     * 		It allows an administrator to save the business, setting the ownership to any user, thus maintaining access control rules.
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param values
+     * @param authInfo
+     * @return
+     *     returns org.uddi.api_v3.DispositionReport
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "adminSave_Business", action = "adminSave_Business")
+    @WebResult(name = "dispositionReport", targetNamespace = "urn:juddi-apache-org:api_v3")
+    @RequestWrapper(localName = "adminSave_Business", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminSaveBusiness")
+    @ResponseWrapper(localName = "adminSave_BusinessResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminSaveBusinessResponse")
+    public DispositionReport adminSaveBusiness(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo,
+        @WebParam(name = "values", targetNamespace = "urn:juddi-apache-org:api_v3")
+        List<AdminSaveBusinessWrapper> values)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		saves a tModel just like from the Publication API, however administrators can use this to perform restores from backup.
+     * 		It allows an administrator to save the tModel, setting the ownership to any user, thus maintaining access control rules.
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param values
+     * @param authInfo
+     * @return
+     *     returns org.uddi.api_v3.DispositionReport
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "adminSave_tModel", action = "adminSave_tModel")
+    @WebResult(name = "dispositionReport", targetNamespace = "urn:juddi-apache-org:api_v3")
+    @RequestWrapper(localName = "adminSave_tModel", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminSaveTModel")
+    @ResponseWrapper(localName = "adminSave_tModelResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminSaveTModelResponse")
+    public DispositionReport adminSaveTModel(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo,
+        @WebParam(name = "values", targetNamespace = "urn:juddi-apache-org:api_v3")
+        List<AdminSaveTModelWrapper> values)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		returns all Nodes that have been enabled for replication. 
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param authInfo
+     * @return
+     *     returns org.uddi.repl_v3.ReplicationConfiguration
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "get_ReplicationNodes", action = "get_ReplicationNodes")
+    @WebResult(name = "replicationConfiguration", targetNamespace = "urn:uddi-org:repl_v3")
+    @RequestWrapper(localName = "get_ReplicationNodes", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.GetReplicationNodes")
+    @ResponseWrapper(localName = "get_ReplicationNodesResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.GetReplicationNodesResponse")
+    public ReplicationConfiguration getReplicationNodes(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		sets all Nodes for replication.  Any previously set Nodes will be removed from the replication list.
+     * 		Optionally, all data from remote nodes that 
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param replicationConfiguration
+     * @param authInfo
+     * @return
+     *     returns org.uddi.api_v3.DispositionReport
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "set_ReplicationNodes", action = "set_ReplicationNodes")
+    @WebResult(name = "dispositionReport", targetNamespace = "urn:juddi-apache-org:api_v3")
+    @RequestWrapper(localName = "set_ReplicationNodes", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.SetReplicationNodes")
+    @ResponseWrapper(localName = "set_ReplicationNodesResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.SetReplicationNodesResponse")
+    public DispositionReport setReplicationNodes(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo,
+        @WebParam(name = "replicationConfiguration", targetNamespace = "urn:uddi-org:repl_v3")
+        ReplicationConfiguration replicationConfiguration)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     * 		gets all client subscriptions. useful for backup and restore operations
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param authInfo
+     * @return
+     *     returns java.util.List<org.apache.juddi.api_v3.SubscriptionWrapper>
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "get_allClientSubscriptionInfo", action = "get_allClientSubscriptionInfo")
+    @WebResult(name = "subscriptions", targetNamespace = "urn:juddi-apache-org:api_v3")
+    @RequestWrapper(localName = "get_allClientSubscriptionInfo", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.GetAllClientSubscriptionInfo")
+    @ResponseWrapper(localName = "get_allClientSubscriptionInfoResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.GetAllClientSubscriptionInfoResponse")
+    public List<SubscriptionWrapper> getAllClientSubscriptionInfo(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+   
+    /**
+     * 
+     * 		deletes a client subscription
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param subscriptionKey
+     * @param authInfo
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "adminDelete_Subscription", action = "adminDelete_Subscription")
+    @RequestWrapper(localName = "adminDelete_Subscription", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminDeleteSubscriptionRequest")
+    @ResponseWrapper(localName = "adminDelete_SubscriptionResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminDeleteSubscriptionResponse")
+    public void adminDeleteSubscription(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo,
+        @WebParam(name = "subscriptionKey", targetNamespace = "urn:juddi-apache-org:api_v3")
+        List<String> subscriptionKey)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+ /**
+     * 
+     * 		saves a client subscription, useful for restore functions
+     * 		@since 3.3
+     * 	  
+     * 
+     * @param publisherOrUsername
+     * @param subscriptions
+     * @param authInfo
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(operationName = "adminSave_Subscription", action = "adminSave_Subscription")
+    @RequestWrapper(localName = "adminSave_Subscription", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminSaveSubscriptionRequest")
+    @ResponseWrapper(localName = "adminSave_SubscriptionResponse", targetNamespace = "urn:juddi-apache-org:api_v3", className = "org.apache.juddi.api_v3.AdminSaveSubscriptionResponse")
+    public void adminSaveSubscription(
+        @WebParam(name = "authInfo", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String authInfo,
+        @WebParam(name = "publisherOrUsername", targetNamespace = "urn:juddi-apache-org:api_v3")
+        String publisherOrUsername,
+        @WebParam(name = "subscriptions", targetNamespace = "urn:juddi-apache-org:api_v3", mode = WebParam.Mode.INOUT)
+        Holder<List<Subscription>> subscriptions)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+
+    /**
+     * 
+     *     gets a given entities change record history
+     *     @since 3.3
+     *     
+     * 
+     * @param body
+     * @return
+     *     returns org.apache.juddi.api_v3.GetEntityHistoryMessageResponse
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(action = "getEntityHistory")
+    @WebResult(name = "getEntityHistoryMessageResponse", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "response")
+    @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+    public GetEntityHistoryMessageResponse getEntityHistory(
+        @WebParam(name = "getEntityHistoryMessage", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
+        GetEntityHistoryMessageRequest body)
+        throws DispositionReportFaultMessage
+    ,RemoteException;
+
+    /**
+     * 
+     *     gets a list of change records that were received from another node but failed to save locally, usually due to a key conflict
+     *     @since 3.3
+     *     
+     * 
+     * @param body
+     * @return
+     *     returns org.apache.juddi.api_v3.GetFailedReplicationChangeRecordsMessageResponse
+     * @throws DispositionReportFaultMessage
+     */
+    @WebMethod(action = "getFailedReplicationChangeRecords")
+    @WebResult(name = "getFailedReplicationChangeRecordsMessageResponse", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "response")
+    @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+    public GetFailedReplicationChangeRecordsMessageResponse getFailedReplicationChangeRecords(
+        @WebParam(name = "getFailedReplicationChangeRecordsMessage", targetNamespace = "urn:juddi-apache-org:api_v3", partName = "body")
+        GetFailedReplicationChangeRecordsMessageRequest body)
+        throws DispositionReportFaultMessage, RemoteException
+    ;
+    
+>>>>>>> refs/remotes/apache/master
 }

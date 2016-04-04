@@ -24,6 +24,12 @@ import org.apache.juddi.v3.client.ClassUtil;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.apache.juddi.v3.client.transport.TransportException;
 
+/**
+ * Connection information to a UDDI node.
+ * 
+ * @author kstam
+ *
+ */
 public class UDDINode implements Serializable {
 
 	private static final long serialVersionUID = 5721040459195558161L;
@@ -36,9 +42,14 @@ public class UDDINode implements Serializable {
 	private String description;
 	private String custodyTransferUrl;
 	private String inquiryUrl;
+<<<<<<< HEAD
         private String inquiryRESTUrl;
+=======
+	private String inquiryRESTUrl;
+>>>>>>> refs/remotes/apache/master
 	private String publishUrl;
 	private String securityUrl;
+        private String replicationUrl;
 	private String subscriptionUrl;
 	private String subscriptionListenerUrl;
 	private String juddiApiUrl;
@@ -59,11 +70,16 @@ public class UDDINode implements Serializable {
 		description = node.getDescription();
 		custodyTransferUrl = node.getCustodyTransferUrl();
 		inquiryUrl = node.getInquiryUrl();
+<<<<<<< HEAD
                 //TODO inquiryRESTUrl = node.getInquiryRESTUrl();
+=======
+                //TODO need juddi schema updat inquiryRESTUrl = node.getInquiryRESTUrl()
+>>>>>>> refs/remotes/apache/master
 		publishUrl = node.getPublishUrl();
 		securityUrl = node.getSecurityUrl();
 		subscriptionUrl = node.getSubscriptionUrl();
 		subscriptionListenerUrl = node.getSubscriptionListenerUrl();
+                replicationUrl=node.getReplicationUrl();
 		juddiApiUrl = node.getJuddiApiUrl();
 		proxyTransport = node.getProxyTransport();
 		factoryInitial = node.getFactoryInitial();
@@ -81,32 +97,40 @@ public class UDDINode implements Serializable {
 	
 	public Node getApiNode() {
 		Node apiNode = new Node();
-		apiNode.setCustodyTransferUrl(custodyTransferUrl);
+		apiNode.setClientName(clientName);
+                apiNode.setCustodyTransferUrl(custodyTransferUrl);
 		apiNode.setDescription(description);
 		apiNode.setFactoryInitial(factoryInitial);
 		apiNode.setFactoryNamingProvider(factoryNamingProvider);
 		apiNode.setFactoryURLPkgs(factoryURLPkgs);
 		apiNode.setInquiryUrl(inquiryUrl);
+<<<<<<< HEAD
                 //apiNode.setInquiryRESTUrl(name);
+=======
+                //no mapping for this apiNode.setInquiryRESTUrl(name);
+>>>>>>> refs/remotes/apache/master
 		apiNode.setJuddiApiUrl(juddiApiUrl);
-		apiNode.setClientName(clientName);
+		
 		apiNode.setName(name);
 		apiNode.setProxyTransport(proxyTransport);
 		apiNode.setPublishUrl(publishUrl);
+                apiNode.setReplicationUrl(replicationUrl);
 		apiNode.setSecurityUrl(securityUrl);
 		apiNode.setSubscriptionUrl(subscriptionUrl);
+                apiNode.setSubscriptionListenerUrl(subscriptionListenerUrl);
 		return apiNode;
 	}
 	
 	
 	public Transport getTransport() throws TransportException {
 		if (transport==null) {
+                        String clazz = getProxyTransport();
 			try {
-				String clazz = getProxyTransport();
+				
 				Class<?> transportClass = ClassUtil.forName(clazz,this.getClass());
 				transport = (Transport) transportClass.getConstructor(String.class,String.class).newInstance(clientName,name);
 			} catch (Exception e) {
-				throw new TransportException(e.getMessage(),e);
+				throw new TransportException(e.getMessage() + " node " + name + " transport class: " + clazz,e);
 			}
 		}
 		return transport;
@@ -147,9 +171,29 @@ public class UDDINode implements Serializable {
 	public String getInquiryUrl() {
 		return inquiryUrl;
 	}
+<<<<<<< HEAD
         
         /**
          * used ONLY for jUDDI's HTTP GET (REST) endpoint
+=======
+        /**
+         * @since 3.2.1
+         * @return 
+         */
+        public String getReplicationUrl() {
+		return replicationUrl;
+	}
+        /**
+         * @since 3.2.1
+         * @param value 
+         */
+        public void setReplicationUrl(String value) {
+		replicationUrl=value;
+	}
+        
+        /**
+         * used ONLY for UDDI's HTTP GET (REST) endpoint
+>>>>>>> refs/remotes/apache/master
          * @since 3.2
          * @param url 
          */
@@ -159,7 +203,11 @@ public class UDDINode implements Serializable {
         /**
          * used ONLY for jUDDI's HTTP GET (REST) endpoint
          * @since 3.2
+<<<<<<< HEAD
          * @return 
+=======
+         * @return the REST url for the Inquiry, not supported by all registries 
+>>>>>>> refs/remotes/apache/master
          */
         public String getInquiry_REST_Url() {
 		return inquiryRESTUrl;

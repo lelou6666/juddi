@@ -38,18 +38,16 @@ function deleteBusinessByID(id)
     request.done(function(msg) {
         window.console && console.log('postback done '  + url);                
         
-        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-        $("#resultBar").show();
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>'  + msg);
+        $("#alert").modal();
         $("#" + escapeJquerySelector(id)).remove();
         
     });
 
     request.fail(function(jqXHR, textStatus) {
         window.console && console.log('postback failed ' + url);                                
-        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;' + '</a>' + jqXHR.responseText + textStatus );
-        //$(".alert").alert();
-        $("#resultBar").show();
-        
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+        $("#alert").modal();
     });
 }
 
@@ -94,7 +92,7 @@ function AddDescription()
     var i = currentDescriptionEntries;
     $("<div id=\"Description" + i + "\" style=\"border-width:1px; border-style:solid\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('Description" + i 
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"Description" + i + "Value\"></div>"
         +"<div style=\"float:left\">" + i18n_lang + ": &nbsp;</div>"
@@ -111,7 +109,7 @@ function AddDisco()
     
     $("<div id=\"disco" + i + "\" style=\"border-width:1px; border-style:solid\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('disco" + i 
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"disco" + i + "Value\"></div>"
         +"<div style=\"float:left\">" + i18n_type + ": &nbsp;</div>"
@@ -131,7 +129,7 @@ function AddContact()
     
     $("<div id=\"contact" + i + "\" style=\"border-width:2px; border-style:solid; border-color:red\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + i 
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_contactType+ ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + i + "Type\">" + i18n_contactTypeDefault + "</div>"
         +"<a href=\"javascript:AddContactName('" + i + "');\"><i class=\"icon-plus-sign icon-large\"></i></a>" + i18n_name + " &nbsp"
@@ -145,12 +143,12 @@ function AddContact()
     
     Reedit();
 }
-var contactname=0;
+
 function AddContactName(contactid)
 {
     $("<div id=\"contact" + contactid + "Name" + contactname + "\" style=\"border-width:1px; border-style:solid\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + contactid + "Name" + contactname
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_name + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + contactid + "Name" + contactname + "Value\"></div>"
         +"<div style=\"float:left\">" + i18n_lang + ": &nbsp;</div>"
@@ -160,12 +158,11 @@ function AddContactName(contactid)
     contactname++;
 }
 
-var contactemail=0;
 function AddContactEmail(contactid)
 {
     $("<div id=\"contact" + contactid + "Email" + contactemail + "\" style=\"border-width:1px; border-style:solid\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + contactid + "Email" + contactemail
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_type + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + contactid + "Email" + contactemail + "Type\">" + i18n_email+ "</div>"
         +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
@@ -174,13 +171,11 @@ function AddContactEmail(contactid)
     Reedit();
     contactemail++;
 }
-
-var contactdescription=0;
 function AddContactDescription(contactid)
 {
     $("<div id=\"contact" + contactid + "Description" + contactdescription + "\" style=\"border-width:1px; border-style:solid\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + contactid + "Description" + contactdescription
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_description + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + contactid + "Description" + contactdescription + "Value\">"+i18n_contactPrimary+"</div>"
         +"<div style=\"float:left\">" + i18n_lang + ": &nbsp;</div>"
@@ -189,12 +184,12 @@ function AddContactDescription(contactid)
     Reedit();
     contactdescription++;
 }
-var contactphone=0;
+
 function AddContactPhone(contactid)
 {
     $("<div id=\"contact" + contactid + "Phone" + contactphone + "\" style=\"border-width:1px; border-style:solid\" >" 
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + contactid + "Phone" + contactphone
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_phone + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + contactid + "Phone" + contactphone + "Value\"></div>"
         +"<div style=\"float:left\">" + i18n_type + ": &nbsp;</div>"
@@ -204,13 +199,12 @@ function AddContactPhone(contactid)
     contactphone++;
 }
 
-var contactaddress=0;
 function AddContactAddress(contactid)
 {
     $("<div id=\"contact" + contactid + "Address" + contactaddress + "\" style=\"border-width:1px; border-style:solid\" >" 
         
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + contactid + "Address" + contactaddress
-        +"');\"><i class=\"icon-trash icon-large\"></i></a>" + i18n_address + "</div><br>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a>" + i18n_address + "</div><br>"
         +"<div style=\"float:left\">" + i18n_lang + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + contactid + "Address" + contactaddress + "Lang\"></div>"
         +"<div style=\"float:left\">" + i18n_addressSortCode + ": &nbsp;</div>"
@@ -227,14 +221,14 @@ function AddContactAddress(contactid)
     contactaddress++;
 }
 
-var contactaddresslines=0;
 function AddContactAddressLine(contactid)
 {
+    contactaddresslines++;
     $("<div id=\"contact" + contactid +  "addressLine" +contactaddresslines + 
         "\" style=\"border-width:1px; border-style:solid\" >" 
         
         +"<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('contact" + contactid + "addressLine" +contactaddresslines 
-        +"');\"><i class=\"icon-trash icon-large\"></i></a></div>"
+        +"');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"
         +"<div style=\"float:left\">" + i18n_addressValue + ": &nbsp;</div>"
         +"<div class=\"edit\" id=\"contact" + contactid + "addressLine" + contactaddresslines + "Value\"></div>"
         +"<div style=\"float:left\">" +i18n_keyname_optional + ": &nbsp;</div>"
@@ -244,8 +238,27 @@ function AddContactAddressLine(contactid)
     
         +"</div>").appendTo("#contact" + contactid);
     Reedit();
-    contactaddress++;
+    
 }
+
+
+function AddCategoryKeyReferenceParam(tmodelkey, keyname, keyvalue)
+{
+    currentcatkeyref++;
+    var i=currentcatkeyref;
+    
+    $("<div id=\"catbagkeyref" + i + "\" style=\"border-width:1px; border-style:solid\">"+
+        "<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('catbagkeyref" + i + "');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"+
+        "<div style=\"float:left\">" + i18n_key +" (<a href=\"javascript:tModelModal('catbagkeyref" + i + "Value')\" ><i class=\"icon-list-alt icon-large\"></i>" + il8n_picker + "</a>): &nbsp;</div>"
+        + "<div class=\"edit\" id=\"catbagkeyref" + i + "Value\">" + tmodelkey + "</div>"
+        +"<div style=\"float:left\">" + i18n_name + ": &nbsp;</div>"
+        + "<div class=\"edit\" id=\"catbagkeyref" + i + "KeyName\">" + keyname + "</div>"
+        +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
+        + "<div class=\"edit\" id=\"catbagkeyref" + i + "KeyValue\">" + keyvalue + "</div>"
+        +"</div>").appendTo("#catContainer");
+    Reedit();
+}
+
 
 
 function AddCategoryKeyReference()
@@ -254,7 +267,7 @@ function AddCategoryKeyReference()
     var i=currentcatkeyref;
     
     $("<div id=\"catbagkeyref" + i + "\" style=\"border-width:1px; border-style:solid\">"+
-        "<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('catbagkeyref" + i + "');\"><i class=\"icon-trash icon-large\"></i></a></div>"+
+        "<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('catbagkeyref" + i + "');\"><i class=\"icon-trash icon-large\"></i>&nbsp;</a></div>"+
         // <div style=\"float:left\">" + s.key") + ": <a href=\"javascript:tModelModal('" + PostBackConstants.CATBAG_KEY_REF + i + PostBackConstants.VALUE + "')\" class=\"btn btn-mini\">Picker</a> &nbsp;</div>"
         "<div style=\"float:left\">" + i18n_key +" (<a href=\"javascript:tModelModal('catbagkeyref" + i + "Value')\" ><i class=\"icon-list-alt icon-large\"></i>" + il8n_picker + "</a>): &nbsp;</div>"
         + "<div class=\"edit\" id=\"catbagkeyref" + i + "Value\"></div>"
@@ -277,7 +290,7 @@ function AddCategoryKeyReferenceGroup()
         + "<div class=\"edit\" id=\"catbaggrpkeyref" + i + "Value\"></div>"
         
         + "<div id=\"catbaggrpkeyref" + i + "keyref\" style=\"border-width:1px; border-style:solid\">"
-        + "<div style=\"float:left;height:100%\"><a href=\"javascript:AddCategoryKeyReferenceGroupKeyRef('catbaggrpkeyref" + i + "keyref');\"><i class=\"icon-plus-sign icon-large\"></i></a></div>"
+        + "<div style=\"float:left;height:100%\"><a href=\"javascript:AddCategoryKeyReferenceGroupKeyRef('catbaggrpkeyref" + i + "');\"><i class=\"icon-plus-sign icon-large\"></i></a></div>"
     
         +i18n_addrefcat
         + "</div>"
@@ -285,7 +298,48 @@ function AddCategoryKeyReferenceGroup()
         +"</div>").appendTo("#catContainerGrp");
     Reedit();
 }
-var currentcatkeyrefgrpitems=0;
+
+
+function AddCategoryKeyReferenceGroupParam(tmodelkey)
+{
+    currentcatkeyrefgrp++;
+    var i=currentcatkeyrefgrp;
+    
+    $("<div id=\"catbaggrpkeyref" + i + "\" style=\"border-width:2px; border-style:solid\">"+
+        "<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('catbaggrpkeyref" + i + "');\"><i class=\"icon-trash icon-large\"></i></a></div>"+
+        "<div style=\"float:left\">" + i18n_key + " (<a href=\"javascript:tModelModal('catbaggrpkeyref" + i + "Value')\"><i class=\"icon-list-alt icon-large\"></i>" + il8n_picker + "</a>): &nbsp;</div>"
+        + "<div class=\"edit\" id=\"catbaggrpkeyref" + i + "Value\">" + tmodelkey + "</div>"
+        
+        + "<div id=\"catbaggrpkeyref" + i + "keyref\" style=\"border-width:1px; border-style:solid\">"
+        + "<div style=\"float:left;height:100%\"><a href=\"javascript:AddCategoryKeyReferenceGroupKeyRef('catbaggrpkeyref" + i + "');\"><i class=\"icon-plus-sign icon-large\"></i></a></div>"
+    
+        +i18n_addrefcat
+        + "</div>"
+    
+        +"</div>").appendTo("#catContainerGrp");
+    Reedit();
+    return "catbaggrpkeyref"+i;
+}
+
+function AddWGS1984(){
+        var div=AddCategoryKeyReferenceGroupParam("uddi:uddi.org:ubr:categorizationGroup:wgs84");
+        AddCategoryKeyReferenceGroupKeyRef(div, "uddi:uddi.org:ubr:categorizationGroup:wgs84:latitude",
+         "WGS 84 Latitude", "0.0");
+         AddCategoryKeyReferenceGroupKeyRef(div, "uddi:uddi.org:ubr:categorizationGroup:wgs84:longitude",
+         "WGS 84 Longitude", "0.0");
+         AddCategoryKeyReferenceGroupKeyRef(div, "uddi:uddi.org:ubr:categorization:geo_precision",
+         "Center of Street", "0900");
+}
+
+function AddISO3166UNSPSC(){
+        var div=AddCategoryKeyReferenceGroupParam("uddi:uddi.org:ubr:categorizationgroup:unspsc_geo3166");
+        AddCategoryKeyReferenceGroupKeyRef(div, "uddi:uddi.org:ubr:categorization:unspsc",
+         "UNSPSC:", "0.0");
+         AddCategoryKeyReferenceGroupKeyRef(div, "uddi:uddi.org:ubr:categorization:iso3166",
+         "GEO:United States", "US");
+}
+
+
 function AddCategoryKeyReferenceGroupKeyRef(div)
 {
     var i=currentcatkeyrefgrp;
@@ -304,6 +358,28 @@ function AddCategoryKeyReferenceGroupKeyRef(div)
         +"</div>").appendTo("#" + div);
     Reedit();
 }
+
+
+function AddCategoryKeyReferenceGroupKeyRef(div, tmodelkey, keyname, keyval)
+{
+    var i=currentcatkeyrefgrp;
+    currentcatkeyrefgrpitems++;
+    var k=currentcatkeyrefgrpitems;
+    
+    $("<div id=\"" + div + "keyref" + k + "\" style=\"border-width:1px; border-style:solid\">"+
+        "<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('" + div  + "keyref" + k+  
+        "');\"><i class=\"icon-trash icon-large\"></i></a></div>"+
+        "<div style=\"float:left\">" + i18n_key + " (<a href=\"javascript:tModelModal('" + div  +"keyref" + k+ "Value')\"><i class=\"icon-list-alt icon-large\"></i>" + il8n_picker + "</a>): &nbsp;</div>"
+        + "<div class=\"edit\" id=\"" + div  +"keyref" + k+ "Value\">" + tmodelkey + "</div>"
+        +"<div style=\"float:left\">" + i18n_name + ": &nbsp;</div>"
+        + "<div class=\"edit\" id=\"" + div  +"keyref" + k+ "KeyName\">" + keyname + "</div>"
+        +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
+        + "<div class=\"edit\" id=\""+ div  +"keyref" + k+ "KeyValue\">" + keyval + "</div>"
+        +"</div>").appendTo("#" + div);
+    Reedit();
+}
+
+
 function AddIdentKeyReference()
 {
     currentident++;
@@ -317,6 +393,23 @@ function AddIdentKeyReference()
         + "<div class=\"edit\" id=\"identbagkeyref" + i + "KeyName\"></div>"
         +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
         + "<div class=\"edit\" id=\"identbagkeyref" + i + "KeyValue\"></div>"
+        +"</div>").insertAfter("#identContainer");
+    Reedit();
+}
+
+function AddIdentKeyReferenceParam(tmodelkey, keyname, keyvalue)
+{
+    currentident++;
+    var i=currentident;
+    
+    $("<div id=\"identbagkeyref" + i + "\" style=\"border-width:1px; border-style:solid\">"+
+        "<div style=\"float:left;height:100%\"><a href=\"javascript:Remove('identbagkeyref" + i + "');\"><i class=\"icon-trash icon-large\"></i></a></div>"+
+        "<div style=\"float:left\">" + i18n_key + " (<a href=\"javascript:tModelModal('identbagkeyref" + i + "Value')\"><i class=\"icon-list-alt icon-large\"></i>" + il8n_picker + "</a>): &nbsp;</div>"
+        + "<div class=\"edit\" id=\"identbagkeyref" + i + "Value\">" + tmodelkey + "</div>"
+        +"<div style=\"float:left\">" + i18n_name + ": &nbsp;</div>"
+        + "<div class=\"edit\" id=\"identbagkeyref" + i + "KeyName\">" + keyname + "</div>"
+        +"<div style=\"float:left\">" + i18n_value + ": &nbsp;</div>"
+        + "<div class=\"edit\" id=\"identbagkeyref" + i + "KeyValue\">"+keyvalue+"</div>"
         +"</div>").insertAfter("#identContainer");
     Reedit();
 }
@@ -355,21 +448,21 @@ function deleteBusiness()
         data: postbackdata
     });
 
-    request.done(function(msg) {
+request.done(function(msg) {
         window.console && console.log('postback done '  + url);                
         
-        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-        $("#resultBar").show();
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>'  + msg);
+        $("#alert").modal();
+        $("#" + escapeJquerySelector(id)).remove();
         
     });
 
     request.fail(function(jqXHR, textStatus) {
         window.console && console.log('postback failed ' + url);                                
-        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;' + '</a>' + jqXHR.responseText + textStatus );
-        //$(".alert").alert();
-        $("#resultBar").show();
-        
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+        $("#alert").modal();
     });
+    
 }
 
 
@@ -411,20 +504,17 @@ function saveBusiness()
         data: postbackdata
     });
                 
-                
-    request.done(function(msg) {
+     request.done(function(msg) {
         window.console && console.log('postback done '  + url);                
         
-        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-        $("#resultBar").show();
-        
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>'  + msg);
+        $("#alert").modal();
     });
 
     request.fail(function(jqXHR, textStatus) {
         window.console && console.log('postback failed ' + url);                                
-        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;' + '</a>' +jqXHR.responseText + textStatus );
-        //$(".alert").alert();
-        $("#resultBar").show();
-        
-    });
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+        $("#alert").modal();
+    });         
+    
 }

@@ -36,20 +36,29 @@ public class UDDI_010_PublisherIntegrationTest {
 
 	@BeforeClass
 	public static void startRegistry() throws ConfigurationException {
+                if (!TckPublisher.isEnabled()) return;
+                if (!TckPublisher.isJUDDI()) return;
 		manager  = new UDDIClient();
 		manager.start();
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
 	}
 	
 	@AfterClass
 	public static void stopRegistry() throws ConfigurationException {
+                if (!TckPublisher.isEnabled()) return;
+                if (!TckPublisher.isJUDDI()) return;
 		manager.stop();
 	}
 	
      @Test
      public void testAuthToken() {
+<<<<<<< HEAD
+=======
+          Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
              Assume.assumeTrue(TckPublisher.isUDDIAuthMode());
 	     try {
-	    	 Transport transport = manager.getTransport();
+	    	 Transport transport = manager.getTransport("uddiv3");
         	 UDDISecurityPortType securityService = transport.getUDDISecurityService();
         	 GetAuthToken getAuthToken = new GetAuthToken();
         	 getAuthToken.setUserID(TckPublisher.getRootPublisherId());

@@ -18,8 +18,6 @@
 package org.apache.juddi.v3.client.mapping;
 
 import java.io.StringWriter;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jws.WebService;
 import javax.xml.bind.JAXBContext;
@@ -27,6 +25,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.juddi.v3.client.subscription.SubscriptionCallbackListener;
 import org.uddi.api_v3.DispositionReport;
 import org.uddi.api_v3.Result;
 import org.uddi.subr_v3.NotifySubscriptionListener;
@@ -38,7 +37,6 @@ import org.uddi.v3_service.UDDISubscriptionListenerPortType;
  * the UDDI registry when any change to a Service or BindingTemplate
  * call in to it.
  * 
- * @deprecated Use SubscriptionCallbackListener instead
  * @author kstam
  * @see SubscriptionCallbackListener
  *
@@ -46,25 +44,29 @@ import org.uddi.v3_service.UDDISubscriptionListenerPortType;
 @WebService(serviceName="UDDIClientSubscriptionListenerService", 
 			endpointInterface="org.uddi.v3_service.UDDISubscriptionListenerPortType",
 			targetNamespace = "urn:uddi-org:v3_service")
-@Deprecated
+
 public class UDDIClientSubscriptionListenerImpl implements UDDISubscriptionListenerPortType {
 	
-	private static Log logger = LogFactory.getLog(UDDIClientSubscriptionListenerImpl.class);
-	private static Map<String,UDDIServiceCache> serviceCacheMap = new ConcurrentHashMap<String,UDDIServiceCache>();
-	
-	public UDDIClientSubscriptionListenerImpl(String bindingKey, UDDIServiceCache serviceCache) {
-		super();
-		serviceCacheMap.put(bindingKey, serviceCache);
-	}
-	
+	private static final Log logger = LogFactory.getLog(UDDIClientSubscriptionListenerImpl.class);
+	private UDDIServiceCache serviceCache = null;
+
 	public UDDIClientSubscriptionListenerImpl() {
 		super();
-	}
-	
-	public static Map<String, UDDIServiceCache> getServiceCacheMap() {
-		return serviceCacheMap;
+	}	
+
+	public UDDIClientSubscriptionListenerImpl(String bindingKey, UDDIServiceCache serviceCache) {
+		super();
+		this.serviceCache = serviceCache;
 	}
 
+	
+        /**
+         * The SubscriptionListener is called by the UDDI Server when there is a change to any of the
+	 * services Endpoints. With every call the serviceCache is cleared.
+         * @param body
+         * @return success or fail
+         * @throws DispositionReportFaultMessage 
+         */
 	public DispositionReport notifySubscriptionListener(
 			NotifySubscriptionListener body)
 			throws DispositionReportFaultMessage 
@@ -74,16 +76,13 @@ public class UDDIClientSubscriptionListenerImpl implements UDDISubscriptionListe
 			Marshaller marshaller = context.createMarshaller();
 			StringWriter sw = new StringWriter();
 			marshaller.marshal(body, sw);
-			logger.debug("Notification received by UDDISubscriptionListenerService : " + sw.toString());
-			String bindingKey = body.getSubscriptionResultsList().getSubscription().getBindingKey();
-			if (serviceCacheMap.containsKey(bindingKey)) {
-				UDDIServiceCache serviceCache = serviceCacheMap.get(bindingKey);
-				// reset the cache, big hammer for now, we could figure out changed from the
-				// subscriptionResults, and be more selective.
-				serviceCache.removeAll();
-			}
+			logger.info("Notification received by UDDISubscriptionListenerService : " + sw.toString());
+			// reset the cache, big hammer for now, we could figure out changed from the
+			// subscriptionResults, and be more selective.
+			if (serviceCache!=null) serviceCache.removeAll();
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
 		}
 			
 		DispositionReport dr = new DispositionReport();

@@ -2,6 +2,21 @@
     Document   : transfer
     Created on : Apr 27, 2013, 8:52:12 AM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 --%>
 
 <%@page import="java.util.ArrayList"%>
@@ -131,9 +146,7 @@
                             request.done(function(msg) {
                                 window.console && console.log('postback done '  + url);                
         
-                                //$("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' +
-                               //     safe_tags_replace(msg));
-                                //$("#resultBar").show();
+                                
                                 $("#transfercontent").html(UndoBreaks(safe_tags_replace(msg)));
                                 $("#tranfermodal").modal("show");
         
@@ -141,9 +154,8 @@
 
                             request.fail(function(jqXHR, textStatus) {
                                 window.console && console.log('postback failed ' + url);                                
-                                $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;' + '</a>' +jqXHR.responseText + " " + textStatus );
-                                //$(".alert").alert();
-                                $("#resultBar").show();
+                                  $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+                                        $("#alert").modal();
         
                             });
                         }
@@ -182,20 +194,17 @@
                 
                 
                             request.done(function(msg) {
-                                window.console && console.log('postback done '  + url);                
+        window.console && console.log('postback done '  + url);                
         
-                                $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-                                $("#resultBar").show();
-        
-                            });
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>'  + msg);
+        $("#alert").modal();
+    });
 
-                            request.fail(function(jqXHR, textStatus) {
-                                window.console && console.log('postback failed ' + url);                                
-                                $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;' + '</a>' +jqXHR.responseText + textStatus );
-                                //$(".alert").alert();
-                                $("#resultBar").show();
-        
-                            });
+    request.fail(function(jqXHR, textStatus) {
+        window.console && console.log('postback failed ' + url);                                
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+        $("#alert").modal();
+    });         
                         }
                         
                         
@@ -235,20 +244,17 @@
                 
                 
                             request.done(function(msg) {
-                                window.console && console.log('postback done '  + url);                
-                                
-                                $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-                                $("#resultBar").show();
+        window.console && console.log('postback done '  + url);                
         
-                            });
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>'  + msg);
+        $("#alert").modal();
+    });
 
-                            request.fail(function(jqXHR, textStatus) {
-                                window.console && console.log('postback failed ' + url);                                
-                                $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;' + '</a>' +jqXHR.responseText + " " + textStatus );
-                                //$(".alert").alert();
-                                $("#resultBar").show();
-        
-                            });
+    request.fail(function(jqXHR, textStatus) {
+        window.console && console.log('postback failed ' + url);                                
+        $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+        $("#alert").modal();
+    });         
                         }
                     </script>
                 </div>

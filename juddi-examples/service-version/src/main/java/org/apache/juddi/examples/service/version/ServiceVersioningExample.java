@@ -44,7 +44,8 @@ import org.uddi.v3_service.UDDISecurityPortType;
  * Hello world!
  *
  * This gives you an example of one way to use service version with UDDI and is
- * a partial solution to https://issues.apache.org/jira/browse/JUDDI-509
+ * a partial solution to https://issues.apache.org/jira/browse/JUDDI-509 which 
+ * references the following
  * http://www.ibm.com/developerworks/webservices/library/ws-version/
  *
  */
@@ -95,7 +96,9 @@ public class ServiceVersioningExample {
         bt1.setAccessPoint(new AccessPoint("http://localhost", "wsdl"));
         bt1.setTModelInstanceDetails(new TModelInstanceDetails());
         bt1.getTModelInstanceDetails().getTModelInstanceInfo().add(UDDIClerk.createServiceInterfaceVersion(version, lang));
+        bt1 = UDDIClient.addSOAPtModels(bt1);
         bs.getBindingTemplates().getBindingTemplate().add(bt1);
+        
 
 
         //version 2
@@ -105,6 +108,7 @@ public class ServiceVersioningExample {
         bt2.setAccessPoint(new AccessPoint("http://localhost", "wsdl"));
         bt2.setTModelInstanceDetails(new TModelInstanceDetails());
         bt2.getTModelInstanceDetails().getTModelInstanceInfo().add(UDDIClerk.createServiceInterfaceVersion(version2, lang));
+        bt2 = UDDIClient.addSOAPtModels(bt2);
         bs.getBindingTemplates().getBindingTemplate().add(bt2);
 
         be.getBusinessServices().getBusinessService().add(bs);
@@ -190,5 +194,6 @@ public class ServiceVersioningExample {
     private void Destroy() {
         clerk.unRegisterBusiness(domain_prefix + "zerocoolbiz");
         clerk.unRegisterTModel(keygen.getTModelKey());
+        clerk.discardAuthToken();
     }
 }

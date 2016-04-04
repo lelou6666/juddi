@@ -45,11 +45,7 @@ public class UddiDigitalSignatureSearch {
             // create a manager and read the config in the archive; 
             // you can use your config file name
             UDDIClient clerkManager = new UDDIClient("META-INF/simple-publish-uddi.xml");
-            // register the clerkManager with the client side container
-            UDDIClientContainer.addClient(clerkManager);            // a ClerkManager can be a client to multiple UDDI nodes, so 
-            // supply the nodeName (defined in your uddi.xml.
-            // The transport can be WS, inVM, RMI etc which is defined in the uddi.xml
-            Transport transport = clerkManager.getTransport("default");
+            Transport transport = clerkManager.getTransport();
             // Now you create a reference to the UDDI API
             security = transport.getUDDISecurityService();
             inquiry = transport.getUDDIInquiryService();
@@ -67,18 +63,21 @@ public class UddiDigitalSignatureSearch {
     public static void main(String args[]) {
 
         UddiDigitalSignatureSearch sp = new UddiDigitalSignatureSearch();
-        sp.Fire(args);
+        sp.Fire(null);
     }
 
-    public void Fire(String[] args) {
+    public void Fire(String token) {
         try {
 
             FindService fs = new FindService();
             //optional, usually
-            fs.setAuthInfo(GetAuthKey("root", "root"));
+            if (token==null)
+                    token=GetAuthKey("root", "root");
+            fs.setAuthInfo(token);
             fs.setFindQualifiers(new FindQualifiers());
             fs.getFindQualifiers().getFindQualifier().add(UDDIConstants.SORT_BY_DATE_ASC);
-            fs.getFindQualifiers().getFindQualifier().add(UDDIConstants.SORT_BY_DATE_DESC);
+            fs.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+            fs.getFindQualifiers().getFindQualifier().add(UDDIConstants.SIGNATURE_PRESENT);
             Name n = new Name();
             n.setValue("%");
             fs.getName().add(n);
@@ -109,7 +108,11 @@ public class UddiDigitalSignatureSearch {
 
             // Making API call that retrieves the authentication token for the 'root' user.
             AuthToken rootAuthToken = security.getAuthToken(getAuthTokenRoot);
+<<<<<<< HEAD
             System.out.println("root AUTHTOKEN = " + "***** don't log auth tokens");
+=======
+            System.out.println("root AUTHTOKEN = " + "dont log auth tokens!");
+>>>>>>> refs/remotes/apache/master
             return rootAuthToken.getAuthInfo();
         } catch (Exception ex) {
             System.out.println("Could not authenticate with the provided credentials " + ex.getMessage());

@@ -54,7 +54,11 @@ public class BPEL_010_IntegrationTest {
                 manager.start();
                 logger.debug("Getting auth token for user riftsaw/riftsaw..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
 
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         authInfoRiftSaw = TckSecurity.getAuthToken(security, TckPublisher.getRiftSawPublisherId(), TckPublisher.getRiftSawPassword());

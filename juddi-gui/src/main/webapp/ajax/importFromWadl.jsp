@@ -2,14 +2,33 @@
     Document   : importFromWadl
     Created on : July 11, 2013, 3:26:42 PM
     Author     : Alex O'Ree 
+<<<<<<< HEAD
+=======
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+>>>>>>> refs/remotes/apache/master
 --%>
+<%@page import="org.apache.juddi.webconsole.resources.ResourceLoader"%>
 <%@page import="org.apache.juddi.jaxb.PrintUDDI"%>
 <%@page import="org.uddi.api_v3.BusinessService"%>
-<%@page import="org.apache.juddi.v3.client.mappings.wadl.Application"%>
-<%@page import="org.apache.juddi.v3.client.mapping.WADL2UDDI"%>
+<%@page import="org.apache.juddi.v3.client.mapping.wadl.Application"%>
+<%@page import="org.apache.juddi.v3.client.mapping.wadl.WADL2UDDI"%>
 <%@page import="java.io.File"%>
 <%@page import="org.apache.juddi.v3.client.config.TokenResolver"%>
-<%@page import="org.uddi.api_v3.Name"%>
+<%@page import="org.uddi.api_v3.Name"%> 
 <%@page import="org.uddi.api_v3.BusinessEntity"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
@@ -20,11 +39,9 @@
 <%@page import="javax.wsdl.PortType"%>
 <%@page import="java.util.Map"%>
 <%@page import="org.uddi.api_v3.BusinessServices"%>
-<%@page import="org.apache.juddi.v3.client.mapping.WSDL2UDDI"%>
 <%@page import="org.apache.juddi.v3.client.mapping.URLLocalizerDefaultImpl"%>
 <%@page import="java.util.Properties"%>
 <%@page import="javax.wsdl.Definition"%>
-<%@page import="org.apache.juddi.v3.client.mapping.ReadWSDL"%>
 <%@page import="org.apache.juddi.v3.client.config.UDDIClerk"%>
 <%@page import="org.uddi.api_v3.TModel"%>
 <%@page import="java.net.URL"%>
@@ -165,16 +182,23 @@
                     }
 
                 } catch (Exception ex) {
-                    out.write("<i class=\"icon-thumbs-down icon-large\"></i> Error! " + ex.getClass().getCanonicalName() + " " + ex.getMessage());
+                        response.setStatus(406);
+                        String msg = x.HandleException(ex);     
+                        if (msg.contains(ResourceLoader.GetResource(session, "errors.generic")))
+                                response.setStatus(406);
+                        out.write(msg);
                 }
             } else {
-                out.write("bad request");
+                    response.setStatus(406);
+                out.write(ResourceLoader.GetResource(session, "errors.generic"));
             }
         } else {
-            out.write("bad request");
+                response.setStatus(406);
+            out.write(ResourceLoader.GetResource(session, "errors.generic"));
         }
     } else {
-        out.write("bad request");
+            response.setStatus(406);
+        out.write(ResourceLoader.GetResource(session, "errors.generic"));
     }
 
 

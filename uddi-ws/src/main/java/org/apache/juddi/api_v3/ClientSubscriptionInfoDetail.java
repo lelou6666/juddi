@@ -16,21 +16,29 @@
  */
 package org.apache.juddi.api_v3;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+<<<<<<< HEAD
 import javax.xml.bind.annotation.XmlTransient;
+=======
+>>>>>>> refs/remotes/apache/master
 import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for clientSubscriptionInfoDetail complex type.
+<<<<<<< HEAD
  *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
  *
+=======
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+>>>>>>> refs/remotes/apache/master
  * <pre>
  * &lt;complexType name="clientSubscriptionInfoDetail">
  *   &lt;complexContent>
@@ -42,13 +50,19 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+<<<<<<< HEAD
  *
  *
+=======
+ * 
+ * 
+>>>>>>> refs/remotes/apache/master
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "clientSubscriptionInfoDetail", propOrder = {
         "clientSubscriptionInfo"
 })
+<<<<<<< HEAD
 public class ClientSubscriptionInfoDetail implements Serializable {
 
         @XmlTransient
@@ -83,5 +97,37 @@ public class ClientSubscriptionInfoDetail implements Serializable {
                         clientSubscriptionInfo = new ArrayList<ClientSubscriptionInfo>();
                 }
                 return this.clientSubscriptionInfo;
+=======
+public class ClientSubscriptionInfoDetail {
+
+    @XmlElement(nillable = true)
+    protected List<ClientSubscriptionInfo> clientSubscriptionInfo;
+
+    /**
+     * Gets the value of the clientSubscriptionInfo property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the clientSubscriptionInfo property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getClientSubscriptionInfo().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link ClientSubscriptionInfo }
+     * 
+     * 
+     */
+    public List<ClientSubscriptionInfo> getClientSubscriptionInfo() {
+        if (clientSubscriptionInfo == null) {
+            clientSubscriptionInfo = new ArrayList<ClientSubscriptionInfo>();
+>>>>>>> refs/remotes/apache/master
         }
 }

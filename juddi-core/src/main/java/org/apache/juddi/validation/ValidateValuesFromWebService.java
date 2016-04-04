@@ -15,6 +15,10 @@
  */
 package org.apache.juddi.validation;
 
+<<<<<<< HEAD
+=======
+import java.util.List;
+>>>>>>> refs/remotes/apache/master
 import javax.xml.ws.BindingProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,16 +40,27 @@ import org.uddi.vs_v3.ValidateValues;
 /**
  * This class handles when this UDDI server receives some kind of SaveXXX
  * Publish API request and the request uses a tModel KeyedReference that is both
+<<<<<<< HEAD
  * "checked" and has a UDDIConstants.IS_VALIDATED_BY property. The value of the
+=======
+ * "checked" and has a {@link UDDIConstants#IS_VALIDATED_BY}  property. The value of the
+>>>>>>> refs/remotes/apache/master
  * IS_VALIDATED_BY reference points to a BindingTemplate which should in turn
  * point to a Web Service that handles validation requests for the tModel
  * KeyedReferences.
  *
  * Short Story long, this class handles the external callout. It also handles
+<<<<<<< HEAD
  * classpath:/ URLs (which is currently just jUDDI's implementation of VSV
  *
  * @author Alex O'Ree
  * @see UDDIConstants.IS_VALIDATED_BY
+=======
+ * classpath:/ URLs (which is currently just jUDDI's implementation of VSV.
+ * 
+ * @author Alex O'Ree
+ * @see UDDIConstants
+>>>>>>> refs/remotes/apache/master
  * @since 3.3
  */
 public class ValidateValuesFromWebService {
@@ -81,11 +96,16 @@ public class ValidateValuesFromWebService {
                 {
                         log.warn("Unable to figure out how to use the URL " + url  + " as a Value Set Validation Service transport mechanism.");
                         ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidurl", url));
+<<<<<<< HEAD
+=======
+                        throw x;
+>>>>>>> refs/remotes/apache/master
                 }
                 
                 return vsv;
         }
 
+<<<<<<< HEAD
         public static void Validate(String url, BusinessEntity obj) throws ValueNotAllowedException {
 
                 UDDIValueSetValidationPortType vsv = getPort(url);
@@ -98,19 +118,42 @@ public class ValidateValuesFromWebService {
                 } catch (Exception ex) {
                         log.error("VSV Validation Failed: From external service at " + url + ". Reason: " + ex.getMessage());
                         log.debug("VSV Validation Failed: From external service at " + url + ". Reason: ", ex);
+=======
+       
+
+        public static void ValidateTModel(String url, List<TModel> obj) throws ValueNotAllowedException {
+                UDDIValueSetValidationPortType vsv = getPort(url);
+                ValidateValues req = new ValidateValues();
+                req.getTModel().addAll(obj);
+
+                try {
+                        DispositionReport validateValues = vsv.validateValues(req);
+                } catch (Exception ex) {
+                        log.warn(ex.getMessage());
+                        log.debug(ex.getMessage(),ex);
+>>>>>>> refs/remotes/apache/master
                         ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
                         throw x;
                 }
         }
+<<<<<<< HEAD
 
         public static void Validate(String url, TModel obj) throws ValueNotAllowedException {
                 UDDIValueSetValidationPortType vsv = getPort(url);
                 ValidateValues req = new ValidateValues();
                 req.getTModel().add(obj);
+=======
+        
+          public static void ValidateBinding(String url, List<BindingTemplate> obj) throws ValueNotAllowedException {
+                UDDIValueSetValidationPortType vsv = getPort(url);
+                ValidateValues req = new ValidateValues();
+                req.getBindingTemplate().addAll(obj);
+>>>>>>> refs/remotes/apache/master
 
                 try {
                         DispositionReport validateValues = vsv.validateValues(req);
                 } catch (Exception ex) {
+<<<<<<< HEAD
                         log.warn(ex);
                         ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
                 }
@@ -120,10 +163,24 @@ public class ValidateValuesFromWebService {
                 UDDIValueSetValidationPortType vsv = getPort(url);
                 ValidateValues req = new ValidateValues();
                 req.getBusinessService().add(obj);
+=======
+                        log.warn(ex.getMessage());
+                        log.debug(ex.getMessage(),ex);
+                        ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
+                        throw x;
+                }
+        }
+
+        public static void ValidateService(String url, List<BusinessService> obj) throws ValueNotAllowedException {
+                UDDIValueSetValidationPortType vsv = getPort(url);
+                ValidateValues req = new ValidateValues();
+                req.getBusinessService().addAll(obj);
+>>>>>>> refs/remotes/apache/master
 
                 try {
                         DispositionReport validateValues = vsv.validateValues(req);
                 } catch (Exception ex) {
+<<<<<<< HEAD
                         log.warn(ex);
                         ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
                 }
@@ -133,24 +190,56 @@ public class ValidateValuesFromWebService {
                 UDDIValueSetValidationPortType vsv = getPort(url);
                 ValidateValues req = new ValidateValues();
                 req.getBindingTemplate().add(obj);
+=======
+                        log.warn(ex.getMessage());
+                        log.debug(ex.getMessage(),ex);
+                        ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
+                        throw x;
+                }
+        }
+        
+      
+        public static void ValidateBusiness(String url, List<BusinessEntity> obj) throws ValueNotAllowedException {
+                UDDIValueSetValidationPortType vsv = getPort(url);
+                ValidateValues req = new ValidateValues();
+                req.getBusinessEntity().addAll(obj);
+>>>>>>> refs/remotes/apache/master
 
                 try {
                         DispositionReport validateValues = vsv.validateValues(req);
                 } catch (Exception ex) {
+<<<<<<< HEAD
                         log.warn(ex);
                         ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
                 }
         }
 
         public static void Validate(String url, PublisherAssertion obj) throws ValueNotAllowedException {
+=======
+                        log.warn(ex.getMessage());
+                        log.debug(ex.getMessage(),ex);
+                        ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
+                        throw x;
+                }
+        }
+
+        public static void ValidatePubAss(String url, PublisherAssertion obj) throws ValueNotAllowedException {
+>>>>>>> refs/remotes/apache/master
                 UDDIValueSetValidationPortType vsv = getPort(url);
                 ValidateValues req = new ValidateValues();
                 req.getPublisherAssertion().add(obj);
                 try {
                         DispositionReport validateValues = vsv.validateValues(req);
                 } catch (Exception ex) {
+<<<<<<< HEAD
                         log.warn(ex);
                         ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
+=======
+                        log.warn(ex.getMessage());
+                        log.debug(ex.getMessage(),ex);
+                        ValueNotAllowedException x = new ValueNotAllowedException(new ErrorMessage("errors.valuesetvalidation.invalidcontent", ex.getMessage()));
+                        throw x;
+>>>>>>> refs/remotes/apache/master
                 }
         }
 }

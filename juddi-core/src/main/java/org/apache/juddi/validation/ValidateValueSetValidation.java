@@ -32,7 +32,11 @@ import org.apache.juddi.v3.error.ErrorMessage;
 import org.apache.juddi.v3.error.ValueNotAllowedException;
 import org.uddi.api_v3.TModel;
 import org.uddi.v3_service.DispositionReportFaultMessage;
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> refs/remotes/apache/master
 /**
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
  * @author <a href="mailto:alexoree@apache.org">Alex O'Ree</a>

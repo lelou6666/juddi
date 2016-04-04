@@ -61,13 +61,21 @@ public class JUDDI_010_PublisherIntegrationTest {
         @BeforeClass
         public static void startManager() throws ConfigurationException {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 manager = new UDDIClient();
                 manager.start();
 
 
                 logger.debug("Getting auth tokens..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
 
                         security = transport.getUDDISecurityService();
                         GetAuthToken getAuthToken = new GetAuthToken();
@@ -80,18 +88,32 @@ public class JUDDI_010_PublisherIntegrationTest {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 manager.stop();
         }
 
         @Test
         public void testAuthToken() {
                 Assume.assumeTrue(TckPublisher.isUDDIAuthMode());
+<<<<<<< HEAD
                 try {
                         Transport transport = manager.getTransport();
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                try {
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
 
                         UDDISecurityPortType securityService = transport.getUDDISecurityService();
                         GetAuthToken getAuthToken = new GetAuthToken();
@@ -109,6 +131,10 @@ public class JUDDI_010_PublisherIntegrationTest {
         @Test
         public void testJoePublisher() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 //We can only test this if the publisher is not there already.
                 //If it already there is probably has foreign key relationships.
                 //This test should really only run on an empty database. Seed
@@ -122,6 +148,10 @@ public class JUDDI_010_PublisherIntegrationTest {
         @Test
         public void testSamSyndicator() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 //We can only test this if the publisher is not there already.
                 if (!isExistPublisher(TckPublisher.getSamPublisherId())) {
                         saveSamSyndicator();
@@ -132,6 +162,10 @@ public class JUDDI_010_PublisherIntegrationTest {
         @Test
         public void testGetAllPublishers() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 GetAllPublisherDetail gp = new GetAllPublisherDetail();
                 gp.setAuthInfo(authInfo);
                 try {
@@ -151,6 +185,10 @@ public class JUDDI_010_PublisherIntegrationTest {
          */
         public boolean saveJoePublisher() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 if (!isExistPublisher(TckPublisher.getJoePublisherId())) {
                         savePublisher(TckPublisher.getJoePublisherId(), TckPublisher.JOE_PUBLISHER_XML);
                         return true;
@@ -165,6 +203,10 @@ public class JUDDI_010_PublisherIntegrationTest {
          */
         public void deleteJoePublisher() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 deletePublisher(TckPublisher.getJoePublisherId());
         }
 
@@ -175,6 +217,10 @@ public class JUDDI_010_PublisherIntegrationTest {
          */
         public String saveSamSyndicator() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 if (!isExistPublisher(TckPublisher.getSamPublisherId())) {
                         savePublisher(TckPublisher.getSamPublisherId(), TckPublisher.SAM_SYNDICATOR_XML);
                 }
@@ -187,6 +233,10 @@ public class JUDDI_010_PublisherIntegrationTest {
          */
         public void deleteSamSyndicator() {
                 Assume.assumeTrue(TckPublisher.isJUDDI());
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 deletePublisher(TckPublisher.getSamPublisherId());
         }
 
@@ -211,8 +261,13 @@ public class JUDDI_010_PublisherIntegrationTest {
                         Assert.assertEquals(pubIn.getAuthorizedName(), pubOut.getAuthorizedName());
                         Assert.assertEquals(pubIn.getPublisherName(), pubOut.getPublisherName());
                         Assert.assertEquals(pubIn.getEmailAddress(), pubOut.getEmailAddress());
+<<<<<<< HEAD
                         Assert.assertEquals(pubIn.getIsAdmin(), pubOut.getIsAdmin());
                         Assert.assertEquals(pubIn.getIsEnabled(), pubOut.getIsEnabled());
+=======
+                        Assert.assertEquals(pubIn.isIsAdmin(), pubOut.isIsAdmin());
+                        Assert.assertEquals(pubIn.isIsEnabled(), pubOut.isIsEnabled());
+>>>>>>> refs/remotes/apache/master
                         Assert.assertEquals(pubIn.getMaxBindingsPerService(), pubOut.getMaxBindingsPerService());
                         Assert.assertEquals(pubIn.getMaxBusinesses(), pubOut.getMaxBusinesses());
                         Assert.assertEquals(pubIn.getMaxServicePerBusiness(), pubOut.getMaxServicePerBusiness());
@@ -287,6 +342,7 @@ public class JUDDI_010_PublisherIntegrationTest {
                 return TckSecurity.getAuthToken(security, TckPublisher.getSamPublisherId(), TckPublisher.getSamPassword());
         }
 
+<<<<<<< HEAD
         @Test
         public void getAllnodes() throws Exception {
                 NodeList allNodes = publisher.getAllNodes(authInfo);
@@ -308,4 +364,6 @@ public class JUDDI_010_PublisherIntegrationTest {
                 }
 
         }
+=======
+>>>>>>> refs/remotes/apache/master
 }

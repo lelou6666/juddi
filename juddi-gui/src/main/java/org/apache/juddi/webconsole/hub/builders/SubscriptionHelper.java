@@ -1,12 +1,22 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.juddi.webconsole.hub.builders;
 
 import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.juddi.webconsole.resources.ResourceLoader;
 import org.uddi.api_v3.FindQualifiers;
 import org.uddi.sub_v3.Subscription;
 
@@ -163,6 +173,9 @@ public class SubscriptionHelper {
         if (sub == null) {
             return "";
         }
+        if (sub.getSubscriptionFilter() == null) {
+            return "";
+        }
 
         if (sub.getSubscriptionFilter().getGetBindingDetail() != null && !sub.getSubscriptionFilter().getGetBindingDetail().getBindingKey().isEmpty()) {
             return " active ";
@@ -174,7 +187,9 @@ public class SubscriptionHelper {
         if (sub == null) {
             return "";
         }
-
+        if (sub.getSubscriptionFilter() == null) {
+            return "";
+        }
         if (sub.getSubscriptionFilter().getGetBusinessDetail() != null && !sub.getSubscriptionFilter().getGetBusinessDetail().getBusinessKey().isEmpty()) {
             return " active ";
         }
@@ -183,6 +198,9 @@ public class SubscriptionHelper {
 
     public static String isServiceSpecific(Subscription sub) {
         if (sub == null) {
+            return "";
+        }
+        if (sub.getSubscriptionFilter() == null) {
             return "";
         }
         if (sub.getSubscriptionFilter().getGetServiceDetail() != null && !sub.getSubscriptionFilter().getGetServiceDetail().getServiceKey().isEmpty()) {
@@ -195,7 +213,7 @@ public class SubscriptionHelper {
         if (sub == null) {
             return "";
         }
-        if (sub.getSubscriptionKey() == null) {
+        if (sub.getSubscriptionFilter() == null) {
             return "";
         }
         if (sub.getSubscriptionFilter().getGetTModelDetail() != null && !sub.getSubscriptionFilter().getGetTModelDetail().getTModelKey().isEmpty()) {
@@ -206,6 +224,9 @@ public class SubscriptionHelper {
 
     public static String isPublisherAssertionSpecific(Subscription sub) {
         if (sub == null) {
+            return "";
+        }
+        if (sub.getSubscriptionFilter() == null) {
             return "";
         }
 
@@ -230,6 +251,9 @@ public class SubscriptionHelper {
         if (sub == null) {
             return "";
         }
+        if (sub.getSubscriptionFilter() == null) {
+            return "";
+        }
 
         if (sub.getSubscriptionFilter().getFindBinding() != null) {
             return " active ";
@@ -239,6 +263,9 @@ public class SubscriptionHelper {
 
     public static String isFindRelatedBusinesses(Subscription sub) {
         if (sub == null) {
+            return "";
+        }
+        if (sub.getSubscriptionFilter() == null) {
             return "";
         }
 
@@ -252,6 +279,9 @@ public class SubscriptionHelper {
         if (sub == null) {
             return "";
         }
+        if (sub.getSubscriptionFilter() == null) {
+            return "";
+        }
 
         if (sub.getSubscriptionFilter().getFindService() != null) {
             return " active ";
@@ -261,6 +291,9 @@ public class SubscriptionHelper {
 
     public static String isFindTModel(Subscription sub) {
         if (sub == null) {
+            return "";
+        }
+        if (sub.getSubscriptionFilter() == null) {
             return "";
         }
 

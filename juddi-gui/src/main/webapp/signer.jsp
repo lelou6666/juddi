@@ -2,6 +2,21 @@
     Document   : signer
     Created on : Mar 24, 2013, 8:23:30 AM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -30,7 +45,7 @@
             You're about to digitally sign the <b><%=StringEscapeUtils.escapeHtml(itemtype)%></b> identified by the key <b><%=StringEscapeUtils.escapeHtml(id)%></b>.<br>
             By electronically signing this UDDI entry, other users will then be able to verify that this entry hasn't been modified.<br>
 
-            <applet code="org.apache.juddi.gui.dsig.XmlSigApplet2" archive="applets/juddi-gui-dsig-all.jar" MAYSCRIPT height="300px" width="400px"></applet> 
+            <applet code="org.apache.juddi.gui.dsig.XmlSigApplet2" archive="applets/juddi-gui-dsig-all.jar" MAYSCRIPT height="350px" width="400px"></applet> 
             <script type="text/javascript">
                 $.get("ajax/toXML.jsp?id=<%=id%>&type=<%=itemtype%>", function(data){
                     $("#data").val(data);
@@ -58,8 +73,8 @@
                   
                     request.done(function(msg) {
                         window.console && console.log('postback done ');                
-                        $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-                        $("#resultBar").show();
+                        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>' + msg);
+                        $("#alert").modal();
                         //TODO timer to auto redirect to the
                         window.setTimeout(function(){
                 <%
@@ -72,6 +87,9 @@
                     if (itemtype == "tmodel") {
                         out.write("window.location=\"tmodelEditor.jsp?id=" + StringEscapeUtils.escapeJavaScript(id) + "\";");
                     }
+                    if (itemtype == "bindingTemplate") {
+                        out.write("window.location=\"bindingEditor.jsp?id=" + StringEscapeUtils.escapeJavaScript(id) + "\";");
+                    }
                  
                 %>
                             }, 5000);
@@ -79,8 +97,8 @@
 
                         request.fail(function(jqXHR, textStatus) {
                             window.console && console.log('postback failed ');                                
-                            $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' +jqXHR.responseText + textStatus);
-                            $("#resultBar").show();
+                            $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>' +jqXHR.responseText + textStatus);
+                            $("#alert").modal();
                         });
                     }
 				 
@@ -91,28 +109,31 @@
                     {
                         $("#data").val(data);
                         //post back to the publishing thread
-                        
+                        var url='ajax/saveFromXML.jsp?id=<%=id%>&type=<%=itemtype%>'
                         var form = $("#uddiform");
                         var d = form.serializeArray();
                         var request=   $.ajax({
-                            url: 'ajax/saveFromXML.jsp?id=<%=id%>&type=<%=itemtype%>',
+                            url: url,
                             type:"POST",
                             cache: false, 
 
                             data: d
                         });
                   
-                        request.done(function(msg) {
-                            window.console && console.log('postback done ');                
-                            $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' + msg);
-                            $("#resultBar").show();
-                        });
+                       request.done(function(msg) {
+                        window.console && console.log('postback done '  + url);                
 
-                        request.fail(function(jqXHR, textStatus) {
-                            window.console && console.log('postback failed ');                                
-                            $("#resultBar").html('<a class="close" data-dismiss="alert" href="javascript:hideAlert();">&times;'  + '</a>' +jqXHR.responseText + textStatus);
-                            $("#resultBar").show();
-                        });
+                        $("#alert_results").html('<i class="icon-2x icon-thumbs-up"></i><br>'  + msg);
+                        $("#alert").modal();
+
+                    });
+
+                    request.fail(function(jqXHR, textStatus) {
+                        window.console && console.log('postback failed ' + url);                                
+                        $("#alert_results").html('<i class="icon-2x icon-thumbs-down"></i><br>'  + jqXHR.responseText + textStatus);
+                        $("#alert").modal();
+                    });
+                    
                     }
 				
                     function getBrowserName()

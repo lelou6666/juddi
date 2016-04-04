@@ -23,6 +23,7 @@ import org.apache.juddi.v3.client.transport.Transport;
 import static org.apache.juddi.v3.tck.UDDI_040_BusinessServiceIntegrationTest.tckTModelJoe;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uddi.api_v3.TModelDetail;
@@ -48,12 +49,22 @@ public class UDDI_020_TmodelIntegrationTest {
 
         @BeforeClass
         public static void startManager() throws ConfigurationException {
+<<<<<<< HEAD
 
+=======
+                if (!TckPublisher.isEnabled()) {
+                        return;
+                }
+>>>>>>> refs/remotes/apache/master
                 manager = new UDDIClient();
                 manager.start();
                 logger.debug("Getting auth tokens..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
 
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
@@ -61,7 +72,10 @@ public class UDDI_020_TmodelIntegrationTest {
                         //Assert.assertNotNull(authInfoJoe);
                         //Assert.assertNotNull(authInfoSam);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/apache/master
                         UDDIPublicationPortType publication = transport.getUDDIPublishService();
                         UDDIInquiryPortType inquiry = transport.getUDDIInquiryService();
                         if (!TckPublisher.isUDDIAuthMode()) {
@@ -70,7 +84,11 @@ public class UDDI_020_TmodelIntegrationTest {
                         }
                         tckTModelJoe = new TckTModel(publication, inquiry);
 
+<<<<<<< HEAD
                         transport = manager.getTransport();
+=======
+                        transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         publication = transport.getUDDIPublishService();
                         inquiry = transport.getUDDIInquiryService();
                         if (!TckPublisher.isUDDIAuthMode()) {
@@ -83,10 +101,20 @@ public class UDDI_020_TmodelIntegrationTest {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) {
+                        return;
+                }
+>>>>>>> refs/remotes/apache/master
                 tckTModelJoe.deleteCreatedTModels(authInfoJoe);
                 tckTModelSam.deleteCreatedTModels(authInfoSam);
                 manager.stop();
@@ -94,6 +122,10 @@ public class UDDI_020_TmodelIntegrationTest {
 
         @Test
         public void testJoePublisherTmodel() {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 tckTModelJoe.saveJoePublisherTmodel(authInfoJoe, true);
 
                 //Now if we use a finder it should be found.
@@ -119,6 +151,10 @@ public class UDDI_020_TmodelIntegrationTest {
 
         @Test
         public void testSamSyndicatorTmodelTest() {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 tckTModelSam.saveSamSyndicatorTmodel(authInfoSam);
                 tckTModelSam.deleteSamSyndicatorTmodel(authInfoSam);
         }

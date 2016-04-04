@@ -22,6 +22,7 @@ import org.apache.juddi.v3.client.config.UDDIClient;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uddi.v3_service.UDDIInquiryPortType;
@@ -46,6 +47,10 @@ public class UDDI_050_BindingTemplateIntegrationTest {
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 tckTModel.deleteCreatedTModels(authInfoJoe);
                 
                 manager.stop();
@@ -53,12 +58,20 @@ public class UDDI_050_BindingTemplateIntegrationTest {
 
         @BeforeClass
         public static void startManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 manager = new UDDIClient();
                 manager.start();
 
                 logger.debug("Getting auth tokens..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         UDDIPublicationPortType publication = transport.getUDDIPublishService();
                         UDDIInquiryPortType inquiry = transport.getUDDIInquiryService();
@@ -77,7 +90,11 @@ public class UDDI_050_BindingTemplateIntegrationTest {
                         tckFindEntity = new TckFindEntity(inquiry);
 
 
+<<<<<<< HEAD
                         transport = manager.getTransport();
+=======
+                        transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         security = transport.getUDDISecurityService();
                         publication = transport.getUDDIPublishService();
                         inquiry = transport.getUDDIInquiryService();
@@ -95,10 +112,18 @@ public class UDDI_050_BindingTemplateIntegrationTest {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
 
         @Test
         public void joepublisher() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 try {
                         tckTModel.saveJoePublisherTmodel(authInfoJoe);
                         tckBusiness.saveJoePublisherBusiness(authInfoJoe);
@@ -114,6 +139,10 @@ public class UDDI_050_BindingTemplateIntegrationTest {
 
         @Test
         public void findService() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 try {
                         tckTModel.saveJoePublisherTmodel(authInfoJoe);
                         tckBusiness.saveJoePublisherBusiness(authInfoJoe);

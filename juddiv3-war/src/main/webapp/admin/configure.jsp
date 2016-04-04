@@ -2,6 +2,22 @@
     Document   : configure jUDDI
     Created on : Feb 23, 2013, 2:05:35 PM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 --%>
 
 
@@ -17,8 +33,9 @@
 
     <!-- Main hero unit for a primary marketing message or call to action -->
     <div class="well">
-        <h1>Configure jUDDI</h1>
-        Just click to edit each field, then click save when you are done. (Not all fields can be modified)
+        <h1><%=ResourceLoader.GetResource(session, "pages.home.config")%></h1>
+        <%=ResourceLoader.GetResource(session, "pages.configure.info")%>
+        
     </div>
 
     <!-- Example row of columns -->
@@ -34,9 +51,9 @@
                     out.write("Loaded from: (location unknown)<br>");
                 }
             %>
-            <h2>Server Config</h2>
+            <h2><%=ResourceLoader.GetResource(session, "pages.configure.server")%></h2>
             <table class="table table-hover">
-                <tr><th>Field</th><th>Value</th></tr>
+                <tr><th><%=ResourceLoader.GetResource(session, "items.key")%></th><th><%=ResourceLoader.GetResource(session, "items.value")%></th></tr>
                         <%
 
                             Iterator it = AppConfig.getConfiguration().getKeys();
@@ -68,13 +85,13 @@
                         %>
             </table>
 
-            <h2>Admin Console Config (this web site)</h2>
+            <h2><%=ResourceLoader.GetResource(session, "pages.configure.admin")%></h2>
             <%
                 UddiAdminHub ahub = UddiAdminHub.getInstance(application, session);
                 out.write("Loaded from: " + StringEscapeUtils.escapeHtml(ahub.GetJuddiClientConfig().getConfigurationFile()) + "<br>");
             %>
             <table class="table table-hover" id="configtable">
-                <tr><th>Field</th><th>Value</th></tr>
+                <tr><th><%=ResourceLoader.GetResource(session, "items.key")%></th><th><%=ResourceLoader.GetResource(session, "items.value")%></th></tr>
                         <%
 
                             try {
@@ -176,6 +193,42 @@
                                     out.write("class=\"edit\" id=\"" + StringEscapeUtils.escapeHtml(key) + "\">");
                                     out.write(StringEscapeUtils.escapeHtml(cfg2.getString(key)));
                                     out.write("</div></td></tr>");
+                                    
+                                    key = "client.nodes.node(" + i + ").subscriptionListenerUrl";
+                                    out.write("<tr id=\"" + StringEscapeUtils.escapeHtml(key) + "ROW\"><td>");
+                                    out.write("<a href=\"javascript:removeKey('" + StringEscapeUtils.escapeJavaScript(key) + "');\"><i class=\"icon-trash icon-large\"></i></a>");
+                                    out.write(StringEscapeUtils.escapeHtml(key));
+                                    out.write("</td><td><div ");
+                                    out.write("class=\"edit\" id=\"" + StringEscapeUtils.escapeHtml(key) + "\">");
+                                    out.write(StringEscapeUtils.escapeHtml(cfg2.getString(key)));
+                                    out.write("</div></td></tr>");
+                                    
+                                    key = "client.nodes.node(" + i + ").juddiApiUrl";
+                                    out.write("<tr id=\"" + StringEscapeUtils.escapeHtml(key) + "ROW\"><td>");
+                                    out.write("<a href=\"javascript:removeKey('" + StringEscapeUtils.escapeJavaScript(key) + "');\"><i class=\"icon-trash icon-large\"></i></a>");
+                                    out.write(StringEscapeUtils.escapeHtml(key));
+                                    out.write("</td><td><div ");
+                                    out.write("class=\"edit\" id=\"" + StringEscapeUtils.escapeHtml(key) + "\">");
+                                    out.write(StringEscapeUtils.escapeHtml(cfg2.getString(key)));
+                                    out.write("</div></td></tr>");
+                                                                        
+                                    key = "client.nodes.node(" + i + ").inquiryRESTUrl";
+                                    out.write("<tr id=\"" + StringEscapeUtils.escapeHtml(key) + "ROW\"><td>");
+                                    out.write("<a href=\"javascript:removeKey('" + StringEscapeUtils.escapeJavaScript(key) + "');\"><i class=\"icon-trash icon-large\"></i></a>");
+                                    out.write(StringEscapeUtils.escapeHtml(key));
+                                    out.write("</td><td><div ");
+                                    out.write("class=\"edit\" id=\"" + StringEscapeUtils.escapeHtml(key) + "\">");
+                                    out.write(StringEscapeUtils.escapeHtml(cfg2.getString(key)));
+                                    out.write("</div></td></tr>");
+                                    
+                                    key = "client.nodes.node(" + i + ").replicationUrl";
+                                    out.write("<tr id=\"" + StringEscapeUtils.escapeHtml(key) + "ROW\"><td>");
+                                    out.write("<a href=\"javascript:removeKey('" + StringEscapeUtils.escapeJavaScript(key) + "');\"><i class=\"icon-trash icon-large\"></i></a>");
+                                    out.write(StringEscapeUtils.escapeHtml(key));
+                                    out.write("</td><td><div ");
+                                    out.write("class=\"edit\" id=\"" + StringEscapeUtils.escapeHtml(key) + "\">");
+                                    out.write(StringEscapeUtils.escapeHtml(cfg2.getString(key)));
+                                    out.write("</div></td></tr>");
 
                                 }
 
@@ -190,7 +243,6 @@
             <script type="text/javascript">
                 function save()
                 {
-                    //alert("hi");
                     var url = 'ajax/saveconfig.jsp';
                     var postbackdata = new Array();
                     $("div.edit").each(function()
@@ -234,8 +286,8 @@
                 Reedit();
 
             </script>
-            <a class="btn btn-primary" href="javascript:newItem();"><i class="icon-large icon-plus-sign"></i> Add</a>
-            <a class="btn btn-primary" href="javascript:save();">Save</a><br><br>
+            <a class="btn btn-primary" href="javascript:newItem();"><i class="icon-large icon-plus-sign"></i> <%=ResourceLoader.GetResource(session, "actions.add")%></a>
+            <a class="btn btn-primary" href="javascript:save();"><%=ResourceLoader.GetResource(session, "actions.save")%></a><br><br>
 
 
             <div id="saveConfigresultBar" class="well-small"></div>
@@ -246,10 +298,10 @@
                 }
             </script>
 
-            <a class="btn " href="javascript:showDebug();"><i class="icon-large icon-arrow-down"></i> Show Debug Info</a>
+            <a class="btn " href="javascript:showDebug();"><i class="icon-large icon-arrow-down"></i> <%=ResourceLoader.GetResource(session, "page.config.debug")%></a>
             <div id="debugtable" class="hide">
                 <table class="table table-hover">
-                    <tr><th>Field</th><th>Value</th></tr>
+                    <tr><th><%=ResourceLoader.GetResource(session, "items.key")%></th><th><%=ResourceLoader.GetResource(session, "items.value")%></th></tr>
                             <%
 
                                 try {
@@ -308,16 +360,16 @@
     <div class="modal hide fade container" id="newItemModal">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3>Add a new setting</h3>
+            <h3><%=ResourceLoader.GetResource(session, "pages.config.add")%></h3>
         </div>
         <div class="modal-body">
-            Note: the key must start with either client., config.props, or juddi.<br>
-            Key: <input type="text" id="newItemKey" placeholder="client."><br>
-            Value: <input type="text" id="newItemValue" placeholder="value"><br>
+             <%=ResourceLoader.GetResource(session, "pages.config.add.note")%><br>
+            <%=ResourceLoader.GetResource(session, "items.key")%>: <input type="text" id="newItemKey" placeholder="client."><br>
+            <%=ResourceLoader.GetResource(session, "items.value")%>: <input type="text" id="newItemValue" placeholder="value"><br>
         </div>
         <div class="modal-footer">
-            <a href="javascript:appendKey();" class="btn btn-primary">Add</a>
-            <a href="javascript:$('#newItemModal').modal('hide');" class="btn">Close</a>
+            <a href="javascript:appendKey();" class="btn btn-primary"><%=ResourceLoader.GetResource(session, "actions.add")%></a>
+            <a href="javascript:$('#newItemModal').modal('hide');" class="btn"><%=ResourceLoader.GetResource(session, "modal.close")%></a>
         </div>
     </div>
 

@@ -15,6 +15,10 @@
  */
 package org.apache.juddi.v3.tck;
 
+<<<<<<< HEAD
+=======
+import java.rmi.RemoteException;
+>>>>>>> refs/remotes/apache/master
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +34,15 @@ import org.uddi.api_v3.FindBusiness;
 import org.uddi.api_v3.FindQualifiers;
 import org.uddi.api_v3.FindService;
 import org.uddi.api_v3.FindTModel;
+<<<<<<< HEAD
 import org.uddi.api_v3.KeyedReference;
 import org.uddi.api_v3.Name;
+=======
+import org.uddi.api_v3.GetOperationalInfo;
+import org.uddi.api_v3.KeyedReference;
+import org.uddi.api_v3.Name;
+import org.uddi.api_v3.OperationalInfos;
+>>>>>>> refs/remotes/apache/master
 import org.uddi.api_v3.ServiceInfos;
 import org.uddi.api_v3.ServiceList;
 import org.uddi.api_v3.TModelList;
@@ -42,7 +53,11 @@ import org.uddi.v3_service.UDDIPublicationPortType;
 import org.uddi.v3_service.UDDISubscriptionPortType;
 
 /**
+<<<<<<< HEAD
  * Common Utlities for TCK tests
+=======
+ * Common Utilities for TCK tests
+>>>>>>> refs/remotes/apache/master
  *
  * @author Alex O'Ree
  */
@@ -55,7 +70,11 @@ public class TckCommon {
          * Converts category bags of tmodels to a readable string
          *
          * @param categoryBag
+<<<<<<< HEAD
          * @return
+=======
+         * @return human readable category bag
+>>>>>>> refs/remotes/apache/master
          */
         public static String CatBagToString(CategoryBag categoryBag) {
                 StringBuilder sb = new StringBuilder();
@@ -236,8 +255,13 @@ public class TckCommon {
         }
 
         /**
+<<<<<<< HEAD
          * returns true if the environment variable "debug" is equal to "true"
          * @return 
+=======
+         * returns true if the System Property "debug" is equal to "true"
+         * @return true/false
+>>>>>>> refs/remotes/apache/master
          */
         public static boolean isDebug() {
                 boolean serialize = false;
@@ -325,4 +349,40 @@ public class TckCommon {
                 return sb.toString();
         }
 
+<<<<<<< HEAD
+=======
+        public static void PrintMarker() {
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> MARKER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> MARKER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> MARKER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> MARKER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> MARKER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> MARKER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        }
+
+        public static void DumpAllTModelsOpInfo(String authInfoJoe, UDDIInquiryPortType uddiInquiryImpl) throws Exception {
+                FindTModel ftm = new FindTModel();
+                ftm.setAuthInfo(authInfoJoe);
+                //org.apache.juddi.v3.client.UDDIConstants.WILDCARD
+                ftm.setName(new Name("%", null));
+                ftm.setFindQualifiers(new FindQualifiers());
+                ftm.getFindQualifiers().getFindQualifier().add("approximateMatch");
+                TModelList findTModel = uddiInquiryImpl.findTModel(ftm);
+
+                GetOperationalInfo req = new GetOperationalInfo();
+                req.setAuthInfo(authInfoJoe);
+
+                for (int i = 0; i < findTModel.getTModelInfos().getTModelInfo().size(); i++) {
+                        req.getEntityKey().add(
+                             findTModel.getTModelInfos().getTModelInfo().get(i).getTModelKey());
+                }
+                OperationalInfos operationalInfo = uddiInquiryImpl.getOperationalInfo(req);
+
+                for (int i = 0; i < operationalInfo.getOperationalInfo().size(); i++) {
+                        System.out.println(operationalInfo.getOperationalInfo().get(i).getEntityKey() + " on node "
+                             + operationalInfo.getOperationalInfo().get(i).getNodeID() + " is owned by " + operationalInfo.getOperationalInfo().get(i).getAuthorizedName());
+                }
+        }
+
+>>>>>>> refs/remotes/apache/master
 }

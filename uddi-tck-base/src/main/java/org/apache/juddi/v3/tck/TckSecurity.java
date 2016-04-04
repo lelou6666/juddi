@@ -38,9 +38,21 @@ public class TckSecurity {
 		return token.getAuthInfo();
 	}
 
+<<<<<<< HEAD
         public static void setCredentials(BindingProvider bindingProvider, String rootPublisherId, String rootPassword) {
                 bindingProvider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, rootPublisherId);
                 bindingProvider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, rootPassword);
+=======
+        /**
+         * used for non UDDI AuthToken authentication. I.e. HTTP NTLM, HTTP BASIC, HTTP DIGEST
+         * @param bindingProvider
+         * @param publisherId
+         * @param password 
+         */
+        public static void setCredentials(BindingProvider bindingProvider, String publisherId, String password) {
+                bindingProvider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, publisherId);
+                bindingProvider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+>>>>>>> refs/remotes/apache/master
         }
 
 }

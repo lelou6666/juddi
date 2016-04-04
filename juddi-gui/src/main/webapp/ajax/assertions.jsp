@@ -2,6 +2,21 @@
     Document   : assertions
     Created on : Apr 13, 2013, 7:44:30 PM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 --%>
 
 <%@page import="org.uddi.api_v3.CompletionStatus"%>
@@ -17,7 +32,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <jsp:include page="../csrf.jsp" />
-<%
+<% 
     UddiHub x = UddiHub.getInstance(application, session);
     if (request.getMethod().equalsIgnoreCase("post")) {
         if (request.getParameter("action") != null) {
@@ -25,14 +40,14 @@
             if (action.equalsIgnoreCase("delete")) {
                 String msg = x.DeletePublisherAssertion(request.getParameter("tokey"), request.getParameter("fromkey"), request.getParameter("tmodelkey"), request.getParameter("keyname"), request.getParameter("keyvalue"));
                 if (!msg.equals(ResourceLoader.GetResource(session, "actions.saved"))) {
-                    response.setStatus(500);
+                    response.setStatus(406);
                 }
                 out.write(msg);
             }
         } else {
             String msg = x.AddPublisherAssertion(request.getParameter("tokey"), request.getParameter("fromkey"), request.getParameter("tmodelkey"), request.getParameter("keyname"), request.getParameter("keyvalue"));
             if (!msg.equals(ResourceLoader.GetResource(session, "actions.saved"))) {
-                response.setStatus(500);
+                response.setStatus(406);
             }
             out.write(msg);
         }

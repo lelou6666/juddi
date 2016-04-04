@@ -66,7 +66,7 @@ import org.uddi.repl_v3.TransferCustody;
  * Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * </span></span>get_highWaterMarks</p>
  */
-@WebService(name = "UDDI_Replication_PortType", targetNamespace = "urn:uddi-org:v3_service")
+@WebService(name = "UDDI_Replication_PortType", targetNamespace = "urn:uddi-org:api_v3_portType")
 @XmlSeeAlso({
     org.uddi.custody_v3.ObjectFactory.class,
     org.uddi.repl_v3.ObjectFactory.class,
@@ -107,6 +107,25 @@ public interface UDDIReplicationPortType extends Remote {
      * changeRecords element. Under all circumstances, all change records
      * returned therein by the message recipient MUST be returned sorted in
      * increasing order according to the recipient’s local USN.</p>
+     * 
+     * <p><b>A node that is ready to initiate replication of change records held
+     * at another node within the registry uses the get_changeRecords message.  
+     * Part of the message is a high water mark vector that contains for each 
+     * node of the registry the originating USN of the most recent change record
+     * that has been successfully processed by the invocating node. The effect 
+     * of receiving a get_changeRecords message causes a node to return to the 
+     * calling node change records it has generated locally and processed from 
+     * other nodes constrained by the directives of the high water mark vector 
+     * specified. As such, by invoking get_changeRecords a node obtains from its
+     * adjacent node all change records (constrained by the high water mark 
+     * vector) the adjacent node has generated locally or successfully processed
+     * from other nodes participating in the replication topology. What 
+     * constitutes an adjacent node is governed by the replication communication
+     * graph. Replication topology is controlled via a Replication Configuration
+     * Structure. Amongst other parameters, the Replication Configuration 
+     * Structure identifies one unique URL to represent the replication point, 
+     * soapReplicationURL, of each of the nodes of the registry. 
+     * </b></p>
      *
      * @param responseLimitVector responseLimitCount or responseLimitVector: A
      * caller MAY place an upper bound on the number of change records he wishes
@@ -136,17 +155,29 @@ public interface UDDIReplicationPortType extends Remote {
      * code. Error reporting SHALL be that specified by Section 4.8 – Success
      * and Error Reporting of this specification.
      */
+          @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+    @WebResult(name = "changeRecords", targetNamespace = "urn:uddi-org:repl_v3", partName = "body")
     @WebMethod(operationName = "get_changeRecords", action = "get_changeRecords")
+    public org.uddi.repl_v3.ChangeRecords getChangeRecords(
+        @WebParam(partName = "body", name = "get_changeRecords", targetNamespace = "urn:uddi-org:repl_v3")
+        org.uddi.repl_v3.GetChangeRecords body
+    ) throws DispositionReportFaultMessage,RemoteException;
+    /*
+ @WebMethod(operationName = "get_changeRecords", action = "get_changeRecords")
     @WebResult(name = "changeRecord", targetNamespace = "urn:uddi-org:repl_v3")
     @RequestWrapper(localName = "get_changeRecords", targetNamespace = "urn:uddi-org:repl_v3", className = "org.uddi.repl_v3.GetChangeRecords")
     @ResponseWrapper(localName = "changeRecords", targetNamespace = "urn:uddi-org:repl_v3", className = "org.uddi.repl_v3.ChangeRecords")
     public List<ChangeRecord> getChangeRecords(
-            @WebParam(name = "requestingNode", targetNamespace = "urn:uddi-org:repl_v3") String requestingNode,
-            @WebParam(name = "changesAlreadySeen", targetNamespace = "urn:uddi-org:repl_v3") HighWaterMarkVectorType changesAlreadySeen,
-            @WebParam(name = "responseLimitCount", targetNamespace = "urn:uddi-org:repl_v3") BigInteger responseLimitCount,
-            @WebParam(name = "responseLimitVector", targetNamespace = "urn:uddi-org:repl_v3") HighWaterMarkVectorType responseLimitVector)
-            throws DispositionReportFaultMessage, RemoteException;
-
+        @WebParam(name = "requestingNode", targetNamespace = "urn:uddi-org:repl_v3")
+        String requestingNode,
+        @WebParam(name = "changesAlreadySeen", targetNamespace = "urn:uddi-org:repl_v3")
+        HighWaterMarkVectorType changesAlreadySeen,
+        @WebParam(name = "responseLimitCount", targetNamespace = "urn:uddi-org:repl_v3")
+        BigInteger responseLimitCount,
+        @WebParam(name = "responseLimitVector", targetNamespace = "urn:uddi-org:repl_v3")
+        HighWaterMarkVectorType responseLimitVector)
+        throws DispositionReportFaultMessage, RemoteException;
+*/
     /**
      * <p class="MsoBodyText">Nodes can inform other nodes that they have new
      * change records available for consumption by replication by using this
@@ -191,7 +222,7 @@ public interface UDDIReplicationPortType extends Remote {
      *
      * <span
      * style="font-size:10.0pt;font-family:Arial;letter-spacing:-.25pt"></span>
-     * @return Success reporting SHALL be that specified by Section 4.8 –
+     * Success reporting SHALL be that specified by Section 4.8 –
      * Success and Error Reporting of this specification.
      * @throws DispositionReportFaultMessage, RemoteException Processing an
      * inbound replication message may fail due to a server internal error. The
@@ -202,8 +233,9 @@ public interface UDDIReplicationPortType extends Remote {
     @WebMethod(operationName = "notify_changeRecordsAvailable", action = "notify_changeRecordsAvailable")
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
     public void notifyChangeRecordsAvailable(
-            @WebParam(name = "notify_changeRecordsAvailable", targetNamespace = "urn:uddi-org:repl_v3", partName = "body") NotifyChangeRecordsAvailable body)
-            throws DispositionReportFaultMessage, RemoteException;
+        @WebParam(name = "notify_changeRecordsAvailable", targetNamespace = "urn:uddi-org:repl_v3", partName = "body")
+        NotifyChangeRecordsAvailable body)
+        throws DispositionReportFaultMessage,RemoteException;
 
         /**
          * This UDDI API message provides the means by which the current
@@ -232,8 +264,9 @@ public interface UDDIReplicationPortType extends Remote {
     @WebResult(name = "operatorNodeID", targetNamespace = "urn:uddi-org:repl_v3", partName = "body")
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
     public String doPing(
-            @WebParam(name = "do_ping", targetNamespace = "urn:uddi-org:repl_v3", partName = "body") DoPing body)
-            throws DispositionReportFaultMessage, RemoteException;
+        @WebParam(name = "do_ping", targetNamespace = "urn:uddi-org:repl_v3", partName = "body")
+        DoPing body)
+        throws DispositionReportFaultMessage, RemoteException;
 
     /**
      * This UDDI API message provides a means to obtain a list of highWaterMark
@@ -274,7 +307,7 @@ public interface UDDIReplicationPortType extends Remote {
     @RequestWrapper(localName = "get_highWaterMarks", targetNamespace = "urn:uddi-org:repl_v3", className = "org.uddi.repl_v3.GetHighWaterMarks")
     @ResponseWrapper(localName = "highWaterMarks", targetNamespace = "urn:uddi-org:repl_v3", className = "org.uddi.repl_v3.HighWaterMarkVectorType")
     public List<ChangeRecordIDType> getHighWaterMarks()
-            throws DispositionReportFaultMessage, RemoteException;
+        throws DispositionReportFaultMessage, RemoteException;
 
     /**
      * Invoked by the target node in a custody transfer operation in response to
@@ -321,7 +354,8 @@ public interface UDDIReplicationPortType extends Remote {
      * ">7.5.2</a> <i>Configuration of a UDDI Node – operator element</i>. The
      * authorizedName is obtained from the call to transfer_entities by the
      * requesting publisher.</p>
-     * @return <p class="MsoBodyText">The custodial node must verify that it has
+     * 
+     * <p class="MsoBodyText">The custodial node must verify that it has
      * granted permission to transfer the entities identified and that this
      * permission is still valid.&nbsp; This operation is comprised of two
      * steps:</p>
@@ -404,7 +438,7 @@ public interface UDDIReplicationPortType extends Remote {
     @WebMethod(operationName = "transfer_custody", action = "transfer_custody")
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
     public void transferCustody(
-            @WebParam(name = "transfer_custody", targetNamespace = "urn:uddi-org:repl_v3", partName = "body") TransferCustody body)
-            throws DispositionReportFaultMessage, RemoteException;
+        @WebParam(name = "transfer_custody", targetNamespace = "urn:uddi-org:repl_v3", partName = "body")
+        TransferCustody body)
+        throws DispositionReportFaultMessage, RemoteException;
 }
-

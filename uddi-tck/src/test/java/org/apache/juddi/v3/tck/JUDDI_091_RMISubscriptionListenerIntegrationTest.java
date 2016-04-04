@@ -59,6 +59,10 @@ public class JUDDI_091_RMISubscriptionListenerIntegrationTest {
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 manager.stop();
                 //shutting down the TCK SubscriptionListener
                 //re
@@ -67,6 +71,10 @@ public class JUDDI_091_RMISubscriptionListenerIntegrationTest {
         @BeforeClass
         public static void startManager() throws ConfigurationException {
 
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 try {
                         //bring up the RMISubscriptionListener
                         //random port
@@ -88,7 +96,10 @@ public class JUDDI_091_RMISubscriptionListenerIntegrationTest {
 
 
                 } catch (Exception e2) {
+<<<<<<< HEAD
                         // TODO Auto-generated catch block
+=======
+>>>>>>> refs/remotes/apache/master
                         e2.printStackTrace();
                         Assert.fail();
                 }
@@ -99,7 +110,11 @@ public class JUDDI_091_RMISubscriptionListenerIntegrationTest {
                 logger.debug("Getting auth tokens..");
                 try {
 
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
 
@@ -123,10 +138,18 @@ public class JUDDI_091_RMISubscriptionListenerIntegrationTest {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
 
         @Test
         public void joePublisher() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isRMI());
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 try {

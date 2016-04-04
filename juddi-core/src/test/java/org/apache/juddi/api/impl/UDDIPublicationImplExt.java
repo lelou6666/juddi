@@ -17,9 +17,17 @@ package org.apache.juddi.api.impl;
 
 import java.util.Date;
 import java.util.List;
+<<<<<<< HEAD
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.xml.ws.WebServiceContext;
+=======
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.xml.ws.WebServiceContext;
+
+>>>>>>> refs/remotes/apache/master
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.config.PersistenceManager;
@@ -62,9 +70,14 @@ public class UDDIPublicationImplExt extends UDDIPublicationImpl {
                         tx.begin();
 
                         UddiEntityPublisher publisher = this.getEntityPublisher(em, body.getAuthInfo());
+<<<<<<< HEAD
 
                         ValidatePublish validator = new ValidatePublish(publisher);
                         validator.validateSaveBusiness(em, body, null);
+=======
+                        ValidatePublish validator = new ValidatePublish(publisher);
+                        validator.validateSaveBusiness(em, body, null, publisher);
+>>>>>>> refs/remotes/apache/master
 
                         BusinessDetail result = new BusinessDetail();
 

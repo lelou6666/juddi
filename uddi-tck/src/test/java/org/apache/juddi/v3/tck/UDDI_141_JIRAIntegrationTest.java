@@ -40,7 +40,6 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uddi.api_v3.*;
-import org.uddi.sub_v3.DeleteSubscription;
 import org.uddi.sub_v3.Subscription;
 import org.uddi.sub_v3.SubscriptionFilter;
 import org.uddi.v3_service.UDDIInquiryPortType;
@@ -94,6 +93,10 @@ public class UDDI_141_JIRAIntegrationTest {
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+                if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 tckTModelJoe.deleteCreatedTModels(authInfoJoe);
                 tckTModelSam.deleteCreatedTModels(authInfoSam);
                 manager.stop();
@@ -101,6 +104,7 @@ public class UDDI_141_JIRAIntegrationTest {
 
         @BeforeClass
         public static void startManager() throws ConfigurationException {
+<<<<<<< HEAD
                 logger.info("UDDI_141_JIRAIntegrationTest");
                 manager = new UDDIClient();
                 manager.start();
@@ -223,8 +227,22 @@ public class UDDI_141_JIRAIntegrationTest {
                         failuremsg += "No lang defined, " + found1 + " records found instead of 2";
                 }
 
+=======
+                if (!TckPublisher.isEnabled()) return;
+                logger.info("UDDI_141_JIRAIntegrationTest");
+                manager = new UDDIClient();
+                manager.start();
 
+                logger.debug("Getting auth tokens..");
+                try {
+                        Transport transport = manager.getTransport("uddiv3");
+                        security = transport.getUDDISecurityService();
+>>>>>>> refs/remotes/apache/master
 
+                        publicationJoe = transport.getUDDIPublishService();
+                        inquiryJoe = transport.getUDDIInquiryService();
+
+<<<<<<< HEAD
                 found1 = 0;
                 fb = new FindBusiness();
                 fb.setAuthInfo(authInfoJoe);
@@ -250,8 +268,20 @@ public class UDDI_141_JIRAIntegrationTest {
                 if (found1 != 1) {
                         failuremsg += "Lang defined, " + found1 + " records found instead of 1";
                 }
+=======
+                        subscriptionJoe = transport.getUDDISubscriptionService();
+>>>>>>> refs/remotes/apache/master
 
+                        authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
+                        authInfoSam = TckSecurity.getAuthToken(security, TckPublisher.getSamPublisherId(), TckPublisher.getSamPassword());
+                        //Assert.assertNotNull(authInfoJoe);
+                        //Assert.assertNotNull(authInfoSam);
+                        if (!TckPublisher.isUDDIAuthMode()) {
+                                TckSecurity.setCredentials((BindingProvider) publicationJoe, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
+                                TckSecurity.setCredentials((BindingProvider) inquiryJoe, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
+                                TckSecurity.setCredentials((BindingProvider) subscriptionJoe, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
 
+<<<<<<< HEAD
                 DeleteBusinesses(businesskeysToDelete, authInfoJoe, publicationJoe);
                 if (failuremsg.length() > 0) {
                         Assert.fail(failuremsg);
@@ -329,11 +359,112 @@ public class UDDI_141_JIRAIntegrationTest {
                 if (found1 != 2) {
                         failuremsg += "No lang defined, " + found1 + " records found instead of 2";
                 }
+=======
+                        }
+                        tckTModelJoe = new TckTModel(publicationJoe, inquiryJoe);
+                        tckBusinessJoe = new TckBusiness(publicationJoe, inquiryJoe);
 
+                        transport = manager.getTransport("uddiv3");
 
+                        publicationSam = transport.getUDDIPublishService();
+                        inquiryJoeSam = transport.getUDDIInquiryService();
+                        if (!TckPublisher.isUDDIAuthMode()) {
+                                TckSecurity.setCredentials((BindingProvider) publicationSam, TckPublisher.getSamPublisherId(), TckPublisher.getSamPassword());
+                                TckSecurity.setCredentials((BindingProvider) inquiryJoeSam, TckPublisher.getSamPublisherId(), TckPublisher.getSamPassword());
+                                TckSecurity.setCredentials((BindingProvider) subscriptionSam, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
+                        }
+                        subscriptionSam = transport.getUDDISubscriptionService();
+                        tckTModelSam = new TckTModel(publicationSam, inquiryJoeSam);
+                        tckBusinessSam = new TckBusiness(publicationSam, inquiryJoeSam);
+
+                } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        Assert.fail("Could not obtain authInfo token.");
+                }
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+        }
+
+        static void HandleException(Exception ex) {
+                System.err.println("Error caught of type " + ex.getClass().getCanonicalName());
+                ex.printStackTrace();
+                if (ex.getMessage() != null) {
+                        Assert.assertFalse(ex.getMessage().contains(TRANS));
+                        Assert.assertFalse(ex.getMessage().contains(MISSING_RESOURCE));
+                }
+                if (ex instanceof SOAPFault) {
+                        SOAPFault sf = (SOAPFault) ex;
+                        if (!sf.getTextContent().contains("org.apache.juddi.v3.error.ValueNotAllowedException")) {
+                                Assert.fail();
+                        }
+                }
+        }
+>>>>>>> refs/remotes/apache/master
+
+        @Test
+        public void JUDDI_JIRA_571_Part1_Test() {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                //add a business
+                //add a business with lang defined
+                //find business with lang defined, expecting one result
+                //find business without lang defined, expecting 2 results
+                List<String> businesskeysToDelete = new ArrayList<String>();
+                String failuremsg = "";
+                System.out.println("JUDDI_JIRA_571_Part1_Test");
+                SaveBusiness sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoJoe);
+                BusinessEntity be = new BusinessEntity();
+                Name n = new Name();
+                n.setValue("JUDDI_JIRA_571_Part1_Test no lang");
+                be.getName().add(n);
+                sb.getBusinessEntity().add(be);
+
+                be = new BusinessEntity();
+                n = new Name();
+                n.setValue("JUDDI_JIRA_571_Part1_Test with lang");
+                n.setLang("en");
+                be.getName().add(n);
+                sb.getBusinessEntity().add(be);
+                try {
+                        BusinessDetail saveBusiness = publicationJoe.saveBusiness(sb);
+                        businesskeysToDelete.add(saveBusiness.getBusinessEntity().get(0).getBusinessKey());
+                        businesskeysToDelete.add(saveBusiness.getBusinessEntity().get(1).getBusinessKey());
+
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+
+                int found1 = 0;
+                FindBusiness fb = new FindBusiness();
+                fb.setAuthInfo(authInfoJoe);
+                n = new Name();
+                n.setValue("%");
+                fb.getName().add(n);
+                fb.setFindQualifiers(new FindQualifiers());
+                fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                try {
+                        BusinessList findBusiness = inquiryJoe.findBusiness(fb);
+                        if (findBusiness.getBusinessInfos() != null) {
+                                for (int i = 0; i < findBusiness.getBusinessInfos().getBusinessInfo().size(); i++) {
+                                        if (businesskeysToDelete.contains(findBusiness.getBusinessInfos().getBusinessInfo().get(i).getBusinessKey())) {
+                                                found1++;
+                                        }
+                                }
+                        }
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+                if (found1 != 2) {
+                        failuremsg += "No lang defined, " + found1 + " records found instead of 2";
+                }
 
                 found1 = 0;
+<<<<<<< HEAD
                 fb = new FindService();
+=======
+                fb = new FindBusiness();
+>>>>>>> refs/remotes/apache/master
                 fb.setAuthInfo(authInfoJoe);
                 n = new Name();
                 n.setLang("en");
@@ -342,10 +473,17 @@ public class UDDI_141_JIRAIntegrationTest {
                 fb.setFindQualifiers(new FindQualifiers());
                 fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
                 try {
+<<<<<<< HEAD
                         ServiceList findBusiness = inquiryJoe.findService(fb);
                         if (findBusiness.getServiceInfos() != null) {
                                 for (int i = 0; i < findBusiness.getServiceInfos().getServiceInfo().size(); i++) {
                                         if (businesskeysToDelete.contains(findBusiness.getServiceInfos().getServiceInfo().get(i).getBusinessKey())) {
+=======
+                        BusinessList findBusiness = inquiryJoe.findBusiness(fb);
+                        if (findBusiness.getBusinessInfos() != null) {
+                                for (int i = 0; i < findBusiness.getBusinessInfos().getBusinessInfo().size(); i++) {
+                                        if (businesskeysToDelete.contains(findBusiness.getBusinessInfos().getBusinessInfo().get(i).getBusinessKey())) {
+>>>>>>> refs/remotes/apache/master
                                                 found1++;
                                         }
                                 }
@@ -358,7 +496,13 @@ public class UDDI_141_JIRAIntegrationTest {
                         failuremsg += "Lang defined, " + found1 + " records found instead of 1";
                 }
 
+                DeleteBusinesses(businesskeysToDelete, authInfoJoe, publicationJoe);
+                if (failuremsg.length() > 0) {
+                        Assert.fail(failuremsg);
+                }
+                System.out.println("Pass");
 
+<<<<<<< HEAD
                 DeleteBusinesses(businesskeysToDelete, authInfoJoe, publicationJoe);
                 if (failuremsg.length() > 0) {
                         Assert.fail(failuremsg);
@@ -426,10 +570,106 @@ public class UDDI_141_JIRAIntegrationTest {
                 }
                 if (found1 != 2) {
                         failuremsg += "No lang defined, " + found1 + " records found instead of 2";
+=======
+        }
+
+        @Test
+        public void JUDDI_JIRA_571_Part2_Test() {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                //add a service
+                //add a service with lang defined
+                //find service with lang defined, expecting one result
+                //find service without lang defined, expecting 2 results
+
+                List<String> businesskeysToDelete = new ArrayList<String>();
+                List<String> targetServiceKeys = new ArrayList<String>();
+                String failuremsg = "";
+                System.out.println("JUDDI_JIRA_571_Part2_Test");
+                SaveBusiness sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoJoe);
+                BusinessEntity be = new BusinessEntity();
+                Name n = new Name();
+                n.setValue("JUDDI_JIRA_571_Part2_Test no lang");
+                be.getName().add(n);
+                sb.getBusinessEntity().add(be);
+
+                BusinessService bs = new BusinessService();
+                n = new Name();
+                n.setValue("Service1 No Lang");
+                bs.getName().add(n);
+                be.setBusinessServices(new BusinessServices());
+                be.getBusinessServices().getBusinessService().add(bs);
+
+                bs = new BusinessService();
+                n = new Name();
+                n.setValue("Service2 Lang");
+                n.setLang("en");
+                bs.getName().add(n);
+                be.getBusinessServices().getBusinessService().add(bs);
+                try {
+                        BusinessDetail saveBusiness = publicationJoe.saveBusiness(sb);
+                        businesskeysToDelete.add(saveBusiness.getBusinessEntity().get(0).getBusinessKey());
+                        targetServiceKeys.add(saveBusiness.getBusinessEntity().get(0).getBusinessServices().getBusinessService().get(0).getServiceKey());
+                        targetServiceKeys.add(saveBusiness.getBusinessEntity().get(0).getBusinessServices().getBusinessService().get(1).getServiceKey());
+
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+>>>>>>> refs/remotes/apache/master
                 }
 
+                int found1 = 0;
+                FindService fb = new FindService();
+                fb.setAuthInfo(authInfoJoe);
+                n = new Name();
+                n.setValue("%");
+                fb.getName().add(n);
+                fb.setFindQualifiers(new FindQualifiers());
+                fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                try {
+                        ServiceList findBusiness = inquiryJoe.findService(fb);
+                        if (findBusiness.getServiceInfos() != null) {
+                                for (int i = 0; i < findBusiness.getServiceInfos().getServiceInfo().size(); i++) {
+                                        if (targetServiceKeys.contains(findBusiness.getServiceInfos().getServiceInfo().get(i).getServiceKey())) {
+                                                found1++;
+                                        }
+                                }
+                        }
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+                if (found1 != 2) {
+                        failuremsg += "No lang defined, " + found1 + " records found instead of 2";
+                }
 
+                found1 = 0;
+                fb = new FindService();
+                fb.setAuthInfo(authInfoJoe);
+                n = new Name();
+                n.setLang("en");
+                n.setValue("%");
+                fb.getName().add(n);
+                fb.setFindQualifiers(new FindQualifiers());
+                fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                try {
+                        ServiceList findBusiness = inquiryJoe.findService(fb);
+                        if (findBusiness.getServiceInfos() != null) {
+                                for (int i = 0; i < findBusiness.getServiceInfos().getServiceInfo().size(); i++) {
+                                        if (businesskeysToDelete.contains(findBusiness.getServiceInfos().getServiceInfo().get(i).getBusinessKey())) {
+                                                found1++;
+                                        }
+                                }
+                        }
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+                if (found1 != 1) {
+                        failuremsg += "Lang defined, " + found1 + " records found instead of 1";
+                }
 
+<<<<<<< HEAD
                 found1 = 0;
                 fb = new FindTModel();
                 fb.setAuthInfo(authInfoJoe);
@@ -455,8 +695,53 @@ public class UDDI_141_JIRAIntegrationTest {
                 if (found1 != 1) {
                         failuremsg += "Lang defined, " + found1 + " records found instead of 1";
                 }
+=======
+                DeleteBusinesses(businesskeysToDelete, authInfoJoe, publicationJoe);
+                if (failuremsg.length() > 0) {
+                        Assert.fail(failuremsg);
+                }
+                System.out.println("Pass");
 
+        }
+>>>>>>> refs/remotes/apache/master
 
+        @Test
+        public void JUDDI_571_Part3_Test() {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                //add a tmodel
+                //add a tmodel with lang defined
+                //find tmodel with lang defined, expecting one result
+                //find tmodel without lang defined, expecting 2 results
+
+                List<String> businesskeysToDelete = new ArrayList<String>();
+
+                String failuremsg = "";
+                System.out.println("JUDDI_571_Part3_Test");
+                SaveTModel sb = new SaveTModel();
+                sb.setAuthInfo(authInfoJoe);
+                TModel be = new TModel();
+                Name n = new Name();
+                n.setValue("JUDDI_571_Part3_Test no lang");
+                be.setName(n);
+                sb.getTModel().add(be);
+
+                be = new TModel();
+                n = new Name();
+                n.setValue("JUDDI_571_Part3_Test lang");
+                n.setLang("en");
+                be.setName(n);
+                sb.getTModel().add(be);
+
+                try {
+                        TModelDetail saveTModel = publicationJoe.saveTModel(sb);
+                        businesskeysToDelete.add(saveTModel.getTModel().get(0).getTModelKey());
+                        businesskeysToDelete.add(saveTModel.getTModel().get(1).getTModelKey());
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+
+<<<<<<< HEAD
                 DeleteTModels(businesskeysToDelete);
                 if (failuremsg.length() > 0) {
                         Assert.fail(failuremsg);
@@ -494,11 +779,17 @@ public class UDDI_141_JIRAIntegrationTest {
                         HandleException(ex);
                         Assert.fail("unexpected failure");
                 }
+=======
+>>>>>>> refs/remotes/apache/master
                 int found1 = 0;
                 FindTModel fb = new FindTModel();
                 fb.setAuthInfo(authInfoJoe);
                 n = new Name();
+<<<<<<< HEAD
                 n.setValue("JUDDI_574");
+=======
+                n.setValue("%JUDDI_571_Part3_Test%");
+>>>>>>> refs/remotes/apache/master
                 fb.setName(n);
                 fb.setFindQualifiers(new FindQualifiers());
                 fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
@@ -508,6 +799,7 @@ public class UDDI_141_JIRAIntegrationTest {
                                 for (int i = 0; i < findTModel.getTModelInfos().getTModelInfo().size(); i++) {
                                         if (businesskeysToDelete.contains(findTModel.getTModelInfos().getTModelInfo().get(i).getTModelKey())) {
                                                 found1++;
+<<<<<<< HEAD
                                                 if (findTModel.getTModelInfos().getTModelInfo().get(i).getName() == null
                                                         || findTModel.getTModelInfos().getTModelInfo().get(i).getName().getLang() == null
                                                         || findTModel.getTModelInfos().getTModelInfo().get(i).getName().getLang().length() == 0) {
@@ -516,12 +808,16 @@ public class UDDI_141_JIRAIntegrationTest {
                                                 }
                                         }
 
+=======
+                                        }
+>>>>>>> refs/remotes/apache/master
                                 }
                         }
                 } catch (Exception ex) {
                         HandleException(ex);
                         Assert.fail("unexpected failure");
                 }
+<<<<<<< HEAD
                 if (found1 != 1) {
                         failuremsg += "found " + found1 + " records found instead of 1";
                 }
@@ -583,8 +879,107 @@ public class UDDI_141_JIRAIntegrationTest {
                 } catch (SOAPFaultException ex) {
                         HandleException(ex);
                 }
+=======
+                if (found1 != 2) {
+                        failuremsg += "No lang defined, " + found1 + " records found instead of 2";
+                }
 
+                found1 = 0;
+                fb = new FindTModel();
+                fb.setAuthInfo(authInfoJoe);
+                n = new Name();
+                n.setLang("en");
+                n.setValue("%JUDDI_571_Part3_Test%");
+                fb.setName(n);
+                fb.setFindQualifiers(new FindQualifiers());
+                fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                try {
+                        TModelList findTModel = inquiryJoe.findTModel(fb);
+                        if (findTModel.getTModelInfos() != null) {
+                                for (int i = 0; i < findTModel.getTModelInfos().getTModelInfo().size(); i++) {
+                                        if (businesskeysToDelete.contains(findTModel.getTModelInfos().getTModelInfo().get(i).getTModelKey())) {
+                                                found1++;
+                                        }
+                                }
+                        }
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+                if (found1 != 1) {
+                        failuremsg += "Lang defined, " + found1 + " records found instead of 1";
+                }
 
+                DeleteTModels(businesskeysToDelete);
+                if (failuremsg.length() > 0) {
+                        Assert.fail(failuremsg);
+                }
+                System.out.println("Pass");
+
+        }
+>>>>>>> refs/remotes/apache/master
+
+        @Test
+        public void JUDDI_574() {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                //make a test model with a lang
+
+                //search for it by name
+                //confirm that the lang is present
+                List<String> businesskeysToDelete = new ArrayList<String>();
+
+                String failuremsg = "";
+                System.out.println("JUDDI_574");
+                SaveTModel sb = new SaveTModel();
+                sb.setAuthInfo(authInfoJoe);
+                TModel be = new TModel();
+                Name n = new Name();
+                n.setValue("JUDDI_574");
+                n.setLang("en");
+                be.setName(n);
+                sb.getTModel().add(be);
+
+                try {
+                        TModelDetail saveTModel = publicationJoe.saveTModel(sb);
+                        businesskeysToDelete.add(saveTModel.getTModel().get(0).getTModelKey());
+                        System.out.println("tmodel created with key " + saveTModel.getTModel().get(0).getTModelKey());
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+                int found1 = 0;
+                FindTModel fb = new FindTModel();
+                fb.setAuthInfo(authInfoJoe);
+                n = new Name();
+                n.setValue("JUDDI_574");
+                fb.setName(n);
+                fb.setFindQualifiers(new FindQualifiers());
+                fb.getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                try {
+                        TModelList findTModel = inquiryJoe.findTModel(fb);
+                        if (findTModel.getTModelInfos() != null) {
+                                for (int i = 0; i < findTModel.getTModelInfos().getTModelInfo().size(); i++) {
+                                        if (businesskeysToDelete.contains(findTModel.getTModelInfos().getTModelInfo().get(i).getTModelKey())) {
+                                                found1++;
+                                                if (findTModel.getTModelInfos().getTModelInfo().get(i).getName() == null
+                                                     || findTModel.getTModelInfos().getTModelInfo().get(i).getName().getLang() == null
+                                                     || findTModel.getTModelInfos().getTModelInfo().get(i).getName().getLang().length() == 0) {
+                                                        failuremsg += "Tmodel key " + findTModel.getTModelInfos().getTModelInfo().get(i).getTModelKey()
+                                                             + " has a null or empty lang";
+                                                }
+                                        }
+
+                                }
+                        }
+                } catch (Exception ex) {
+                        HandleException(ex);
+                        Assert.fail("unexpected failure");
+                }
+                if (found1 != 1) {
+                        failuremsg += "found " + found1 + " records found instead of 1";
+                }
+
+<<<<<<< HEAD
                 //create an assertion on one end
                 AddPublisherAssertions apa = new AddPublisherAssertions();
                 apa.setAuthInfo(authInfoJoe);
@@ -619,7 +1014,170 @@ public class UDDI_141_JIRAIntegrationTest {
                         ok = false;
                         ex.printStackTrace();
                 }
+=======
+                DeleteTModels(businesskeysToDelete);
+                if (failuremsg.length() > 0) {
+                        Assert.fail(failuremsg);
+                }
+                System.out.println("Pass");
+>>>>>>> refs/remotes/apache/master
 
+        }
+
+<<<<<<< HEAD
+                //aprove the assertion from sam
+                apa = new AddPublisherAssertions();
+                apa.setAuthInfo(authInfoSam);
+                apa.getPublisherAssertion().add(new PublisherAssertion());
+                apa.getPublisherAssertion().get(0).setFromKey(joeBiz);
+                apa.getPublisherAssertion().get(0).setToKey(samBiz);
+                kr = new KeyedReference();
+                kr.setKeyName("Subsidiary");
+                kr.setKeyValue("parent-child");
+                kr.setTModelKey("uddi:uddi.org:relationships");
+                apa.getPublisherAssertion().get(0).setKeyedReference(kr);
+                publicationSam.addPublisherAssertions(apa);
+                try {
+                        List<AssertionStatusItem> assertionStatusReport = publicationJoe.getAssertionStatusReport(authInfoJoe, CompletionStatus.STATUS_COMPLETE);
+                        if (assertionStatusReport.isEmpty()) {
+                                msg = "Stage2: no result returned, expected at least 1";
+                                ok = false;
+                        }
+                        for (int i = 0; i < assertionStatusReport.size(); i++) {
+                                JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
+                                        if (!assertionStatusReport.get(i).getCompletionStatus().equals(CompletionStatus.STATUS_COMPLETE)) {
+                                                ok = false;
+                                                msg = "Stage2: status type mismatch";
+                                        }
+                                }
+                        }
+                        //test to see what the status actually is
+                        if (!ok) {
+                                assertionStatusReport = publicationJoe.getAssertionStatusReport(authInfoJoe, CompletionStatus.STATUS_FROM_KEY_INCOMPLETE);
+                                for (int i = 0; i < assertionStatusReport.size(); i++) {
+                                        JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                        if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
+                                                msg = "Stage3: status is " + assertionStatusReport.get(i).getCompletionStatus().toString() + " instead of complete";
+                                        }
+                                }
+
+                                assertionStatusReport = publicationJoe.getAssertionStatusReport(authInfoJoe, CompletionStatus.STATUS_TO_KEY_INCOMPLETE);
+                                for (int i = 0; i < assertionStatusReport.size(); i++) {
+                                        JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                        if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
+                                                msg = "Stage3: status is " + assertionStatusReport.get(i).getCompletionStatus().toString() + " instead of complete";
+                                        }
+                                }
+                                assertionStatusReport = publicationJoe.getAssertionStatusReport(authInfoJoe, CompletionStatus.STATUS_BOTH_INCOMPLETE);
+                                for (int i = 0; i < assertionStatusReport.size(); i++) {
+                                        JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                        if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
+                                                msg = "Stage3: status is " + assertionStatusReport.get(i).getCompletionStatus().toString() + " instead of complete";
+                                        }
+                                }
+
+                        }
+                } catch (Exception ex) {
+                        ok = false;
+                        ex.printStackTrace();
+=======
+        /**
+         * sets up a compelte publisher assertion
+         *
+         * @throws Exception
+         */
+        @Test
+        public void JUDDI_590() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                //create two businesses
+                System.out.println("JUDDI_590");
+
+                SaveBusiness sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoJoe);
+                BusinessEntity be = new BusinessEntity();
+                Name n = new Name();
+                n.setValue("JUDDI_590 Joe");
+                be.getName().add(n);
+                sb.getBusinessEntity().add(be);
+                String joeBiz = null;
+                try {
+                        BusinessDetail saveBusiness = publicationJoe.saveBusiness(sb);
+                        joeBiz = saveBusiness.getBusinessEntity().get(0).getBusinessKey();
+                        //DeleteBusiness db = new DeleteBusiness();
+                        //db.setAuthInfo(authInfoJoe);
+                        //db.getBusinessKey().add(saveBusiness.getBusinessEntity().get(0).getBusinessKey());
+                        //publicationJoe.deleteBusiness(db);
+                        //Assert.fail("request should have been rejected");
+                } catch (SOAPFaultException ex) {
+                        HandleException(ex);
+                }
+
+                sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoSam);
+                be = new BusinessEntity();
+                n = new Name();
+                n.setValue("JUDDI_590 Sam");
+                be.getName().add(n);
+                sb.getBusinessEntity().add(be);
+                String samBiz = null;
+                try {
+                        BusinessDetail saveBusiness = publicationSam.saveBusiness(sb);
+                        samBiz = saveBusiness.getBusinessEntity().get(0).getBusinessKey();
+                        //DeleteBusiness db = new DeleteBusiness();
+                        //db.setAuthInfo(authInfoJoe);
+                        //db.getBusinessKey().add(saveBusiness.getBusinessEntity().get(0).getBusinessKey());
+                        //publicationJoe.deleteBusiness(db);
+                        //Assert.fail("request should have been rejected");
+                } catch (SOAPFaultException ex) {
+                        HandleException(ex);
+>>>>>>> refs/remotes/apache/master
+                }
+                List<String> biz = new ArrayList<String>();
+                biz.add(samBiz);
+                DeleteBusinesses(biz, authInfoSam, publicationSam);
+
+<<<<<<< HEAD
+                biz = new ArrayList<String>();
+                biz.add(joeBiz);
+                DeleteBusinesses(biz, authInfoJoe, publicationJoe);
+                Assert.assertTrue(msg, ok);
+
+=======
+                //create an assertion on one end
+                AddPublisherAssertions apa = new AddPublisherAssertions();
+                apa.setAuthInfo(authInfoJoe);
+                apa.getPublisherAssertion().add(new PublisherAssertion());
+                apa.getPublisherAssertion().get(0).setFromKey(joeBiz);
+                apa.getPublisherAssertion().get(0).setToKey(samBiz);
+                KeyedReference kr = new KeyedReference();
+                kr.setKeyName("Subsidiary");
+                kr.setKeyValue("parent-child");
+                kr.setTModelKey("uddi:uddi.org:relationships");
+                apa.getPublisherAssertion().get(0).setKeyedReference(kr);
+                publicationJoe.addPublisherAssertions(apa);
+                //check get status is not null from 1 and from 2
+                boolean ok = true;
+                String msg = "";
+                try {
+                        List<AssertionStatusItem> assertionStatusReport = publicationJoe.getAssertionStatusReport(authInfoJoe, CompletionStatus.STATUS_TO_KEY_INCOMPLETE);
+                        if (assertionStatusReport.isEmpty()) {
+                                msg = "Stage1: no result returned, expected at least 1";
+                                ok = false;
+                        }
+                        for (int i = 0; i < assertionStatusReport.size(); i++) {
+                                JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
+                                        if (!assertionStatusReport.get(i).getCompletionStatus().equals(CompletionStatus.STATUS_TO_KEY_INCOMPLETE)) {
+                                                ok = false;
+                                                msg = "Stage1: status type mismatch";
+                                        }
+                                }
+                        }
+                } catch (Exception ex) {
+                        ok = false;
+                        ex.printStackTrace();
+                }
 
                 //aprove the assertion from sam
                 apa = new AddPublisherAssertions();
@@ -686,7 +1244,7 @@ public class UDDI_141_JIRAIntegrationTest {
                 biz.add(joeBiz);
                 DeleteBusinesses(biz, authInfoJoe, publicationJoe);
                 Assert.assertTrue(msg, ok);
-
+>>>>>>> refs/remotes/apache/master
 
         }
 
@@ -697,6 +1255,10 @@ public class UDDI_141_JIRAIntegrationTest {
          */
         @Test
         public void JUDDI_590_1() throws Exception {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 //create two businesses
                 System.out.println("JUDDI_590_1");
 
@@ -739,7 +1301,10 @@ public class UDDI_141_JIRAIntegrationTest {
                 } catch (SOAPFaultException ex) {
                         HandleException(ex);
                 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/apache/master
 
                 //create an assertion on one end
                 AddPublisherAssertions apa = new AddPublisherAssertions();
@@ -765,7 +1330,13 @@ public class UDDI_141_JIRAIntegrationTest {
                                 ok = false;
                         }
                         for (int i = 0; i < assertionStatusReport.size(); i++) {
+<<<<<<< HEAD
                                 JAXB.marshal(assertionStatusReport.get(i), System.out);
+=======
+                                if (TckCommon.isDebug()) {
+                                        JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                }
+>>>>>>> refs/remotes/apache/master
                                 if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
                                         if (!assertionStatusReport.get(i).getCompletionStatus().equals(CompletionStatus.STATUS_TO_KEY_INCOMPLETE)) {
                                                 ok = false;
@@ -786,7 +1357,13 @@ public class UDDI_141_JIRAIntegrationTest {
                                 ok = false;
                         }
                         for (int i = 0; i < assertionStatusReport.size(); i++) {
+<<<<<<< HEAD
                                 JAXB.marshal(assertionStatusReport.get(i), System.out);
+=======
+                                if (TckCommon.isDebug()) {
+                                        JAXB.marshal(assertionStatusReport.get(i), System.out);
+                                }
+>>>>>>> refs/remotes/apache/master
                                 if (assertionStatusReport.get(i).getToKey().equals(samBiz)) {
                                         if (!assertionStatusReport.get(i).getCompletionStatus().equals(CompletionStatus.STATUS_TO_KEY_INCOMPLETE)) {
                                                 ok = false;
@@ -808,7 +1385,10 @@ public class UDDI_141_JIRAIntegrationTest {
                 DeleteBusinesses(biz, authInfoJoe, publicationJoe);
                 Assert.assertTrue(msg, ok);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/apache/master
         }
         UDDISubscriptionListenerImpl impl = new UDDISubscriptionListenerImpl();
 
@@ -819,7 +1399,11 @@ public class UDDI_141_JIRAIntegrationTest {
          */
         @Test
         public void JIRA_597() throws Exception {
+<<<<<<< HEAD
 
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JIRA_597");
 
                 int port = 7000;
@@ -828,8 +1412,12 @@ public class UDDI_141_JIRAIntegrationTest {
                         hostname = InetAddress.getLocalHost().getHostName();
                 }
 
+<<<<<<< HEAD
 
                 TckCommon.removeAllExistingSubscriptions(authInfoJoe,subscriptionJoe);
+=======
+                TckCommon.removeAllExistingSubscriptions(authInfoJoe, subscriptionJoe);
+>>>>>>> refs/remotes/apache/master
                 UDDISubscriptionListenerImpl.notifcationMap.clear();
                 UDDISubscriptionListenerImpl.notificationCount = 0;
                 Endpoint ep = null;
@@ -884,7 +1472,10 @@ public class UDDI_141_JIRAIntegrationTest {
                 sb.getBusinessEntity().add(be);
                 BusinessDetail saveBusiness1 = publicationSam.saveBusiness(sb);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/apache/master
                 //ok Joe now needs to subscribe for Sam's business
                 Holder<List<Subscription>> list = new Holder<List<Subscription>>();
                 list.value = new ArrayList<Subscription>();
@@ -919,7 +1510,11 @@ public class UDDI_141_JIRAIntegrationTest {
                         Thread.sleep(1000);
                         maxwait = maxwait - 1000;
                 }
+<<<<<<< HEAD
                 TckCommon.removeAllExistingSubscriptions(authInfoJoe,subscriptionJoe);
+=======
+                TckCommon.removeAllExistingSubscriptions(authInfoJoe, subscriptionJoe);
+>>>>>>> refs/remotes/apache/master
                 this.DeleteBusinesses(deleteme, authInfoJoe, publicationJoe);
                 deleteme.clear();
                 deleteme.add(saveBusiness1.getBusinessEntity().get(0).getBusinessKey());
@@ -929,7 +1524,10 @@ public class UDDI_141_JIRAIntegrationTest {
                         Assert.fail("no callbacks were recieved.");
                 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/apache/master
         }
 
         /**
@@ -941,6 +1539,10 @@ public class UDDI_141_JIRAIntegrationTest {
          */
         @Test
         public void JIRA_596() throws Exception {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JIRA_596");
                 int port = 9000;
 
@@ -949,9 +1551,14 @@ public class UDDI_141_JIRAIntegrationTest {
                         hostname = InetAddress.getLocalHost().getHostName();
                 }
 
+<<<<<<< HEAD
 
                 // String localhostname = "localhost";//java.net.InetAddress.getLocalHost().getHostName();
                 TckCommon.removeAllExistingSubscriptions(authInfoJoe,subscriptionJoe);
+=======
+                // String localhostname = "localhost";//java.net.InetAddress.getLocalHost().getHostName();
+                TckCommon.removeAllExistingSubscriptions(authInfoJoe, subscriptionJoe);
+>>>>>>> refs/remotes/apache/master
                 //UDDISubscriptionListenerImpl impl = new UDDISubscriptionListenerImpl();
                 UDDISubscriptionListenerImpl.notifcationMap.clear();
                 UDDISubscriptionListenerImpl.notificationCount = 0;
@@ -1042,7 +1649,11 @@ public class UDDI_141_JIRAIntegrationTest {
                         Thread.sleep(1000);
                         maxwait = maxwait - 1000;
                 }
+<<<<<<< HEAD
                 TckCommon.removeAllExistingSubscriptions(authInfoJoe,subscriptionJoe);
+=======
+                TckCommon.removeAllExistingSubscriptions(authInfoJoe, subscriptionJoe);
+>>>>>>> refs/remotes/apache/master
                 DeleteBusinesses(deleteme, authInfoJoe, publicationJoe);
                 deleteme.clear();
                 deleteme.add(saveBusiness1.getBusinessEntity().get(0).getBusinessKey());
@@ -1061,6 +1672,10 @@ public class UDDI_141_JIRAIntegrationTest {
         //binding template tmodel instance info
         @Test
         public void JIRA_575_BT() throws Exception {
+<<<<<<< HEAD
+=======
+                Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JIRA_575_BT");
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
@@ -1103,12 +1718,21 @@ public class UDDI_141_JIRAIntegrationTest {
                 } catch (Exception ex) {
                         logger.error(ex.getMessage());
                 }
+<<<<<<< HEAD
 
 
         }
 
         @Test
         public void JIRA_575_KR_Biz() throws Exception {
+                System.out.println("JIRA_575_KR_Biz");
+=======
+
+        }
+
+        @Test
+        public void JIRA_575_KR_Biz() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
                 System.out.println("JIRA_575_KR_Biz");
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
@@ -1142,7 +1766,9 @@ public class UDDI_141_JIRAIntegrationTest {
 
         @Test
         public void JIRA_575_IDENT_Biz() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
                 System.out.println("JIRA_575_IDENT_Biz");
+>>>>>>> refs/remotes/apache/master
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
                 gtm.setAuthInfo(authInfoJoe);
@@ -1158,10 +1784,17 @@ public class UDDI_141_JIRAIntegrationTest {
                 sb.setAuthInfo(authInfoJoe);
                 BusinessEntity be = new BusinessEntity();
                 be.getName().add(new Name());
+<<<<<<< HEAD
+                be.getName().get(0).setValue("Joe's JIRA_575_KR_Biz business");
+                //be.setBusinessServices(new BusinessServices());
+                be.setCategoryBag(new CategoryBag());
+                be.getCategoryBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+=======
                 be.getName().get(0).setValue("Joe's JIRA_575_IDENT_Biz business");
                 //be.setBusinessServices(new BusinessServices());
                 be.setIdentifierBag(new IdentifierBag());
                 be.getIdentifierBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+>>>>>>> refs/remotes/apache/master
                 sb.getBusinessEntity().add(be);
 
                 try {
@@ -1174,8 +1807,68 @@ public class UDDI_141_JIRAIntegrationTest {
         }
 
         @Test
+<<<<<<< HEAD
+        public void JIRA_575_IDENT_Biz() throws Exception {
+                System.out.println("JIRA_575_IDENT_Biz");
+=======
+        public void JIRA_575_KR_TMODEL() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                System.out.println("JIRA_575_KR_TMODEL");
+>>>>>>> refs/remotes/apache/master
+                String madeupTmodel = "uddi" + UUID.randomUUID().toString();
+                GetTModelDetail gtm = new GetTModelDetail();
+                gtm.setAuthInfo(authInfoJoe);
+                gtm.getTModelKey().add(madeupTmodel);
+                TModelDetail tModelDetail = null;
+                try {
+                        tModelDetail = inquiryJoe.getTModelDetail(gtm);
+                } catch (Exception ex) {
+                }
+                Assume.assumeTrue(tModelDetail == null);
+
+<<<<<<< HEAD
+                SaveBusiness sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoJoe);
+                BusinessEntity be = new BusinessEntity();
+                be.getName().add(new Name());
+                be.getName().get(0).setValue("Joe's JIRA_575_IDENT_Biz business");
+                //be.setBusinessServices(new BusinessServices());
+                be.setIdentifierBag(new IdentifierBag());
+                be.getIdentifierBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+                sb.getBusinessEntity().add(be);
+
+                try {
+                        BusinessDetail saveBusiness = publicationJoe.saveBusiness(sb);
+=======
+                SaveTModel stm = new SaveTModel();
+                stm.setAuthInfo(authInfoJoe);
+                TModel tm = new TModel();
+                tm.setName(new Name("JIRA_575_KR_TMODEL", null));
+                tm.setCategoryBag(new CategoryBag());
+                tm.getCategoryBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+                stm.getTModel().add(tm);
+                try {
+                        publicationJoe.saveTModel(stm);
+>>>>>>> refs/remotes/apache/master
+                        Assert.fail("unexpected success");
+                } catch (Exception ex) {
+                        logger.error(ex.getMessage());
+                }
+<<<<<<< HEAD
+
+        }
+
+        @Test
         public void JIRA_575_KR_TMODEL() throws Exception {
                 System.out.println("JIRA_575_KR_TMODEL");
+=======
+        }
+
+        @Test
+        public void JIRA_575_KRGRP_TMODEL() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                System.out.println("JIRA_575_KRGRP_TMODEL");
+>>>>>>> refs/remotes/apache/master
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
                 gtm.setAuthInfo(authInfoJoe);
@@ -1190,9 +1883,16 @@ public class UDDI_141_JIRAIntegrationTest {
                 SaveTModel stm = new SaveTModel();
                 stm.setAuthInfo(authInfoJoe);
                 TModel tm = new TModel();
+<<<<<<< HEAD
                 tm.setName(new Name("JIRA_575_KR_TMODEL", null));
                 tm.setCategoryBag(new CategoryBag());
                 tm.getCategoryBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+=======
+                tm.setName(new Name("JIRA_575_KRGRP_TMODEL", null));
+                tm.setCategoryBag(new CategoryBag());
+                tm.getCategoryBag().getKeyedReferenceGroup().add(new KeyedReferenceGroup());
+                tm.getCategoryBag().getKeyedReferenceGroup().get(0).setTModelKey(madeupTmodel);
+>>>>>>> refs/remotes/apache/master
                 stm.getTModel().add(tm);
                 try {
                         publicationJoe.saveTModel(stm);
@@ -1203,8 +1903,14 @@ public class UDDI_141_JIRAIntegrationTest {
         }
 
         @Test
+<<<<<<< HEAD
         public void JIRA_575_KRGRP_TMODEL() throws Exception {
                 System.out.println("JIRA_575_KRGRP_TMODEL");
+=======
+        public void JIRA_575_KRGRP_Biz() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                System.out.println("JIRA_575_KRGRP_Biz");
+>>>>>>> refs/remotes/apache/master
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
                 gtm.setAuthInfo(authInfoJoe);
@@ -1216,6 +1922,7 @@ public class UDDI_141_JIRAIntegrationTest {
                 }
                 Assume.assumeTrue(tModelDetail == null);
 
+<<<<<<< HEAD
                 SaveTModel stm = new SaveTModel();
                 stm.setAuthInfo(authInfoJoe);
                 TModel tm = new TModel();
@@ -1226,10 +1933,28 @@ public class UDDI_141_JIRAIntegrationTest {
                 stm.getTModel().add(tm);
                 try {
                         publicationJoe.saveTModel(stm);
+=======
+                SaveBusiness sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoJoe);
+                BusinessEntity be = new BusinessEntity();
+                be.getName().add(new Name());
+                be.getName().get(0).setValue("Joe's JIRA_575_KRGRP_Biz business");
+                // be.setBusinessServices(new BusinessServices());
+                be.setCategoryBag(new CategoryBag());
+                //be.getCategoryBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+                be.getCategoryBag().getKeyedReferenceGroup().add(new KeyedReferenceGroup());
+                be.getCategoryBag().getKeyedReferenceGroup().get(0).setTModelKey(madeupTmodel);
+
+                sb.getBusinessEntity().add(be);
+
+                try {
+                        BusinessDetail saveBusiness = publicationJoe.saveBusiness(sb);
+>>>>>>> refs/remotes/apache/master
                         Assert.fail("unexpected success");
                 } catch (Exception ex) {
                         logger.error(ex.getMessage());
                 }
+<<<<<<< HEAD
         }
 
         @Test
@@ -1271,6 +1996,14 @@ public class UDDI_141_JIRAIntegrationTest {
         @Test
         public void JIRA_575_KRGRP_PA() throws Exception {
                 System.out.println("JIRA_575_KRGRP_PA");
+=======
+
+        }
+
+        @Test
+        public void JIRA_575_KRGRP_PA() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                System.out.println("JIRA_575_KRGRP_PA");
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
                 gtm.setAuthInfo(authInfoJoe);
@@ -1281,7 +2014,6 @@ public class UDDI_141_JIRAIntegrationTest {
                 } catch (Exception ex) {
                 }
                 Assume.assumeTrue(tModelDetail == null);
-
 
                 tckTModelJoe.saveJoePublisherTmodel(authInfoJoe);
                 tckTModelSam.saveSamSyndicatorTmodel(authInfoSam);
@@ -1311,7 +2043,9 @@ public class UDDI_141_JIRAIntegrationTest {
 
         @Test
         public void JIRA_575_SVC_KR() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
                 System.out.println("JIRA_575_SVC_KR");
+>>>>>>> refs/remotes/apache/master
                 String madeupTmodel = "uddi" + UUID.randomUUID().toString();
                 GetTModelDetail gtm = new GetTModelDetail();
                 gtm.setAuthInfo(authInfoJoe);
@@ -1323,6 +2057,32 @@ public class UDDI_141_JIRAIntegrationTest {
                 }
                 Assume.assumeTrue(tModelDetail == null);
 
+<<<<<<< HEAD
+
+                tckTModelJoe.saveJoePublisherTmodel(authInfoJoe);
+                tckTModelSam.saveSamSyndicatorTmodel(authInfoSam);
+
+                tckBusinessJoe.saveJoePublisherBusiness(authInfoJoe);
+                tckBusinessSam.saveSamSyndicatorBusiness(authInfoSam);
+
+                AddPublisherAssertions apa = new AddPublisherAssertions();
+                apa.setAuthInfo(authInfoJoe);
+                PublisherAssertion pa = new PublisherAssertion();
+                pa.setKeyedReference(new KeyedReference(madeupTmodel, "name", "val"));
+                pa.setFromKey(TckBusiness.JOE_BUSINESS_KEY);
+                pa.setToKey(TckBusiness.SAM_BUSINESS_KEY);
+                apa.getPublisherAssertion().add(pa);
+                try {
+                        publicationJoe.addPublisherAssertions(apa);
+                        Assert.fail("unexpected success");
+                } catch (Exception ex) {
+                        logger.error(ex.getMessage());
+                } finally {
+                        tckBusinessJoe.deleteJoePublisherBusiness(authInfoJoe);
+                        tckBusinessSam.deleteSamSyndicatorBusiness(authInfoSam);
+                        tckTModelJoe.deleteJoePublisherTmodel(authInfoJoe);
+                        tckTModelSam.deleteSamSyndicatorTmodel(authInfoSam);
+=======
                 SaveBusiness sb = new SaveBusiness();
                 sb.setAuthInfo(authInfoJoe);
                 BusinessEntity be = new BusinessEntity();
@@ -1344,9 +2104,67 @@ public class UDDI_141_JIRAIntegrationTest {
                         Assert.fail("unexpected success");
                 } catch (Exception ex) {
                         logger.error(ex.getMessage());
+>>>>>>> refs/remotes/apache/master
                 }
         }
 
+        @Test
+<<<<<<< HEAD
+        public void JIRA_575_SVC_KR() throws Exception {
+                System.out.println("JIRA_575_SVC_KR");
+=======
+        public void JIRA_575_SVC_KRGRP() throws Exception {
+                Assume.assumeTrue(TckPublisher.isEnabled());
+                System.out.println("JIRA_575_SVC_KRGRP");
+>>>>>>> refs/remotes/apache/master
+                String madeupTmodel = "uddi" + UUID.randomUUID().toString();
+                GetTModelDetail gtm = new GetTModelDetail();
+                gtm.setAuthInfo(authInfoJoe);
+                gtm.getTModelKey().add(madeupTmodel);
+                TModelDetail tModelDetail = null;
+                try {
+                        tModelDetail = inquiryJoe.getTModelDetail(gtm);
+                } catch (Exception ex) {
+                }
+                Assume.assumeTrue(tModelDetail == null);
+
+                SaveBusiness sb = new SaveBusiness();
+                sb.setAuthInfo(authInfoJoe);
+                BusinessEntity be = new BusinessEntity();
+                be.getName().add(new Name());
+<<<<<<< HEAD
+                be.getName().get(0).setValue("Joe's JIRA_575_SVC_KR business");
+                be.setBusinessServices(new BusinessServices());
+                BusinessService bs = new BusinessService();
+                bs.getName().add(new Name());
+                bs.getName().get(0).setValue("Joe's JIRA_575_SVC_KR service");
+                //bs.setBindingTemplates(new BindingTemplates());
+                bs.setCategoryBag(new CategoryBag());
+                bs.getCategoryBag().getKeyedReference().add(new KeyedReference(madeupTmodel, "name", "val"));
+=======
+                be.getName().get(0).setValue("Joe's JIRA_575_SVC_KRGRP business");
+                be.setBusinessServices(new BusinessServices());
+                BusinessService bs = new BusinessService();
+                bs.getName().add(new Name());
+                bs.getName().get(0).setValue("Joe's JIRA_575_SVC_KRGRP service");
+                // bs.setBindingTemplates(new BindingTemplates());
+                bs.setCategoryBag(new CategoryBag());
+                bs.getCategoryBag().getKeyedReferenceGroup().add(new KeyedReferenceGroup());
+                bs.getCategoryBag().getKeyedReferenceGroup().get(0).setTModelKey(madeupTmodel);
+>>>>>>> refs/remotes/apache/master
+
+                be.getBusinessServices().getBusinessService().add(bs);
+                sb.getBusinessEntity().add(be);
+
+                try {
+                        BusinessDetail saveBusiness = publicationJoe.saveBusiness(sb);
+                        Assert.fail("unexpected success");
+                } catch (Exception ex) {
+                        logger.error(ex.getMessage());
+                }
+        }
+
+<<<<<<< HEAD
         @Test
         public void JIRA_575_SVC_KRGRP() throws Exception {
                 System.out.println("JIRA_575_SVC_KRGRP");
@@ -1390,11 +2208,30 @@ public class UDDI_141_JIRAIntegrationTest {
         //TODO tmodel tests
         //TODO create tests for enforcing ref integrity of tmodel keys, after enforcing this, the tests in this class will need to be heavily revised
         private void DeleteBusinesses(List<String> businesskeysToDelete, String authinfo, UDDIPublicationPortType pub) {
+=======
+        private void DeleteBusinesses(List<String> businesskeysToDelete, String authinfo, UDDIPublicationPortType pub) {
                 //cleanup
                 try {
                         DeleteBusiness db = new DeleteBusiness();
                         db.setAuthInfo(authinfo);
                         db.getBusinessKey().addAll(businesskeysToDelete);
+                        pub.deleteBusiness(db);
+                } catch (Exception ex) {
+                        ex.printStackTrace();
+                }
+        }
+
+        private void DeleteBusinesses(String businesskeysToDelete, String authinfo, UDDIPublicationPortType pub) {
+>>>>>>> refs/remotes/apache/master
+                //cleanup
+                try {
+                        DeleteBusiness db = new DeleteBusiness();
+                        db.setAuthInfo(authinfo);
+<<<<<<< HEAD
+                        db.getBusinessKey().addAll(businesskeysToDelete);
+=======
+                        db.getBusinessKey().add(businesskeysToDelete);
+>>>>>>> refs/remotes/apache/master
                         pub.deleteBusiness(db);
                 } catch (Exception ex) {
                         ex.printStackTrace();
@@ -1412,5 +2249,44 @@ public class UDDI_141_JIRAIntegrationTest {
                 } catch (Exception ex) {
                         ex.printStackTrace();
                 }
+<<<<<<< HEAD
         }
+=======
+        }
+
+        /**
+         * Each addressLine element MAY be adorned with two optional descriptive
+         * attributes, keyName and keyValue. Both attributes MUST be present in
+         * each address line if a tModelKey is specified in the address
+         * structure. When no tModelKey is provided for the address structure,
+         * the keyName and keyValue attributes have no defined meaning.
+         * http://uddi.org/pubs/uddi-v3.0.2-20041019.htm#_Toc515847027
+         */
+        @Test
+        public void JUDDI_849_AddressLineAttributeTest() throws Exception {
+                BusinessEntity be = new BusinessEntity();
+                be.setContacts(new Contacts());
+                Contact c = new Contact();
+                c.getPersonName().add(new PersonName("bob", null));
+                Address addr = new Address();
+                addr.setTModelKey("uddi:tmodelkey:address");
+                addr.getAddressLine().add(new AddressLine(null, null, "1313 mockingbird lane"));
+                c.getAddress().add(addr);
+                be.getContacts().getContact().add(c);
+                be.getName().add(new Name("test JUDDI849", null));
+                
+                SaveBusiness sb = new SaveBusiness();
+                sb.getBusinessEntity().add(be);
+                sb.setAuthInfo(authInfoJoe);
+                try {
+                        publicationJoe.saveBusiness(sb);
+                        Assert.fail("unexpected success");
+                } catch (Exception ex) {
+                        logger.info("Expected failure: " + ex.getMessage());
+                        logger.debug("Expected failure: " + ex.getMessage(), ex);
+                }
+
+        }
+
+>>>>>>> refs/remotes/apache/master
 }

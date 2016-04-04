@@ -14,8 +14,11 @@ package org.apache.juddi.v3.tck;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/apache/master
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +51,7 @@ public class TckSubscriptionListener {
         public static final String LISTENER_SMTP_SERVICE_EXTERNAL_XML = "uddi_data/subscriptionnotifier/listenerServiceSMTP-external.xml";
         public static final String LISTENER_RMI_SERVICE_XML = "uddi_data/subscriptionnotifier/listenerServiceRMI.xml";
         public static final String LISTENER_SERVICE_KEY = "uddi:uddi.joepublisher.com:listenerone";
+<<<<<<< HEAD
         /**
          * find service http note that the subscription1.xml contains the
          * binding template for the UDDI server to call back into
@@ -58,6 +62,18 @@ public class TckSubscriptionListener {
          * find business http note that the subscription1.xml contains the
          * binding template for the UDDI server to call back into
          */
+=======
+        /**
+         * find service http note that the subscription1.xml contains the
+         * binding template for the UDDI server to call back into
+         * "uddi_data/subscriptionnotifier/subscription1.xml"
+         */
+        public static final String SUBSCRIPTION_XML = "uddi_data/subscriptionnotifier/subscription1.xml";
+        /**
+         * find business http note that the subscription1.xml contains the
+         * binding template for the UDDI server to call back into
+         */
+>>>>>>> refs/remotes/apache/master
         public static final String SUBSCRIPTION2_XML = "uddi_data/subscriptionnotifier/subscription2.xml";
         /**
          * find business smtp
@@ -85,8 +101,13 @@ public class TckSubscriptionListener {
         private SaveService ss = null;
 
         public TckSubscriptionListener(
+<<<<<<< HEAD
                 UDDISubscriptionPortType subscription,
                 UDDIPublicationPortType publication) {
+=======
+             UDDISubscriptionPortType subscription,
+             UDDIPublicationPortType publication) {
+>>>>>>> refs/remotes/apache/master
                 super();
                 this.subscription = subscription;
                 this.publication = publication;
@@ -122,13 +143,26 @@ public class TckSubscriptionListener {
 
         }
 
+<<<<<<< HEAD
         public void saveService(String authInfo, String listenerService, Integer port, String hostname) {
+=======
+        /**
+         *
+         * @param authInfo
+         * @param listenerService
+         * @param port
+         * @param hostname
+         * @return the first binding key if it exists
+         */
+        public String saveService(String authInfo, String listenerService, Integer port, String hostname) {
+>>>>>>> refs/remotes/apache/master
                 try {
                         // First save the entity
                         ss = new SaveService();
                         ss.setAuthInfo(authInfo);
 
                         org.uddi.api_v3.BusinessService bsIn = (org.uddi.api_v3.BusinessService) EntityCreator.buildFromDoc(listenerService, "org.uddi.api_v3");
+<<<<<<< HEAD
                        // if (port > 0) {
                                 for (BindingTemplate btIn : bsIn.getBindingTemplates().getBindingTemplate()) {
                                         String value = btIn.getAccessPoint().getValue();
@@ -137,6 +171,16 @@ public class TckSubscriptionListener {
                                         btIn.getAccessPoint().setValue(value);
                                         logger.info("service " + bsIn.getServiceKey() + " access point " + btIn.getAccessPoint().getValue() + " key:" + btIn.getBindingKey());
                                 }
+=======
+                        // if (port > 0) {
+                        for (BindingTemplate btIn : bsIn.getBindingTemplates().getBindingTemplate()) {
+                                String value = btIn.getAccessPoint().getValue();
+                                value = value.replace("{randomPort}", port.toString());
+                                value = value.replace("{hostname}", hostname);
+                                btIn.getAccessPoint().setValue(value);
+                                logger.info("service " + bsIn.getServiceKey() + " access point " + btIn.getAccessPoint().getValue() + " key:" + btIn.getBindingKey());
+                        }
+>>>>>>> refs/remotes/apache/master
                         //}
                         ss.getBusinessService().add(bsIn);
                         ServiceDetail bsOut = publication.saveService(ss);
@@ -145,29 +189,58 @@ public class TckSubscriptionListener {
                         if (bsIn.getBindingTemplates() != null) {
                                 Assert.assertNotNull(bsOut.getBusinessService().get(0).getBindingTemplates());
                                 Assert.assertEquals(bsOut.getBusinessService().get(0).getBindingTemplates().getBindingTemplate().size(), bsIn.getBindingTemplates().getBindingTemplate().size());
+<<<<<<< HEAD
                                 for (int i=0; i < bsIn.getBindingTemplates().getBindingTemplate().size(); i++) {
                                         Assert.assertEquals(bsIn.getBindingTemplates().getBindingTemplate().get(i).getAccessPoint().getValue(), 
                                                 bsOut.getBusinessService().get(0).getBindingTemplates().getBindingTemplate().get(i).getAccessPoint().getValue());
                                         
+=======
+                                for (int i = 0; i < bsIn.getBindingTemplates().getBindingTemplate().size(); i++) {
+                                        Assert.assertEquals(bsIn.getBindingTemplates().getBindingTemplate().get(i).getAccessPoint().getValue(),
+                                             bsOut.getBusinessService().get(0).getBindingTemplates().getBindingTemplate().get(i).getAccessPoint().getValue());
+
+>>>>>>> refs/remotes/apache/master
                                 }
                         }
                         Assert.assertEquals(bsOut.getBusinessService().get(0).getServiceKey(), bsIn.getServiceKey());
                         logger.info("service " + bsIn.getServiceKey() + " saved");
+<<<<<<< HEAD
+=======
+                        if (bsOut.getBusinessService().get(0).getBindingTemplates() != null && !bsOut.getBusinessService().get(0).getBindingTemplates().getBindingTemplate().isEmpty()) {
+                                return bsOut.getBusinessService().get(0).getBindingTemplates().getBindingTemplate().get(0).getBindingKey();
+                        }
+>>>>>>> refs/remotes/apache/master
 
                 } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                         Assert.fail("No exception should be thrown.");
                 }
+<<<<<<< HEAD
         }
 
         public void saveNotifierSubscription(String authInfo, String subscriptionXML) {
                 saveSubscription(authInfo, subscriptionXML, SUBSCRIPTION_KEY);
+=======
+                return null;
+        }
+
+        /**
+         * returns subscription key
+         *
+         * @param authInfo
+         * @param subscriptionXML
+         * @return
+         */
+        public String saveNotifierSubscription(String authInfo, String subscriptionXML) {
+                return saveSubscription(authInfo, subscriptionXML, SUBSCRIPTION_KEY);
+>>>>>>> refs/remotes/apache/master
         }
 
         public void deleteNotifierSubscription(String authInfo, String subscriptionKey) {
                 deleteSubscription(authInfo, subscriptionKey);
         }
 
+<<<<<<< HEAD
         public void saveSubscription(String authInfo, String subscriptionXML, String subscriptionKey) {
                 saveSubscription(authInfo, subscriptionXML, subscriptionKey, null);
         }
@@ -176,6 +249,22 @@ public class TckSubscriptionListener {
                 try {
                         logger.info("saving subscription " + subscriptionKey + " " + subscriptionXML + " " + bindingkey);
                         Subscription subIn = (Subscription) EntityCreator.buildFromDoc(subscriptionXML, "org.uddi.sub_v3");
+=======
+        /**
+         * returns subscription key
+         *
+         * @param authInfo
+         * @param subscriptionXML
+         * @param subscriptionKey
+         * @return
+         */
+        public String saveSubscription(String authInfo, String subscriptionXML, String subscriptionKey) {
+                try {
+                        Subscription subIn = (Subscription) EntityCreator.buildFromDoc(subscriptionXML, "org.uddi.sub_v3");
+                        logger.info("saving subscription " + subscriptionKey + " " + subscriptionXML + " " + subIn.getBindingKey());
+                        if (subscriptionKey!=null && !subscriptionKey.equalsIgnoreCase(subIn.getSubscriptionKey()))
+                                logger.warn("subscription key mismatch");
+>>>>>>> refs/remotes/apache/master
                         List<Subscription> subscriptionList = new ArrayList<Subscription>();
                         subscriptionList.add(subIn);
                         Holder<List<Subscription>> subscriptionHolder = new Holder<List<Subscription>>();
@@ -190,12 +279,19 @@ public class TckSubscriptionListener {
                         Assert.assertNotNull(outSubscriptionList);
                         Subscription subOut = outSubscriptionList.get(0);
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/apache/master
                         Assert.assertEquals(subDirectOut.getExpiresAfter().getMonth(), subOut.getExpiresAfter().getMonth());
                         Assert.assertEquals(subDirectOut.getExpiresAfter().getDay(), subOut.getExpiresAfter().getDay());
                         Assert.assertEquals(subDirectOut.getExpiresAfter().getYear(), subOut.getExpiresAfter().getYear());
 
+<<<<<<< HEAD
+=======
+                        return subDirectOut.getSubscriptionKey();
+>>>>>>> refs/remotes/apache/master
                         //assertEquals(subIn.getSubscriptionFilter().getFindService().getName().get(0).getValue(), 
                         //			 subOut.getSubscriptionFilter().getFindService().getName().get(0).getValue());
 
@@ -203,6 +299,10 @@ public class TckSubscriptionListener {
                         logger.error(e.getMessage(), e);
                         Assert.fail("No exception should be thrown");
                 }
+<<<<<<< HEAD
+=======
+                return null;
+>>>>>>> refs/remotes/apache/master
         }
 
         public void deleteSubscription(String authInfo, String subscriptionKey) {
@@ -218,4 +318,8 @@ public class TckSubscriptionListener {
                         Assert.fail("No exception should be thrown.");
                 }
         }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> refs/remotes/apache/master

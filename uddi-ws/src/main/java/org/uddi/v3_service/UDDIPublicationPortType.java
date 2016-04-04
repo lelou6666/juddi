@@ -680,7 +680,7 @@ import org.uddi.api_v3.TModelDetail;
  * reasserted to be removed from the registry.</p>
  *
  */
-@WebService(name = "UDDI_Publication_PortType", targetNamespace = "urn:uddi-org:v3_service")
+@WebService(name = "UDDI_Publication_PortType", targetNamespace = "urn:uddi-org:api_v3_portType")
 @XmlSeeAlso({
     org.uddi.custody_v3.ObjectFactory.class,
     org.uddi.repl_v3.ObjectFactory.class,
@@ -2348,7 +2348,8 @@ node, it is necessary to track a modified date for publisherAssertion elements
 so that nodes have the necessary information for responding to subscription
 requests involving find_relatedBusinesses and get_assertionStatusReport
 filters.</p>
-* @return  <p class="MsoBodyText">Upon successful completion, a publisherAssertions
+<Br>
+* <p class="MsoBodyText">Upon successful completion, a publisherAssertions
 structure is returned containing all of the relationship assertions currently
 attributed to the publisher.&nbsp; When registries distinguish between publishers,
 the structure contains assertion data that is associated with the authInfo
@@ -2387,4 +2388,3 @@ clearly indicate which assertion caused the error.</p>
             @WebParam(name = "publisherAssertion", targetNamespace = "urn:uddi-org:api_v3", mode = WebParam.Mode.INOUT) Holder<List<PublisherAssertion>> publisherAssertion)
             throws DispositionReportFaultMessage, RemoteException;
 }
-

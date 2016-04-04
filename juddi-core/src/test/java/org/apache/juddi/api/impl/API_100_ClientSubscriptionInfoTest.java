@@ -148,7 +148,14 @@ public class API_100_ClientSubscriptionInfoTest {
 			//getDetail.getClientSubscriptionKey().add("mykey");
 			List<String>keys = new ArrayList<String>();
                         keys.add("mykey");
+<<<<<<< HEAD
 			ClientSubscriptionInfoDetail detail2 = publisher.getClientSubscriptionInfoDetail(authInfoJoe,keys);
+=======
+                        GetClientSubscriptionInfoDetail req = new GetClientSubscriptionInfoDetail();
+                        req.setAuthInfo(authInfoJoe);
+                        req.getClientSubscriptionKey().addAll(keys);
+			ClientSubscriptionInfoDetail detail2 = publisher.getClientSubscriptionInfoDetail(req);
+>>>>>>> refs/remotes/apache/master
 			Assert.assertEquals("mykey", detail2.getClientSubscriptionInfo().get(0).getSubscriptionKey());
 	
 			DeleteClientSubscriptionInfo deleteInfo = new DeleteClientSubscriptionInfo();
@@ -158,7 +165,12 @@ public class API_100_ClientSubscriptionInfoTest {
 			
 			try {
 				@SuppressWarnings("unused")
+<<<<<<< HEAD
 				ClientSubscriptionInfoDetail detail3 = publisher.getClientSubscriptionInfoDetail(authInfoJoe, keys);
+=======
+                                        
+				ClientSubscriptionInfoDetail detail3 = publisher.getClientSubscriptionInfoDetail(req);
+>>>>>>> refs/remotes/apache/master
 				Assert.fail("We're expecting an InvalidKeyPassedException");
 			} catch (Exception e) {
 				Assert.assertEquals(InvalidKeyPassedException.class, e.getClass());

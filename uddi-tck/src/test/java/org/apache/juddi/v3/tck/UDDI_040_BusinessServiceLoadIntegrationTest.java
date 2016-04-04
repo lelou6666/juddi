@@ -31,6 +31,10 @@ public class UDDI_040_BusinessServiceLoadIntegrationTest extends UDDI_040_Busine
 	int numberOfServices=1100;
 	@Test @Override
 	public void joepublisher() throws Exception{
+<<<<<<< HEAD
+=======
+          Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 logger.info("UDDI_040_BusinessServiceLoadIntegrationTest joepublisher Servoce Load test " + numberOfServices);
                 Assume.assumeTrue(TckPublisher.isLoadTest());
                 numberOfServices = TckPublisher.getMaxLoadServices();
@@ -63,6 +67,10 @@ public class UDDI_040_BusinessServiceLoadIntegrationTest extends UDDI_040_Busine
 	
 	@Test @Override
 	public void samsyndicator() throws Exception {
+<<<<<<< HEAD
+=======
+          Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isLoadTest());
                 logger.info("UDDI_040_BusinessServiceLoadIntegrationTest samsyndicator Servoce Load test " + numberOfServices);
                 numberOfServices = TckPublisher.getMaxLoadServices();

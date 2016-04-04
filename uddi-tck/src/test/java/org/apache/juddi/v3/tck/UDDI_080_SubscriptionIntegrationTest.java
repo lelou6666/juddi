@@ -87,6 +87,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
 
         @AfterClass
         public static void stopManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 tckTModelJoe.deleteCreatedTModels(authInfoJoe);
                 tckTModelSam.deleteCreatedTModels(authInfoSam);
                 manager.stop();
@@ -94,12 +98,20 @@ public class UDDI_080_SubscriptionIntegrationTest {
 
         @BeforeClass
         public static void startManager() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 manager = new UDDIClient();
                 manager.start();
 
                 logger.debug("Getting auth tokens..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(), TckPublisher.getJoePassword());
                         authInfoSam = TckSecurity.getAuthToken(security, TckPublisher.getSamPublisherId(), TckPublisher.getSamPassword());
@@ -121,10 +133,17 @@ public class UDDI_080_SubscriptionIntegrationTest {
                         tckBusinessServiceJoe = new TckBusinessService(publicationJoe, inquiry);
                         tckBindingTemplateJoe = new TckBindingTemplate(publicationJoe, inquiry);
                         subscriptionJoe = subscription;
+<<<<<<< HEAD
                         tckSubscriptionJoe = new TckSubscription(subscription);
 
 
                         transport = manager.getTransport();
+=======
+                        tckSubscriptionJoe = new TckSubscription(subscription, security, inquiry);
+
+
+                        transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         publicationSam = transport.getUDDIPublishService();
                         inquiry = transport.getUDDIInquiryService();
                         subscription = transport.getUDDISubscriptionService();
@@ -137,11 +156,19 @@ public class UDDI_080_SubscriptionIntegrationTest {
                         tckBusinessSam = new TckBusiness(publicationSam, inquiry);
                         tckBusinessServiceSam = new TckBusinessService(publicationSam, inquiry);
                         //tckBindingTemplateSam = new TckBindingTemplate(publicationSam, inquiry);
+<<<<<<< HEAD
                         tckSubscriptionSam = new TckSubscription(subscription);
 
 
                         String authInfoUDDI = TckSecurity.getAuthToken(security, TckPublisher.getUDDIPublisherId(), TckPublisher.getUDDIPassword());
                         transport = manager.getTransport();
+=======
+                        tckSubscriptionSam = new TckSubscription(subscription, security, inquiry);
+
+
+                        String authInfoUDDI = TckSecurity.getAuthToken(security, TckPublisher.getUDDIPublisherId(), TckPublisher.getUDDIPassword());
+                        transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
                         UDDIPublicationPortType publication = transport.getUDDIPublishService();
                         inquiry = transport.getUDDIInquiryService();
 
@@ -158,6 +185,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
                         logger.error(e.getMessage(), e);
                         Assert.fail("Could not obtain authInfo token.");
                 }
+<<<<<<< HEAD
+=======
+                JUDDI_300_MultiNodeIntegrationTest.testSetupReplicationConfig();
+>>>>>>> refs/remotes/apache/master
         }
         static final String TRANS = "The transaction has been rolled back";
         static final String MISSING_RESOURCE = "Can't find resource for bundle";
@@ -179,6 +210,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
 
         @Test
         public void joePublisher() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 try {
                         TckCommon.removeAllExistingSubscriptions(authInfoJoe, subscriptionJoe);
@@ -199,6 +234,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
 
         @Test
         public void samSyndicator() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 try {
                         tckTModelSam.saveSamSyndicatorTmodel(authInfoSam);
@@ -217,6 +256,11 @@ public class UDDI_080_SubscriptionIntegrationTest {
 
         @Test
         public void samSyndicatorWithChunkingOnFind() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+             
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 try {
                         tckTModelSam.saveSamSyndicatorTmodel(authInfoSam);
@@ -235,6 +279,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
 
         @Test
         public void samSyndicatorWithChunkingOnGet() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 try {
                         tckTModelSam.saveSamSyndicatorTmodel(authInfoSam);
@@ -256,6 +304,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_1() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_1");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 // Null expiration time
@@ -290,6 +342,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_2() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_2");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 // invalid expiration time
@@ -327,6 +383,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_3() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_3");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 //
@@ -360,6 +420,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_4() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_4");
                 //
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
@@ -388,6 +452,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_5() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_5");
                 //
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
@@ -417,6 +485,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_6() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_6");
                 //
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
@@ -452,6 +524,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_7() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_7");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 //
@@ -492,6 +568,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_8() {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_8");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 //
@@ -539,6 +619,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_9() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_9");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 //
@@ -576,6 +660,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_10() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_10");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 //
@@ -622,6 +710,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_11() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_11");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
 
@@ -683,6 +775,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_12() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_12");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
                 //
@@ -747,6 +843,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_13() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_13");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
 
@@ -814,6 +914,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_14() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_14");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
 
@@ -884,6 +988,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_15() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_15");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
 
@@ -972,6 +1080,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_16() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_16");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
 
@@ -1070,6 +1182,10 @@ public class UDDI_080_SubscriptionIntegrationTest {
          */
         @Test
         public void JUDDI_606_17() throws DatatypeConfigurationException {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 System.out.println("JUDDI_606_17");
                 Assume.assumeTrue(TckPublisher.isSubscriptionEnabled());
 

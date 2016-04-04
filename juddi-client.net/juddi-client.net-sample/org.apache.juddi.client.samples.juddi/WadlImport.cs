@@ -37,7 +37,6 @@ namespace org.apache.juddi.client.sample
             try
             {
                 clerkManager = new UDDIClient("uddi.xml");
-                UDDIClientContainer.addClient(clerkManager);
 
                 transport = clerkManager.getTransport("default_non_root");
 
@@ -50,7 +49,7 @@ namespace org.apache.juddi.client.sample
                 //Wadl Import example
 
 
-                application app = WADL2UDDI.ParseWadl("sample.wadl");
+                application app = WADL2UDDI.ParseWadl("..\\..\\..\\juddi-client.net.test\\resources\\sample.wadl");
                 List<Uri> urls = WADL2UDDI.GetBaseAddresses(app);
                 Uri url = urls[0];
                 String domain = url.Host;

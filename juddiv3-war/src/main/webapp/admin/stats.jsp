@@ -2,9 +2,32 @@
     Document   : index
     Created on : Feb 23, 2013, 2:05:35 PM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 --%>
 
 
+<%@page import="java.util.Map.Entry"%>
+<%@page import="javax.persistence.EntityTransaction"%>
+<%@page import="org.uddi.api_v3.BusinessEntity"%>
+<%@page import="org.apache.juddi.config.Property"%> 
+<%@page import="org.apache.juddi.config.AppConfig"%>
+<%@page import="javax.persistence.EntityManager"%>
+<%@page import="org.apache.juddi.config.PersistenceManager"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.apache.juddi.servlets.RegistryServlet"%>
 <%@page import="java.util.SortedSet"%>
@@ -166,7 +189,7 @@
 
     <!-- Main hero unit for a primary marketing message or call to action -->
     <div class="well">
-        <h1>Status and Statistics</h1>
+        <h1><%=ResourceLoader.GetResource(session, "pages.home.stats")%></h1>
 
     </div>
 
@@ -185,15 +208,15 @@
 
 
             <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
-                <li class="active"><a href="#status"  data-toggle="tab">Status</a></li>
-                <li><a href="#stats"  data-toggle="tab">Statistics</a></li>
+                <li class="active"><a href="#status"  data-toggle="tab"><%=ResourceLoader.GetResource(session, "items.status")%></a></li>
+                <li><a href="#stats"  data-toggle="tab"><%=ResourceLoader.GetResource(session, "items.statistics")%></a></li>
 
             </ul>
 
             <div class="tab-content">
                 <div class="tab-pane active" id="status">
 
-                    <h3>Happy jUDDI!</h3>
+                    <h3><%=ResourceLoader.GetResource(session, "items.happyjuddi")%></h3>
 
                     <h4>jUDDI Version Information</h4>
 
@@ -265,83 +288,29 @@
 
                     <h4>jUDDI DataSource Validation</h4>
                     <pre><%
-                        String dsname = null;
-                        Context ctx = null;
-                        DataSource ds = null;
-                        Connection conn = null;
-                        String sql = "SELECT COUNT(*) FROM PUBLISHER";
-
+                        boolean success=false;
+                        EntityManager em=  PersistenceManager.getEntityManager();
+                        EntityTransaction tx= em.getTransaction();
                         try {
-                            dsname = request.getParameter("dsname");
-                            
-                            if ((dsname == null) || (dsname.trim().length() == 0)) {
-                                dsname = "java:comp/env/jdbc/juddiDB";
-                            } else {
-                                dsname = StringEscapeUtils.escapeXml(dsname);
-                            }
-
-                            ctx = new InitialContext();
-                            if (ctx == null) {
-                                throw new Exception("No Context");
-                            }
-
-                            out.print("<font color=\"green\">");
-                            out.print("+ Got a JNDI Context!");
-                            out.println("</font>");
+                               tx.begin();
+                                String rootBusiness = AppConfig.getConfiguration().getString(Property.JUDDI_NODE_ROOT_BUSINESS);
+                               org.apache.juddi.model.BusinessEntity biz= em.find(org.apache.juddi.model.BusinessEntity.class, rootBusiness);
+                               if (biz!=null)
+                                       success=true;
+                               tx.commit();
                         } catch (Exception ex) {
                             out.print("<font color=\"red\">");
-                            out.print("- No JNDI Context (" + ex.getMessage() + ")");
+                            out.print("- Root business lookup failed <i class=\"icon-thumbs-down icon-2x\"> (" + ex.getMessage() + ") ");
                             out.println("</font>");
                         }
-
-                        try {
-                            Context envContext  = (Context)ctx.lookup("java:/comp/env");
-                            ds = (DataSource)envContext.lookup("jdbc/juddiDB");
-                            
-                            if (ds == null) {
-                                throw new Exception("No Context");
-                            }
-
-                            out.print("<font color=\"green\">");
-                            out.print("+ Got a JDBC DataSource (dsname=" + dsname + ")");
-                            out.println("</font>");
-                        } catch (Exception ex) {
-                            out.print("<font color=\"red\">");
-                            out.print("- No '" + dsname + "' DataSource Located(" + ex.getMessage() + ")");
-                            out.println("</font>");
+                        finally{
+                                if (tx.isActive())
+                                        tx.rollback();
+                                em.close();
                         }
 
-                        try {
-                            conn = ds.getConnection();
-                            if (conn == null) {
-                                throw new Exception("No Connection (conn=null)");
-                            }
-
-                            out.print("<font color=\"green\">");
-                            out.print("+ Got a JDBC Connection!");
-                            out.println("</font>");
-                        } catch (Exception ex) {
-                            out.print("<font color=\"red\">");
-                            out.print("- DB connection was not acquired. (" + ex.getMessage() + ")");
-                            out.println("</font>");
-                        }
-
-                        try {
-                            Statement stmt = conn.createStatement();
-                            ResultSet rs = stmt.executeQuery(sql);
-
-                            out.print("<font color=\"green\">");
-                            out.print("+ " + sql + " = ");
-                            if (rs.next()) {
-                                out.print(rs.getString(1));
-                            }
-                            out.println("</font>");
-
-                            conn.close();
-                        } catch (Exception ex) {
-                            out.print("<font color=\"red\">");
-                            out.print("- " + sql + " failed (" + ex.getMessage() + ")");
-                            out.println("</font>");
+                        if (success){
+                                out.write("<font color=\"green\">Data source is valid and online! <i class=\"icon-thumbs-up icon-2x\"></i></font><br>");
                         }
                         %></pre>
 
@@ -350,10 +319,11 @@
                     <pre><%
                         try {
                             Properties sysProps = System.getProperties();
-                            SortedSet sortedProperties = new TreeSet(sysProps.keySet());
-                            for (Iterator keys = sortedProperties.iterator(); keys.hasNext();) {
-                                String key = (String) keys.next();
-                                out.println("<b>" + key + "</b>: " + sysProps.getProperty(key));
+                            Iterator<Entry<Object,Object>> it = sysProps.entrySet().iterator();
+                            while (it.hasNext()){
+                                    Entry<Object,Object> x = it.next();
+                                    
+                                out.println("<b>" + StringEscapeUtils.escapeHtml((String)x.getKey()) + "</b>: " + StringEscapeUtils.escapeHtml((String)x.getValue()) + "<br>");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

@@ -16,14 +16,12 @@
  */
 package org.apache.juddi.api_v3;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.w3._2000._09.xmldsig_.SignatureType;
 
@@ -40,8 +38,13 @@ import org.w3._2000._09.xmldsig_.SignatureType;
  *       &lt;sequence>
  *         &lt;element name="publisherName" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="emailAddress" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+<<<<<<< HEAD
  *         &lt;element name="isAdmin" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="isEnabled" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+=======
+ *         &lt;element name="isAdmin" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="isEnabled" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+>>>>>>> refs/remotes/apache/master
  *         &lt;element name="maxBindingsPerService" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="maxBusinesses" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="maxServicePerBusiness" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
@@ -68,16 +71,20 @@ import org.w3._2000._09.xmldsig_.SignatureType;
     "maxTModels",
     "signature"
 })
+<<<<<<< HEAD
 public class Publisher implements Serializable{
 
 @XmlTransient
 	private static final long serialVersionUID = 9145476126076932380L;
+=======
+public class Publisher {
+>>>>>>> refs/remotes/apache/master
 
     @XmlElement(required = true)
     protected String publisherName;
     protected String emailAddress;
-    protected String isAdmin;
-    protected String isEnabled;
+    protected Boolean isAdmin;
+    protected Boolean isEnabled;
     protected Integer maxBindingsPerService;
     protected Integer maxBusinesses;
     protected Integer maxServicePerBusiness;
@@ -143,7 +150,11 @@ public class Publisher implements Serializable{
      *     {@link String }
      *     
      */
+<<<<<<< HEAD
     public String getIsAdmin() {
+=======
+    public Boolean isIsAdmin() {
+>>>>>>> refs/remotes/apache/master
         return isAdmin;
     }
 
@@ -155,7 +166,11 @@ public class Publisher implements Serializable{
      *     {@link String }
      *     
      */
+<<<<<<< HEAD
     public void setIsAdmin(String value) {
+=======
+    public void setIsAdmin(Boolean value) {
+>>>>>>> refs/remotes/apache/master
         this.isAdmin = value;
     }
 
@@ -167,7 +182,11 @@ public class Publisher implements Serializable{
      *     {@link String }
      *     
      */
+<<<<<<< HEAD
     public String getIsEnabled() {
+=======
+    public Boolean isIsEnabled() {
+>>>>>>> refs/remotes/apache/master
         return isEnabled;
     }
 
@@ -179,7 +198,11 @@ public class Publisher implements Serializable{
      *     {@link String }
      *     
      */
+<<<<<<< HEAD
     public void setIsEnabled(String value) {
+=======
+    public void setIsEnabled(Boolean value) {
+>>>>>>> refs/remotes/apache/master
         this.isEnabled = value;
     }
 

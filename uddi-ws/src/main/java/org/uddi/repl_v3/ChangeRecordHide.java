@@ -30,6 +30,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
+ * A changeRecordHide element corresponds to the behavior of hiding a tModel described in the delete_tModel in the Publish API section of this Specification.  A tModel listed in a changeRecordHide should be marked as hidden, so that it is not returned in response to a find_tModel API call.
+
+The changeRecordHide MUST contain a modified timestamp to allow multi-node registries to calculate consistent modifiedIncludingChildren timestamps as described in Section 3.8 operationalInfo Structure.
  * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -58,7 +61,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class ChangeRecordHide implements Serializable{
 	@XmlTransient
 	private static final long serialVersionUID = 161128451954472777L;
-	@XmlElement(namespace = "urn:uddi-org:api_v3", required = true)
+	@XmlElement(namespace = "urn:uddi-org:repl_v3", required = true)
     protected String tModelKey;
     @XmlElement(required = true)
     protected XMLGregorianCalendar modified;
@@ -112,4 +115,3 @@ public class ChangeRecordHide implements Serializable{
     }
 
 }
-

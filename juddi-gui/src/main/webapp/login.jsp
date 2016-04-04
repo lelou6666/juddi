@@ -2,6 +2,21 @@
     Document   : login
     Created on : Feb 24, 2013, 9:08:02 AM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 --%>
 
 <%@page import="org.apache.juddi.webconsole.hub.UddiHub"%>
@@ -22,7 +37,7 @@
     </script>
     <a class="btn" title="<%=ResourceLoader.GetResource(session, "navbar.login.logout")%>" href="javascript:logout();">
         <%
-                if (!request.isSecure() && UddiHub.getInstance(application, session).isSecure()) {
+                if (!request.isSecure() ||  !UddiHub.getInstance(application, session).isSecure()) {
             %>
             <i class="icon-warning-sign" title="<%=ResourceLoader.GetResource(session, "warning.ssl")%>"></i>
             <%
@@ -58,3 +73,21 @@
 
 
 </div>
+
+        
+<div class="modal hide fade container" id="loginfailure">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3><%=ResourceLoader.GetResource(session, "errors.generic")%></h3>
+    </div>
+    <div class="modal-body">
+            <i class="icon-4x icon-thumbs-down"></i><br>
+            <div id="loginfailuredetails"></div>
+    </div>
+    <div class="modal-footer">
+
+        <button type="button" class="btn" data-dismiss="modal" ><%=ResourceLoader.GetResource(session, "modal.close")%></button>
+    </div>
+</div>
+
+    

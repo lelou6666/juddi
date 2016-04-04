@@ -23,6 +23,7 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,17 +58,20 @@ import org.apache.commons.configuration.ConfigurationException;
  * This authenticator assumes that the publisher username is the same as the LDAP 
  * principal name, which may not be the case as the LDAP principal might be a bind name.
  * This class could easily be extended so that the uid of the LDAP authenticated user is
- * used, or to authenticate by group.
+ * used, or to authenticate by group.<br><br>
  *
- * This class was tested with OpenLDAP.
+ * This class was tested with OpenLDAP.<br>
+ * <br> See properties:
+ *  {@link org.apache.juddi.config.Property#JUDDI_AUTHENTICATOR_INITIAL_CONTEXT JUDDI_AUTHENTICATOR_INITIAL_CONTEXT}
+ *  {@link org.apache.juddi.config.Property#JUDDI_AUTHENTICATOR_STYLE JUDDI_AUTHENTICATOR_STYLE}
  *
  * @author <a href="mailto:tcunning@apache.org">Tom Cunningham</a>
  * @author <a href="mailto:gunnlaugursig@gmail.com">Gunnlaugur Sigurðsson</a>
  * @author <a href="mailto:alexoree@apache.org">Alex O'Ree</a>
  * 
- * 
  * @since 3.2, all values are now configurable
- * @see Property.JUDDI_AUTHENTICATOR_INITIAL_CONTEXT, JUDDI_AUTHENTICATOR_STYLE
+ * @see Property
+ * 
  */
 public class LdapSimpleAuthenticator implements Authenticator {
     private Log logger = LogFactory.getLog(this.getClass());
@@ -166,7 +170,7 @@ public class LdapSimpleAuthenticator implements Authenticator {
                 tx.begin();
                 Publisher publisher = em.find(Publisher.class, authorizedName);
                 if (publisher == null) {
-                    logger.warn("Publisher was not found, adding the publisher in on the fly.");
+                    logger.warn("Publisher was not found in the database, adding the publisher in on the fly.");
                     publisher = new Publisher();
                     publisher.setAuthorizedName(authorizedName);
                     publisher.setIsAdmin("false");
@@ -191,7 +195,7 @@ public class LdapSimpleAuthenticator implements Authenticator {
         return authorizedName;
     }
 
-    public UddiEntityPublisher identify(String authInfo, String authorizedName) throws AuthenticationException, FatalErrorException {
+    public UddiEntityPublisher identify(String authInfo, String authorizedName, WebServiceContext ctx) throws AuthenticationException, FatalErrorException {
         EntityManager em = PersistenceManager.getEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {

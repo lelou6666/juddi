@@ -1,4 +1,21 @@
-﻿using net.java.dev.wadl;
+﻿    /*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+ using net.java.dev.wadl;
+using org.apache.juddi.client.org.apache.juddi.v3.client.mapping;
 using org.apache.juddi.v3.client.config;
 using org.apache.juddi.v3.client.log;
 using org.uddi.apiv3;
@@ -13,6 +30,62 @@ using System.Xml.Serialization;
 
 namespace org.apache.juddi.v3.client.mapping
 {
+    /// <summary>
+    /// 
+    /// This class converts a WADL document, web application description language into a
+    /// structure that more or less works within the UDDI data structures.<br><br>
+    /// <h1>Example Usage Scenario</h1>
+    /// <pre>
+    /// Application app = WADL2UDDI.parseWadl(new File("A path to your file.wadl"));
+    /// List<URL> urls = WADL2UDDI.getBaseAddresses(app);
+    /// URL url = urls.get(0);
+    /// String domain = url.getHost();
+    /// TModel keygen = UDDIClerk.createKeyGenator("uddi:" + domain + ":keygenerator", domain, "en");
+    /// //save the keygen
+    /// SaveTModel stm = new SaveTModel();
+    /// stm.setAuthInfo(rootAuthToken.getAuthInfo());
+    /// stm.getTModel().add(keygen);
+    /// properties.put("keyDomain", domain);
+    /// properties.put("businessName", domain);
+    /// properties.put("serverName", url.getHost());
+    /// properties.put("serverPort", url.getPort());
+    /// WADL2UDDI wadl2UDDI = new WADL2UDDI(null, new URLLocalizerDefaultImpl(), properties);
+    /// BusinessService businessServices = wadl2UDDI.createBusinessService(new QName("MyWasdl.namespace", "Servicename"), app);
+    /// Set<TModel> portTypeTModels = wadl2UDDI.createWADLPortTypeTModels(wsdlURL, app);
+    /// //Since the service depends on the tModel, we have to save the tModels first
+    /// SaveTModel tms = new SaveTModel();
+    /// TModel[] tmodels = portTypeTModels.toArray(new TModel[0]);
+    /// for (int i = 0; i < tmodels.length; i++) {
+    /// System.out.println(tmodelPrinter.print(tmodels[i]));
+    /// tms.getTModel().add(tmodels[i]);
+    /// }
+    /// //important, you'll need to save your new tModels, or else saving the business/service may fail
+    /// publish.saveTModel(stm);
+    /// //finaly, we're ready to save all of the services defined in the WSDL
+    /// //again, we're creating a new business, if you have one already, look it up using the Inquiry getBusinessDetails
+    /// PrintUDDI<BusinessService> servicePrinter = new PrintUDDI<BusinessService>();
+    /// System.out.println(servicePrinter.print(businessServices));
+    /// SaveBusiness sb = new SaveBusiness();
+    /// sb.setAuthInfo(rootAuthToken.getAuthInfo());
+    /// BusinessEntity be = new BusinessEntity();
+    /// be.setBusinessKey(businessServices.getBusinessKey());
+    /// be.getName().add(new Name());
+    /// //TODO, use some relevant here
+    /// be.getName().get(0).setValue(domain);
+    /// be.getName().get(0).setLang("en");
+    /// be.setBusinessServices(new BusinessServices());
+    /// be.getBusinessServices().getBusinessService().add(businessServices);
+    /// sb.getBusinessEntity().add(be);
+    /// PrintUDDI<SaveBusiness> sbp = new PrintUDDI<SaveBusiness>();
+    /// System.out.println("Request " + sbp.print(sb));
+    /// publish.saveBusiness(sb);
+    /// //and we're done
+    /// //Be sure to report any problems to the jUDDI JIRA bug tracker at
+    /// //https://issues.apache.org/jira/browse/JUDDI
+    /// </pre>
+    /// 
+    /// @author <a href="mailto:alexoree@apache.org">Alex O'Ree</a>
+
     public class WADL2UDDI
     {
         private static Log log = LogFactory.getLog(typeof(WADL2UDDI));
@@ -132,60 +205,41 @@ namespace org.apache.juddi.v3.client.mapping
             String serviceDescription = properties.getProperty(Property.SERVICE_DESCRIPTION, Property.DEFAULT_SERVICE_DESCRIPTION);
             // Override with the service description from the WSDL if present
             bool lengthwarn = false;
+            List<description> ds = new List<description>();
             if (wadlDefinition.doc != null)
             {
 
                 for (int i = 0; i < wadlDefinition.doc.Length; i++)
                 {
+                    
+                    String locallang = lang;
                     description description = new description();
                     if (wadlDefinition.doc[i].lang != null)
                     {
-                        description.lang = (wadlDefinition.doc[i].lang);
+                        locallang = (wadlDefinition.doc[i].lang);
                     }
-                    else
-                    {
-                        description.lang = (lang);
-                    }
-                    if (description.lang != null && description.lang.Length > UDDIConstants.MAX_xml_lang_length)
+
+
+                    if (locallang.Length > UDDIConstants.MAX_xml_lang_length)
                     {
                         lengthwarn = true;
-                        description.lang = (description.lang.Substring(0, UDDIConstants.MAX_xml_lang_length - 1));
+                        locallang = (locallang.Substring(0, UDDIConstants.MAX_xml_lang_length - 1));
                     }
 
                     StringBuilder sb = new StringBuilder();
                     sb.Append(wadlDefinition.doc[i].title).Append(" ");
                     sb.Append(ContentToString(wadlDefinition.doc[i].Any));
 
-                    description.Value = (wadlDefinition.doc[i].title);
-                    if (description.Value != null && description.Value.Length > UDDIConstants.MAX_description_length)
-                    {
-                        lengthwarn = true;
-                        description.Value = (description.Value.Substring(0, UDDIConstants.MAX_description_length - 1));
-                    }
+                    ds.AddRange(Common2UDDI.mapdescription(sb.ToString(), locallang));
 
                 }
             }
             else
             {
-
-                description description = new description();
-                description.lang = (lang);
-                if (description.lang != null && description.lang.Length > UDDIConstants.MAX_xml_lang_length)
-                {
-                    lengthwarn = true;
-                    description.lang = (description.lang.Substring(0, UDDIConstants.MAX_xml_lang_length - 1));
-                }
-                description.Value = (serviceDescription);
-                if (service.description == null)
-                    service.description = new uddi.apiv3.description[] { description };
-
-                if (description.Value != null && description.Value.Length > UDDIConstants.MAX_description_length)
-                {
-                    lengthwarn = true;
-                    description.Value = (description.Value.Substring(0, UDDIConstants.MAX_description_length - 1));
-                }
+                ds.AddRange(Common2UDDI.mapdescription(serviceDescription, lang));
+                
             }
-
+            service.description = ds.ToArray();
 
 
             // Service name
@@ -282,7 +336,7 @@ namespace org.apache.juddi.v3.client.mapping
             bindingTemplate bindingTemplate = new bindingTemplate();
             // Set BusinessService Key
             bindingTemplate.serviceKey = (UDDIKeyConvention.getServiceKey(properties, serviceQName.getLocalPart()));
-
+            List<tModelInstanceInfo> items = new List<tModelInstanceInfo>();
             if (serviceUrl != null)
             {
                 // Set AccessPoint
@@ -294,37 +348,32 @@ namespace org.apache.juddi.v3.client.mapping
                 String bindingKey = UDDIKeyConvention.getBindingKey(properties, serviceQName, portName, serviceUrl);
                 bindingTemplate.bindingKey = (bindingKey);
 
-                description description = new description();
-                description.lang = (lang);
-                description.Value = (getDescription(res.doc));
-                bindingTemplate.description = new description[] { description };
-
+                bindingTemplate.description = Common2UDDI.mapdescription(getDescription(res.doc), lang).ToArray();
+                
                 // reference wsdl:binding tModel
                 tModelInstanceInfo tModelInstanceInfoBinding = new tModelInstanceInfo();
                 tModelInstanceInfoBinding.tModelKey = (keyDomainURI + "binding");
                 instanceDetails id = new instanceDetails();
                 id.instanceParms=  portName ;
                 tModelInstanceInfoBinding.instanceDetails = (id);
-                description descriptionB = new description();
-                descriptionB.lang = (lang);
-                descriptionB.Value = ("The binding that this endpoint implements. " + bindingTemplate.description[0].Value
-                        + " The instanceParms specifies the port local name.");
-                tModelInstanceInfoBinding.description = new description[] { descriptionB };
+              
+                tModelInstanceInfoBinding.description = Common2UDDI.mapdescription("The binding that this endpoint implements. " + bindingTemplate.description[0].Value
+                        + " The instanceParms specifies the port local name.", lang).ToArray();
+                items.Add(tModelInstanceInfoBinding);
 
                 tModelInstanceInfo tModelInstanceInfoPortType = new tModelInstanceInfo();
                 tModelInstanceInfoPortType.tModelKey = (keyDomainURI + "rest");
+                tModelInstanceInfoPortType.description = Common2UDDI.mapdescription("The wadl:Resource:base implements.", lang).ToArray();
+                items.Add(tModelInstanceInfoPortType);
 
-                description descriptionPT = new description();
-                descriptionPT.lang = (lang);
-                descriptionPT.Value = ("The wadl:Resource:base implements.");
-                tModelInstanceInfoPortType.description = new description[] { descriptionPT };
             }
+            bindingTemplate.tModelInstanceDetails = items.ToArray();
             return bindingTemplate;
         }
 
         private string getDescription(doc[] doc)
         {
-            if (doc == null) return "";
+            if (doc == null) return "No Description.";
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < doc.Length; i++)
             {

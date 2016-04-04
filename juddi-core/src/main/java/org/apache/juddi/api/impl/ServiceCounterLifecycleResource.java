@@ -1,3 +1,19 @@
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.apache.juddi.api.impl;
 
 import java.util.HashMap;
@@ -6,6 +22,7 @@ import java.util.Map;
 
 import org.apache.juddi.api.util.CustodyTransferQuery;
 import org.apache.juddi.api.util.InquiryQuery;
+import org.apache.juddi.api.util.JUDDIQuery;
 import org.apache.juddi.api.util.PublicationQuery;
 import org.apache.juddi.api.util.ReplicationQuery;
 import org.apache.juddi.api.util.SecurityQuery;
@@ -38,6 +55,7 @@ public class ServiceCounterLifecycleResource {
                 implForQuery.put(UDDISubscriptionListenerImpl.class.getName(), SubscriptionListenerQuery.getQueries());
                 implForQuery.put(UDDIValueSetCachingImpl.class.getName(), ValueSetCachingQuery.getQueries());
                 implForQuery.put(UDDIValueSetValidationImpl.class.getName(), ValueSetValidationQuery.getQueries());
+                implForQuery.put(JUDDIApiImpl.class.getName(), JUDDIQuery.getQueries());
             }
         }
     }

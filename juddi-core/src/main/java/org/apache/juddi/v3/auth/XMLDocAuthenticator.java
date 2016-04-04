@@ -17,11 +17,12 @@
 
 package org.apache.juddi.v3.auth;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -31,6 +32,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
@@ -67,7 +69,7 @@ import org.apache.juddi.v3.error.UnknownUserException;
  */
 public class XMLDocAuthenticator implements Authenticator
 {
-	private static Log log = LogFactory.getLog(AuthenticatorFactory.class);
+	protected static Log log = LogFactory.getLog(AuthenticatorFactory.class);
 	/** Container for the user credentials */
 	Map<String,User> userTable;
 	
@@ -99,16 +101,22 @@ public class XMLDocAuthenticator implements Authenticator
 	{
             
 		userTable = new HashMap<String, User> ();
-                String usersFileName = getFilename();
-                if (usersFileName==null || usersFileName.length()==0)
-                    throw new ConfigurationException("usersFileName value is null!");
-		//log.info("Reading jUDDI Users File: " + usersFileName + "...");
-                URL resource = ClassUtil.getResource(usersFileName, this.getClass());
-                if (resource!=null)
-                    log.info("Reading jUDDI Users File: " + usersFileName + "...from " + resource.toExternalForm());
-                else
-                    log.info("Reading jUDDI Users File: " + usersFileName + "...");
-		InputStream stream = ClassUtil.getResource(usersFileName, this.getClass()).openStream();
+        String usersFileName = getFilename();
+        if (usersFileName==null || usersFileName.length()==0)
+           throw new ConfigurationException("usersFileName value is null!");
+        File file = new File(usersFileName);
+        InputStream stream = null;
+        if (file.exists()) {
+        	log.info("Reading jUDDI Users File: " + usersFileName + "...");
+        	stream = new FileInputStream(file);
+        } else {
+            URL resource = ClassUtil.getResource(usersFileName, this.getClass());
+            if (resource!=null)
+                log.info("Reading jUDDI Users File: " + usersFileName + "...from " + resource.toExternalForm());
+            else
+                log.info("Reading jUDDI Users File: " + usersFileName + "...");
+            stream = ClassUtil.getResource(usersFileName, this.getClass()).openStream();
+        }
 		JAXBContext jaxbContext=JAXBContext.newInstance(JuddiUsers.class);
 		Unmarshaller unMarshaller = jaxbContext.createUnmarshaller();
 		JAXBElement<JuddiUsers> element = unMarshaller.unmarshal(new StreamSource(stream),JuddiUsers.class);
@@ -121,6 +129,8 @@ public class XMLDocAuthenticator implements Authenticator
 
 	/**
 	 *
+         * @param userID
+         * @param credential
 	 */
 	public String authenticate(String userID,String credential)
 	throws AuthenticationException, FatalErrorException
@@ -142,10 +152,52 @@ public class XMLDocAuthenticator implements Authenticator
 		else
 			throw new UnknownUserException(new ErrorMessage("errors.auth.InvalidUserId", userID));
 
+		int MaxBindingsPerService = -1;
+                int MaxServicesPerBusiness = -1;
+                int MaxTmodels = -1;
+                int MaxBusinesses = -1;
+                try {
+                        MaxBindingsPerService = AppConfig.getConfiguration().getInt(Property.JUDDI_MAX_BINDINGS_PER_SERVICE, -1);
+                        MaxServicesPerBusiness = AppConfig.getConfiguration().getInt(Property.JUDDI_MAX_SERVICES_PER_BUSINESS, -1);
+                        MaxTmodels = AppConfig.getConfiguration().getInt(Property.JUDDI_MAX_TMODELS_PER_PUBLISHER, -1);
+                        MaxBusinesses = AppConfig.getConfiguration().getInt(Property.JUDDI_MAX_BUSINESSES_PER_PUBLISHER, -1);
+                } catch (Exception ex) {
+                        MaxBindingsPerService = -1;
+                        MaxServicesPerBusiness = -1;
+                        MaxTmodels = -1;
+                        MaxBusinesses = -1;
+                        log.error("config exception! " + userID, ex);
+                }
+                EntityManager em = PersistenceManager.getEntityManager();
+                EntityTransaction tx = em.getTransaction();
+                try {
+                        tx.begin();
+                        Publisher publisher = em.find(Publisher.class, userID);
+                        if (publisher == null) {
+                                log.warn("Publisher \"" + userID + "\" was not found in the database, adding the publisher in on the fly.");
+                                publisher = new Publisher();
+                                publisher.setAuthorizedName(userID);
+                                publisher.setIsAdmin("false");
+                                publisher.setIsEnabled("true");
+                                publisher.setMaxBindingsPerService(MaxBindingsPerService);
+                                publisher.setMaxBusinesses(MaxBusinesses);
+                                publisher.setMaxServicesPerBusiness(MaxServicesPerBusiness);
+                                publisher.setMaxTmodels(MaxTmodels);
+                                publisher.setPublisherName("Unknown");
+                                em.persist(publisher);
+                                tx.commit();
+                        }
+                } finally {
+                        if (tx.isActive()) {
+                                tx.rollback();
+                        }
+                        em.close();
+                }
 		return userID;
 	}
 	
-	public UddiEntityPublisher identify(String authInfo, String authorizedName) throws AuthenticationException {
+	@Override
+	public UddiEntityPublisher identify(String authInfo, String authorizedName, WebServiceContext ctx) throws AuthenticationException {
 
 		EntityManager em = PersistenceManager.getEntityManager();
 		EntityTransaction tx = em.getTransaction();

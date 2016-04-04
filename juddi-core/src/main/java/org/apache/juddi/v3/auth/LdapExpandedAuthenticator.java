@@ -25,6 +25,7 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,15 +50,15 @@ import org.apache.commons.configuration.ConfigurationException;
  * Usage:
  * 
  * To use this class you must add the following properties to the
- * juddiv3.properties file:
+ * juddiv3.xml file:
  * 
  * # The LDAP Authenticator
- * juddi.authenticator=org.apache.juddi.v3.auth.LdapSimpleAuthenticator
+ * juddi/auth/class=org.apache.juddi.v3.auth.LdapSimpleAuthenticator
  * 
  * # LDAP authentication URL
- * juddi.authenticator.url=ldap://localhost:389
+ * juddi/auth/url=ldap://localhost:389
  *
- * juddi.authenticator.ldapexp=CN=%s, OU=Users,DC=Domain, etc
+ * juddi/auth/ldapexp=CN=%s, OU=Users,DC=Domain, etc
  * 
  * This authenticator assumes that the publisher username can be reformatted to a LDAP 
  * common name. This is common for Microsoft based LDAPs. The configuration item juddi.authenticator.ldapexp
@@ -168,7 +169,7 @@ public class LdapExpandedAuthenticator implements Authenticator {
                 tx.begin();
                 Publisher publisher = em.find(Publisher.class, authorizedName);
                 if (publisher == null) {
-                    logger.warn("Publisher was not found, adding the publisher in on the fly.");
+                    logger.warn("Publisher was not found in the database, adding the publisher in on the fly.");
                     publisher = new Publisher();
                     publisher.setAuthorizedName(authorizedName);
                     publisher.setIsAdmin("false");
@@ -193,7 +194,7 @@ public class LdapExpandedAuthenticator implements Authenticator {
         return authorizedName;
     }
 
-    public UddiEntityPublisher identify(String authInfo, String authorizedName) throws AuthenticationException, FatalErrorException {
+    public UddiEntityPublisher identify(String authInfo, String authorizedName, WebServiceContext ctx) throws AuthenticationException, FatalErrorException {
         EntityManager em = PersistenceManager.getEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {

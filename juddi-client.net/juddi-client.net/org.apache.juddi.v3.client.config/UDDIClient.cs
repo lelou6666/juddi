@@ -29,7 +29,16 @@ namespace org.apache.juddi.v3.client
 {
     /// <summary>
     /// This is the entry point for most functions provide by the juddi-client.
+    /// <p>The UDDIClient is the main entry point for using the jUDDI client. The UDDICLient
+    /// provides a simple way to get interact with a UDDI registry using the UDDI v3 API.</p>
+    /// 
     /// </summary>
+    /// 
+    /// If programmatic acess to a UDDIv3 registry is what you want, we recommend using the UDDIv3 
+    /// API with the UDDIClient.</p>
+    /// 
+    /// <p>The UDDIClient uses a XML formatted configuration file, which by default is loaded from the classpath
+    /// from location META-INF/uddi.xml.</p>
     /// <author><a href="mailto:alexoree@apache.org">Alex O'Ree</a></author> 
     public class UDDIClient
     {
@@ -39,16 +48,20 @@ namespace org.apache.juddi.v3.client
         private String CONFIG_FILE = "uddi.xml";
         private Properties properties = null;
 
+        /// <summary>
+        /// Default constructor, loads from the default config, META-INF/uddi.xml
+        /// </summary>
         public UDDIClient()
         {
 
             clientConfig = new ClientConfig(CONFIG_FILE, properties);
             UDDIClientContainer.addClient(this);
         }
-        /**
-         * Manages the clerks. Initiates reading the client configuration from the uddi.xml.
-         * @throws ConfigurationException 
-         */
+
+        /// <summary>
+        /// Manages the clerks. Initiates reading the client configuration from the uddi.xml.
+        /// </summary>
+        /// <param name="configurationFile"></param>
         public UDDIClient(String configurationFile)
         {
 
@@ -92,7 +105,7 @@ namespace org.apache.juddi.v3.client
             }
         }
 
-       
+
         /**
          * Initializes the UDDI Clerk.
          * @throws ConfigurationException  
@@ -152,39 +165,51 @@ namespace org.apache.juddi.v3.client
          * Saves the clerk and node info from the uddi.xml to the home jUDDI registry.
          * This info is needed if you want to JUDDI Server to do XRegistration/"replication".
          */
-        public void saveClerkAndNodeInfo() {
-		
-		Dictionary<String,UDDIClerk> uddiClerks = clientConfig.getUDDIClerks();
-		
-		if (uddiClerks.Count > 0) {
-			
-			//obtaining a clerk that can write to the home registry
-			UDDIClerk homeClerk=null;
-			foreach (UDDIClerk clerk in uddiClerks.Values) {
-				if (clerk.getUDDINode().isHomeJUDDI()) {
-					homeClerk = clerk;
-				}	
-			}
-			//registering nodes and clerks
-			if (homeClerk!=null) {
-				int numberOfHomeJUDDIs=0;
-				foreach (UDDINode uddiNode in clientConfig.getUDDINodes().Values) {
-					if (uddiNode.isHomeJUDDI()) numberOfHomeJUDDIs++;
-					homeClerk.saveNode(uddiNode.getApiNode());
-				}
-				if (numberOfHomeJUDDIs==1) {
-					foreach (UDDIClerk clerk in clientConfig.getUDDIClerks().Values) {
-						//homeClerk.saveClerk(clerk);
-					}
-				} else {
-		
-			log.error("The client config needs to have one homeJUDDI node and found " + numberOfHomeJUDDIs);
-				}
-			} else {
-				log.debug("No home clerk found.");
-			}
-		}	
-	}
+        public void saveClerkAndNodeInfo()
+        {
+
+            Dictionary<String, UDDIClerk> uddiClerks = clientConfig.getUDDIClerks();
+
+            if (uddiClerks.Count > 0)
+            {
+
+                //obtaining a clerk that can write to the home registry
+                UDDIClerk homeClerk = null;
+                foreach (UDDIClerk clerk in uddiClerks.Values)
+                {
+                    if (clerk.getUDDINode().isHomeJUDDI())
+                    {
+                        homeClerk = clerk;
+                    }
+                }
+                //registering nodes and clerks
+                if (homeClerk != null)
+                {
+                    int numberOfHomeJUDDIs = 0;
+                    foreach (UDDINode uddiNode in clientConfig.getUDDINodes().Values)
+                    {
+                        if (uddiNode.isHomeJUDDI()) numberOfHomeJUDDIs++;
+                        homeClerk.saveNode(uddiNode.getApiNode());
+                    }
+                    if (numberOfHomeJUDDIs == 1)
+                    {
+                        foreach (UDDIClerk clerk in clientConfig.getUDDIClerks().Values)
+                        {
+                            //homeClerk.saveClerk(clerk);
+                        }
+                    }
+                    else
+                    {
+
+                        log.error("The client config needs to have one homeJUDDI node and found " + numberOfHomeJUDDIs);
+                    }
+                }
+                else
+                {
+                    log.debug("No home clerk found.");
+                }
+            }
+        }
 
         /**
          * X-Register services listed in the uddi.xml
@@ -206,7 +231,7 @@ namespace org.apache.juddi.v3.client
             }
             log.debug("Cross registration completed");
         }
-     
+
         /// <summary>
         /// Registers services to UDDI using a clerk, and the uddi.xml configuration.
         /// For .NET users, the class names must be AssemblyQualifiedNames
@@ -221,12 +246,14 @@ namespace org.apache.juddi.v3.client
             if (uddiClerks.Count > 0)
             {
                 AnnotationProcessor ap = new AnnotationProcessor();
-                Dictionary<string, UDDIClerk>.Enumerator it=uddiClerks.GetEnumerator();
-                while (it.MoveNext()){
-                    UDDIClerk c=it.Current.Value;
+                Dictionary<string, UDDIClerk>.Enumerator it = uddiClerks.GetEnumerator();
+                while (it.MoveNext())
+                {
+                    UDDIClerk c = it.Current.Value;
                     List<businessService> services = ap.readServiceAnnotations(
-                            c.getClassWithAnnotations(),c.getUDDINode().getProperties());
-                    foreach (businessService businessService in services) {
+                            c.getClassWithAnnotations(), c.getUDDINode().getProperties());
+                    foreach (businessService businessService in services)
+                    {
                         log.info("Node=" + c.getUDDINode().getApiNode().name);
                         c.register(businessService, c.getUDDINode().getApiNode());
                     }
@@ -235,8 +262,6 @@ namespace org.apache.juddi.v3.client
         }
         /**
          * Removes the service and all of its bindingTemplates of the annotated classes.
-         * @throws TransportException 
-         * @throws RemoteException 
          */
         public void unRegisterAnnotatedServices()
         {
@@ -276,23 +301,31 @@ namespace org.apache.juddi.v3.client
                 Dictionary<string, UDDIClerk>.Enumerator it = clerks.GetEnumerator();
                 while (it.MoveNext())
                 {
-                       UDDIClerk c = it.Current.Value;
+                    UDDIClerk c = it.Current.Value;
                     List<businessService> services = ap.readServiceAnnotations(
-                           c.getClassWithAnnotations(),c.getUDDINode().getProperties());
-                    foreach (businessService businessService in services) {
-                        if (businessService.bindingTemplates != null) {
-                            foreach (bindingTemplate bindingTemplate in businessService.bindingTemplates) {
+                           c.getClassWithAnnotations(), c.getUDDINode().getProperties());
+                    foreach (businessService businessService in services)
+                    {
+                        if (businessService.bindingTemplates != null)
+                        {
+                            foreach (bindingTemplate bindingTemplate in businessService.bindingTemplates)
+                            {
                                 c.unRegisterBinding(bindingTemplate.bindingKey, c.getUDDINode().getApiNode());
                             }
                         }
-                        if (removeServiceWithNoBindingTemplates) {
-                            try {
-                                businessService existingService = c.findService(businessService.serviceKey, c.getUDDINode().getApiNode());
-                                if (existingService.bindingTemplates==null || existingService.bindingTemplates.Length==0) {
-                                    c.unRegisterService(businessService.serviceKey,c.getUDDINode().getApiNode());
+                        if (removeServiceWithNoBindingTemplates)
+                        {
+                            try
+                            {
+                                businessService existingService = c.getServiceDetail(businessService.serviceKey, c.getUDDINode().getApiNode());
+                                if (existingService.bindingTemplates == null || existingService.bindingTemplates.Length == 0)
+                                {
+                                    c.unRegisterService(businessService.serviceKey, c.getUDDINode().getApiNode());
                                 }
-                            } catch (Exception e) {
-                                log.error(e.Message,e);
+                            }
+                            catch (Exception e)
+                            {
+                                log.error(e.Message, e);
                             }
                         }
                     }
@@ -329,12 +362,19 @@ namespace org.apache.juddi.v3.client
          */
         public Transport getTransport(String nodeName)
         {
-            try {
-                String clazz = clientConfig.getHomeNode().getProxyTransport();
+            try
+            {
+                String clazz = clientConfig.getUDDINode(nodeName).getProxyTransport();
                 String managerName = clientConfig.getClientName();
-                return new AspNetTransport(managerName, nodeName, this.getClientConfig());
-            } catch (Exception e) {
-                throw new ConfigurationErrorsException(e.Message,e);
+                if (clazz.Equals("org.apache.juddi.v3.client.transport.AspNetTransport"))
+                    return new AspNetTransport(managerName, nodeName, this.getClientConfig());
+                if (clazz.Equals("org.apache.juddi.v3.client.transport.AspNetv2TranslationTransport"))
+                    return new AspNetv2TranslationTransport(managerName, nodeName, this.getClientConfig());
+                throw new Exception("Unknown transport: " + clazz);
+            }
+            catch (Exception e)
+            {
+                throw new ConfigurationErrorsException(e.Message, e);
             }
         }
 
@@ -346,10 +386,6 @@ namespace org.apache.juddi.v3.client
         /**
          * Registers services to UDDI using a clerk, and the uddi.xml
          * configuration.
-         * @throws WSDLException 
-         * @throws TransportException 
-         * @throws ConfigurationException 
-         * @throws RemoteException 
          */
         public void registerWSDLs()
         {
@@ -362,6 +398,9 @@ namespace org.apache.juddi.v3.client
 
         }
 
+        /// <summary>
+        /// unregisters all config defined wsdls
+        /// </summary>
         public void unRegisterWSDLs()
         {
             Dictionary<String, UDDIClerk> uddiClerks = clientConfig.getUDDIClerks();
@@ -373,6 +412,213 @@ namespace org.apache.juddi.v3.client
         }
 
 
-       
+        /**
+      * adds the typical SOAP tmodel references, but only if they aren't already present
+      * @param bt
+      * @return 
+      */
+        public static bindingTemplate addSOAPtModels(bindingTemplate bt)
+        {
+            bool found = false;
+            List<object> cbags = new List<object>();
+            if (bt.categoryBag != null)
+                cbags.AddRange(bt.categoryBag.Items);
+
+            for (int i = 0; i < cbags.Count; i++)
+            {
+                if (cbags[i] is keyedReference)
+                {
+                    keyedReference kr = (keyedReference)cbags[i];
+                    if (kr.tModelKey != null
+                            && kr.tModelKey.Equals("uddi:uddi.org:categorization:types", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        if (kr.keyName != null
+                                && kr.keyName.Equals("uddi-org:types:wsdl", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            found = true;
+                        }
+                    }
+                }
+            }
+            if (!found)
+                cbags.Add(new keyedReference("uddi:uddi.org:categorization:types", "uddi-org:types:wsdl", "wsdlDeployment"));
+            if (cbags.Count > 0)
+            {
+                if (bt.categoryBag == null)
+                    bt.categoryBag = new categoryBag();
+                bt.categoryBag.Items = cbags.ToArray();
+            }
+
+            List<tModelInstanceInfo> data = new List<tModelInstanceInfo>();
+            if (bt.tModelInstanceDetails != null)
+            {
+                data.AddRange(bt.tModelInstanceDetails);
+            }
+            accessPoint ap = null;
+            if (bt.Item is accessPoint)
+            {
+                ap = (accessPoint)bt.Item;
+            }
+            tModelInstanceInfo tModelInstanceInfo;
+            if (!Exists(data, UDDIConstants.PROTOCOL_SOAP))
+            {
+                tModelInstanceInfo = new tModelInstanceInfo();
+                tModelInstanceInfo.tModelKey = (UDDIConstants.PROTOCOL_SOAP);
+                data.Add(tModelInstanceInfo);
+            }
+
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("http:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_HTTP))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_HTTP);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("jms:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_JMS))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_JMS);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("rmi:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_RMI))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_RMI);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("udp:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_UDP))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_UDP);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("amqp:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_AMQP))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_AMQP);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("mailto:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_EMAIL))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_EMAIL);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("ftp:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_FTP))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_FTP);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("https:"))
+            {
+                if (!Exists(data, UDDIConstants.PROTOCOL_SSLv3))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.PROTOCOL_SSLv3);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("ftps:"))
+            {
+                if (!Exists(data, UDDIConstants.PROTOCOL_SSLv3))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.PROTOCOL_SSLv3);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("jndi:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_JNDI_RMI))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_JNDI_RMI);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            bt.tModelInstanceDetails = data.ToArray();
+            return bt;
+        }
+
+        /**
+         * adds the typical REST tmodel references, but only if they aren't already present
+         * @param bt
+         * @return 
+         */
+        public static bindingTemplate addRESTtModels(bindingTemplate bt)
+        {
+            List<tModelInstanceInfo> data = new List<tModelInstanceInfo>();
+            if (bt.tModelInstanceDetails != null)
+            {
+                data.AddRange(bt.tModelInstanceDetails);
+            }
+            accessPoint ap = null;
+            if (bt.Item is accessPoint)
+            {
+                ap = (accessPoint)bt.Item;
+            }
+            tModelInstanceInfo tModelInstanceInfo;
+            if (!Exists(data, UDDIConstants.PROTOCOL_REST))
+            {
+                tModelInstanceInfo = new tModelInstanceInfo();
+                tModelInstanceInfo.tModelKey = (UDDIConstants.PROTOCOL_REST);
+                data.Add(tModelInstanceInfo);
+            }
+
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("http:"))
+            {
+                if (!Exists(data, UDDIConstants.TRANSPORT_HTTP))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.TRANSPORT_HTTP);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            if (ap != null && ap.Value != null && ap.Value.StartsWith("https:"))
+            {
+                if (!Exists(data, UDDIConstants.PROTOCOL_SSLv3))
+                {
+                    tModelInstanceInfo = new tModelInstanceInfo();
+                    tModelInstanceInfo.tModelKey = (UDDIConstants.PROTOCOL_SSLv3);
+                    data.Add(tModelInstanceInfo);
+                }
+            }
+            bt.tModelInstanceDetails = data.ToArray();
+            return bt;
+        }
+
+        private static bool Exists(List<tModelInstanceInfo> items, String key)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].tModelKey != null
+                        && items[i].tModelKey.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

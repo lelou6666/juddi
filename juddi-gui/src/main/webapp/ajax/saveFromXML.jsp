@@ -2,8 +2,22 @@
     Document   : fromXML
     Created on : Mar 24, 2013, 9:31:37 AM
     Author     : Alex O'Ree
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 --%><%@page import="java.util.concurrent.atomic.AtomicReference"%>
-<%@page import="java.util.Map.Entry"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.util.Set"%>
@@ -16,9 +30,10 @@
 <%@page import="org.uddi.api_v3.BindingTemplate"%>
 <%@page import="org.uddi.api_v3.BusinessService"%>
 <%@page import="org.uddi.api_v3.BusinessEntity"%>
-<%@page import="org.apache.juddi.jaxb.EntityCreator"%>
+<%@page import="org.apache.juddi.jaxb.EntityCreator"%> 
 <%@page import="org.apache.juddi.webconsole.hub.UddiHub"%>
 <%@page import="org.apache.juddi.jaxb.PrintUDDI"%>
+<%@include  file="../csrf.jsp" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%><%
 
     UddiHub x = UddiHub.getInstance(application, session);
@@ -48,7 +63,7 @@
                     msg = (x.SaveBusinessDetails(be));
                 } else if (type.equalsIgnoreCase("service")) {
                     BusinessService be = (BusinessService) JAXB.unmarshal(sr, BusinessService.class);
-                    msg = (x.SaveService(be));
+                    msg = (x.SaveServiceDetails(be));
                 } else if (type.equalsIgnoreCase("bindingTemplate")) {
                     BindingTemplate be = (BindingTemplate) JAXB.unmarshal(sr, BindingTemplate.class);
                     msg = (x.SaveBindingTemplate(be));
@@ -58,10 +73,8 @@
                 } else {
                     msg = (ResourceLoader.GetResource(session, "errors.unknownentity"));
                 }
-
-                if (!msg.equalsIgnoreCase(ResourceLoader.GetResource(session, "actions.saved"))) {
-                    //response.setStatus(500);
-                }
+                if (msg.contains(ResourceLoader.GetResource(session, "errors.generic")))
+                        response.setStatus(406);
                 out.write(msg);
             }
         }

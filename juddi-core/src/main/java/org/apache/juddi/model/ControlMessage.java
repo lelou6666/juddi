@@ -19,7 +19,17 @@ package org.apache.juddi.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+<<<<<<< HEAD
 import javax.persistence.Id;
+=======
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import org.uddi.repl_v3.CommunicationGraph;
+>>>>>>> refs/remotes/apache/master
 
 /**
  *
@@ -29,6 +39,13 @@ import javax.persistence.Id;
 public class ControlMessage implements Serializable{
         private static final long serialVersionUID = 1L;
         
+<<<<<<< HEAD
+=======
+        public ControlMessage(){}
+        public ControlMessage(String msg){
+                this.message = msg;
+        }
+>>>>>>> refs/remotes/apache/master
         
         private Long id;
 
@@ -44,6 +61,10 @@ public class ControlMessage implements Serializable{
         }
 
         @Id
+<<<<<<< HEAD
+=======
+        @GeneratedValue(strategy = GenerationType.AUTO)
+>>>>>>> refs/remotes/apache/master
         public Long getId() {
                 return id;
         }
@@ -51,4 +72,30 @@ public class ControlMessage implements Serializable{
         public void setId(Long id) {
                 this.id = id;
         }
+<<<<<<< HEAD
+=======
+        
+       //  @JoinColumn( )
+       // @ManyToOne(targetEntity = ReplicationConfiguration.class)
+         @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ReplicationConfiguration", nullable = true)
+        public ReplicationConfiguration getReplicationConfiguration() {
+                return parent;
+        }
+        private ReplicationConfiguration parent;
+        public void setReplicationConfiguration(ReplicationConfiguration p){
+                parent = p;
+        }
+        
+         @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "entity_key_ed", nullable = true)
+         public Edge getParentEdge(){
+                 return this.edge;
+         }
+         private Edge edge;
+         public void setParentEdge(Edge e){
+                 this.edge = e;
+         }
+         
+>>>>>>> refs/remotes/apache/master
 }

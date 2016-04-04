@@ -16,15 +16,11 @@
  */
 package org.apache.juddi.v3.client.config;
 
-import java.lang.reflect.InvocationTargetException;
-
 import javax.servlet.ServletContext;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.juddi.v3.client.ClassUtil;
-import org.apache.juddi.v3.client.transport.Transport;
 
 public class WebHelper {
 	
@@ -54,7 +50,7 @@ public class WebHelper {
 	 * &lt;/context-param&gt;
 	 * </pre>
 	 * @param servletContext
-	 * @return
+	 * @return a UDDI Client instance
 	 * @throws ConfigurationException
 	 */
 	public static UDDIClient getUDDIClient(ServletContext servletContext) throws ConfigurationException 
@@ -85,6 +81,7 @@ public class WebHelper {
 			}
 			if (client.getName()!=null) {
 				logger.info("Starting Client " + client.getName() + "...");
+                    clientName = client.getName();
 			} else {
 				throw new ConfigurationException("A client name needs to be specified in the client config file.");
 			}
@@ -94,44 +91,4 @@ public class WebHelper {
 			return client;
 		}
 	}
-	/**
-	 * 
-	 * @param servletContext
-	 * @return
-	 * @throws ConfigurationException
-	 */
-	public static UDDINode getUDDIHomeNode(ServletContext servletContext) throws ConfigurationException {
-		UDDIClient client = getUDDIClient(servletContext);
-		return client.getClientConfig().getHomeNode();	
-	}
-	
-	public static Transport getTransport(ServletContext servletContext) 
-		   throws ConfigurationException, ClassNotFoundException, IllegalArgumentException, 
-		    SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
-		Transport transport = (Transport) servletContext.getAttribute(JUDDI_CLIENT_TRANSPORT);
-		if (transport==null) {
-			UDDIClient client = getUDDIClient(servletContext);
-			UDDINode node = client.getClientConfig().getHomeNode();
-			Class<?> transportClass = ClassUtil.forName(node.getProxyTransport(), Transport.class);
-			transport = (Transport) transportClass.getConstructor(String.class,String.class).newInstance(client.getName(),node.getName());
-			servletContext.setAttribute(JUDDI_CLIENT_TRANSPORT, transport);
-		}
-		return transport;
-	}
-	
-	public static Transport getTransport(ServletContext servletContext, UDDINode remoteNode) 
-	   throws ConfigurationException, ClassNotFoundException, IllegalArgumentException, 
-	    SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
-		Transport transport = (Transport) servletContext.getAttribute(JUDDI_CLIENT_TRANSPORT + "-" + remoteNode.getName());
-		if (transport==null) {
-			UDDIClient manager = getUDDIClient(servletContext);
-			Class<?> transportClass = ClassUtil.forName(remoteNode.getProxyTransport(), Transport.class);
-			transport = (Transport) transportClass.getConstructor(String.class,String.class).newInstance(manager.getName(),remoteNode.getName());
-			servletContext.setAttribute(JUDDI_CLIENT_TRANSPORT + "-" + remoteNode.getName(), transport);
-		}
-		return transport;
-	}
-	
 }

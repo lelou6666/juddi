@@ -7,13 +7,16 @@ applicable law or agreed to in writing, software * distributed under the
 License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS 
 OF ANY KIND, either express or implied. * See the License for the specific 
 language governing permissions and * limitations under the License. * */ -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.juddi</groupId>
         <artifactId>juddi-parent</artifactId>
+<<<<<<< HEAD
         <version>3.3.0-SNAPSHOT</version>
+=======
+        <version>3.3.3-SNAPSHOT</version>
+>>>>>>> refs/remotes/apache/master
     </parent>
     <artifactId>juddi-gui-dsig</artifactId>
     <name>jUDDI Web Client Digital Signature Applet</name>
@@ -28,6 +31,9 @@ language governing permissions and * limitations under the License. * */ -->
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+					  <archive>
+						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+					  </archive>
                 </configuration>
                 <executions>
                     <execution>
@@ -49,6 +55,7 @@ language governing permissions and * limitations under the License. * */ -->
                         </goals>
                         <phase>package</phase>
                         <configuration>
+
                             <archive>${project.build.directory}/${artifactId}-${version}-jar-with-dependencies.jar</archive>
                             <keystore>src/main/keystore/signing-jar.keystore</keystore>
                             <alias>applet</alias>
@@ -67,7 +74,11 @@ language governing permissions and * limitations under the License. * */ -->
             <artifactId>juddi-client</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+<<<<<<< HEAD
 <!--        <dependency>
+=======
+        <!--<dependency>
+>>>>>>> refs/remotes/apache/master
             <groupId>com.sun.jdk</groupId>
             <artifactId>plugin</artifactId>
             <version>1.6.0</version>
@@ -76,7 +87,11 @@ language governing permissions and * limitations under the License. * */ -->
             <systemPath>${java.home}/lib/plugin.jar</systemPath>
         </dependency>-->
     </dependencies>
+<<<<<<< HEAD
     <profiles>
+=======
+ <profiles>
+>>>>>>> refs/remotes/apache/master
 
     <!-- finagling to deal with plugin.jar not being bundled with OpenJDK -->
     <profile>
@@ -95,6 +110,27 @@ language governing permissions and * limitations under the License. * */ -->
         </dependency>
     </dependencies>
     </profile>
+<<<<<<< HEAD
+=======
+     <profile>
+         <id>standard-with-plugin-in-jre-folder</id>
+         <activation>
+             <file>
+                 <exists>${java.home}/jre/lib/plugin.jar</exists>
+             </file>
+         </activation>
+         <dependencies>
+             <dependency>
+                 <groupId>com.sun.jdk</groupId>
+                 <artifactId>plugin</artifactId>
+                 <version>1.6.0</version>
+                 <type>jar</type>
+                 <scope>system</scope>
+                 <systemPath>${java.home}/jre/lib/plugin.jar</systemPath>
+             </dependency>
+         </dependencies>
+     </profile>
+>>>>>>> refs/remotes/apache/master
     <profile>
       <id>icedtea-web</id>
       <activation>

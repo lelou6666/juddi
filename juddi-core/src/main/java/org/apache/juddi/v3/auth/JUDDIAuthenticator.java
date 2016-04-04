@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-
 package org.apache.juddi.v3.auth;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,15 +32,16 @@ import org.apache.juddi.v3.error.ErrorMessage;
 import org.apache.juddi.v3.error.UnknownUserException;
 
 /**
- * This is the default implementation of jUDDI's Authenticator interface, which
- * if the user id has an associated publisher, and adds the publisher is this is not the
- * case. Please do NOT use this class in production.
+ * This is the default implementation of jUDDI's Authenticator interface. If the
+ * user id does not have an associated publisher, it adds the publisher. Please
+ * do NOT use this class in production.
  *
  * @author Steve Viens (sviens@apache.org)
  * @author <a href="mailto:kstam@apache.org">Kurt T Stam</a>
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
  */
 public class JUDDIAuthenticator implements Authenticator {
+<<<<<<< HEAD
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	/**
@@ -51,6 +52,24 @@ public class JUDDIAuthenticator implements Authenticator {
 		if (authorizedName==null || "".equals(authorizedName)) {
 			throw new UnknownUserException(new ErrorMessage("errors.auth.NoPublisher", authorizedName));
 		}
+=======
+
+        private Log log = LogFactory.getLog(this.getClass());
+
+       /**
+        * @return the userId that came in on the request providing the user has
+         * a publishing account in jUDDI.
+        * @param authorizedName
+        * @param credential
+        * @return authorizedName
+        * @throws AuthenticationException 
+        */
+        public String authenticate(String authorizedName, String credential) throws AuthenticationException {
+                if (authorizedName == null || "".equals(authorizedName)) {
+                        throw new UnknownUserException(new ErrorMessage("errors.auth.NoPublisher", authorizedName));
+                }
+                log.warn("DO NOT USE JUDDI AUTHENTICATOR FOR PRODUCTION SYSTEMS - DOES NOT VALIDATE PASSWORDS, AT ALL!");
+>>>>>>> refs/remotes/apache/master
                 int MaxBindingsPerService = -1;
                 int MaxServicesPerBusiness = -1;
                 int MaxTmodels = -1;
@@ -67,6 +86,7 @@ public class JUDDIAuthenticator implements Authenticator {
                         MaxBusinesses = -1;
                         log.error("config exception! " + authorizedName, ex);
                 }
+<<<<<<< HEAD
 		EntityManager em = PersistenceManager.getEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		try {
@@ -113,3 +133,52 @@ public class JUDDIAuthenticator implements Authenticator {
 		}
 	}
 }
+=======
+                EntityManager em = PersistenceManager.getEntityManager();
+                EntityTransaction tx = em.getTransaction();
+                try {
+                        tx.begin();
+                        Publisher publisher = em.find(Publisher.class, authorizedName);
+                        if (publisher == null) {
+                                log.warn("Publisher \"" + authorizedName + "\" was not found, adding the publisher in on the fly.");
+                                publisher = new Publisher();
+                                publisher.setAuthorizedName(authorizedName);
+                                publisher.setIsAdmin("false");
+                                publisher.setIsEnabled("true");
+                                publisher.setMaxBindingsPerService(MaxBindingsPerService);
+                                publisher.setMaxBusinesses(MaxBusinesses);
+                                publisher.setMaxServicesPerBusiness(MaxServicesPerBusiness);
+                                publisher.setMaxTmodels(MaxTmodels);
+                                publisher.setPublisherName("Unknown");
+                                em.persist(publisher);
+                                tx.commit();
+                        }
+                        return authorizedName;
+                } finally {
+                        if (tx.isActive()) {
+                                tx.rollback();
+                        }
+                        em.close();
+                }
+        }
+
+        public UddiEntityPublisher identify(String authInfo, String authorizedName, WebServiceContext ctx) throws AuthenticationException {
+                EntityManager em = PersistenceManager.getEntityManager();
+                EntityTransaction tx = em.getTransaction();
+                try {
+                        tx.begin();
+                        Publisher publisher = em.find(Publisher.class, authorizedName);
+                        if (publisher == null) {
+                                throw new UnknownUserException(new ErrorMessage("errors.auth.NoPublisher", authorizedName));
+                        }
+
+                        return publisher;
+                } finally {
+                        if (tx.isActive()) {
+                                tx.rollback();
+                        }
+                        em.close();
+                }
+        }
+}
+>>>>>>> refs/remotes/apache/master

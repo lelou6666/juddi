@@ -12,7 +12,11 @@ language governing permissions and * limitations under the License. * */ -->
     <parent>
         <groupId>org.apache.juddi</groupId>
         <artifactId>juddi-parent</artifactId>
+<<<<<<< HEAD
         <version>3.3.0-SNAPSHOT</version>
+=======
+        <version>3.3.3-SNAPSHOT</version>
+>>>>>>> refs/remotes/apache/master
     </parent>
     <artifactId>juddi-gui-war</artifactId>
     <packaging>war</packaging>
@@ -22,20 +26,32 @@ language governing permissions and * limitations under the License. * */ -->
         <dependency>
             <groupId>org.apache.juddi</groupId>
             <artifactId>juddi-client</artifactId>
+<<<<<<< HEAD
             <version>3.3.0-SNAPSHOT</version>
+=======
+            <version>${project.parent.version}</version>
+>>>>>>> refs/remotes/apache/master
         </dependency>
         <dependency>
             <groupId>org.apache.juddi</groupId>
             <artifactId>juddi-gui-dsig</artifactId>
+<<<<<<< HEAD
             <version>3.3.0-SNAPSHOT</version>
+=======
+            <version>${project.parent.version}</version>
+>>>>>>> refs/remotes/apache/master
             <classifier>jar-with-dependencies</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
+            <version>1.1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -50,8 +66,8 @@ language governing permissions and * limitations under the License. * */ -->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
+			  <artifactId>commons-lang3</artifactId>
+			  <version>3.2.1</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
@@ -130,5 +146,71 @@ language governing permissions and * limitations under the License. * */ -->
 			
 			
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.apache.sling
+        								</groupId>
+        								<artifactId>
+        									maven-jspc-plugin
+        								</artifactId>
+        								<versionRange>
+        									[2.0.6,)
+        								</versionRange>
+        								<goals>
+        									<goal>jspc</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore />
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>jboss7up</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <packagingExcludes>
+                                WEB-INF/lib/cxf*.jar,
+                                WEB-INF/lib/log4j*.jar,
+                                WEB-INF/lib/commons-log*.jar,
+                                WEB-INF/classes/commons*,
+                                WEB-INF/classes/log*
+                            </packagingExcludes>
+                            <webResources>
+                                <resource>
+                                    <directory>JAX-WS/CXF-JBossAS7Up</directory>
+                                </resource>
+                            </webResources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+       </profile>
+    </profiles>
 </project>

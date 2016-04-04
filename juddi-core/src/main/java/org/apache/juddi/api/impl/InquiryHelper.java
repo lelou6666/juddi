@@ -19,12 +19,17 @@ package org.apache.juddi.api.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.xml.ws.Holder;
+import org.apache.commons.configuration.ConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.juddi.config.AppConfig;
+import org.apache.juddi.config.Property;
 import org.apache.juddi.mapping.MappingModelToApi;
 import org.apache.juddi.query.FetchBindingTemplatesQuery;
 import org.apache.juddi.query.FetchBusinessEntitiesQuery;
@@ -61,6 +66,7 @@ import org.uddi.api_v3.FindRelatedBusinesses;
 import org.uddi.api_v3.FindService;
 import org.uddi.api_v3.FindTModel;
 import org.uddi.api_v3.ListDescription;
+import org.uddi.api_v3.Name;
 import org.uddi.api_v3.RelatedBusinessesList;
 import org.uddi.api_v3.ServiceList;
 import org.uddi.api_v3.TModelBag;
@@ -149,12 +155,16 @@ public class InquiryHelper {
 		if (currentIndex < (queryResults.size() - 1)) {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = currentIndex + 1;
+			result.setTruncated(Boolean.TRUE);
 		}
 		else {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = null;
+			result.setTruncated(Boolean.FALSE);
 		}
-		
+		result.getListDescription().setListHead(currentIndex);
+                result.getListDescription().setActualCount(result.getBindingTemplate().size());
+                result.getListDescription().setIncludeCount(returnedRowCount);
 		return result;
 	}	
 	
@@ -220,9 +230,41 @@ public class InquiryHelper {
 		result.setListDescription(listDesc);
 
 		// Sort and retrieve the final results taking paging into account
-		List<?> queryResults = FetchBusinessEntitiesQuery.select(
-				em, findQualifiers, keysFound, body.getMaxRows(), body.getListHead(), listDesc);
-			
+		List<?> queryResults = FetchBusinessEntitiesQuery.select(em, findQualifiers, keysFound, body.getMaxRows(), body.getListHead(), listDesc);
+                
+                boolean enabled = true;
+                try {
+                        //AppConfig.reloadConfig();
+                       enabled= AppConfig.getConfiguration().getBoolean(Property.JUDDI_ENABLE_FIND_BUSINESS_TMODEL_BAG_FILTERING, true);
+                } catch (ConfigurationException ex) {
+                        logger.error(ex);
+                }
+                if (enabled) {
+                        logger.info("FindBusiness by tModelBag is enabled! Loaded from " + AppConfig.getConfigFileURL());
+                        List<?> serviceResults = null;
+                        for (int i = 0; i < queryResults.size(); i++) {
+                                org.apache.juddi.model.BusinessEntity be = (org.apache.juddi.model.BusinessEntity) queryResults.get(i);
+
+                                List<Object> keysIn = new ArrayList<Object>();
+                                List<org.apache.juddi.model.BusinessService> services = be.getBusinessServices();
+                                for (int j = 0; j < services.size(); j++) {
+                                        keysIn.add(services.get(j).getEntityKey());
+                                }
+
+                                serviceResults = FindServiceByTModelKeyQuery.select(em, findQualifiers, body.getTModelBag(), null, keysIn);
+                                if (serviceResults == null) {
+                                        be.setBusinessServices(null);
+                                } else {
+                                        ListDescription ldesc = new ListDescription();
+                                        result.setListDescription(listDesc);
+                                        List<?> srvcs = FetchBusinessServicesQuery.select(em, findQualifiers, serviceResults, body.getMaxRows(),
+                                                body.getListHead(), ldesc);
+                                        be.setBusinessServices((List<org.apache.juddi.model.BusinessService>) srvcs);
+                                }
+                        }
+                }
+                
+                
 		if (queryResults != null && queryResults.size() > 0)
 			result.setBusinessInfos(new org.uddi.api_v3.BusinessInfos());
 		
@@ -268,12 +310,13 @@ public class InquiryHelper {
 		if (queryResults!=null && currentIndex < (queryResults.size() - 1)) {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = currentIndex + 1;
+			result.setTruncated(Boolean.TRUE);
 		}
 		else {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = null;
+			result.setTruncated(Boolean.FALSE);
 		}
-		
 		return result;
 	}
 	
@@ -293,6 +336,14 @@ public class InquiryHelper {
 			keysFound = FindServiceByCategoryQuery.select(em, findQualifiers, body.getCategoryBag(), body.getBusinessKey(), keysFound);
 		}
 		keysFound = FindServiceByCategoryGroupQuery.select(em, findQualifiers, body.getCategoryBag(), body.getBusinessKey(), keysFound);
+		
+		if (body.getFindTModel()==null && body.getCategoryBag()==null && 
+				( body.getTModelBag()==null || body.getTModelBag().getTModelKey().size() == 0) 
+				&& body.getName().size() == 0 && body.getBusinessKey() != null) {
+			//support searching for all services for a business
+			findQualifiers.setApproximateMatch(true);
+			body.getName().add(new Name("%", null));
+		}
 		keysFound = FindServiceByNameQuery.select(em, findQualifiers, body.getName(), body.getBusinessKey(), keysFound);
 		
 		if (body.getTModelBag().getTModelKey().size()==0) body.setTModelBag(null);
@@ -357,10 +408,12 @@ public class InquiryHelper {
 		if (queryResults!=null && currentIndex < (queryResults.size() - 1)) {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = currentIndex + 1;
+			result.setTruncated(Boolean.TRUE);
 		}
 		else {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = null;
+			result.setTruncated(Boolean.FALSE);
 		}
 		
 		return result;
@@ -435,10 +488,12 @@ public class InquiryHelper {
 		if (queryResults!=null && currentIndex < (queryResults.size() - 1)) {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = currentIndex + 1;
+			result.setTruncated(Boolean.TRUE);
 		}
 		else {
 			if (subscriptionStartIndex != null)
 				subscriptionStartIndex.value = null;
+			result.setTruncated(Boolean.FALSE);
 		}
 		
 		return result;

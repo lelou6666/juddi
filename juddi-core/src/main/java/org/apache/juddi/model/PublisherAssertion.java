@@ -16,6 +16,7 @@ package org.apache.juddi.model;
  */
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -27,13 +28,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * @author <a href="mailto:kurt@apache.org">Kurt T Stam</a>
  */
-@Entity
+        @Entity
 @Table(name = "j3_publisher_assertion")
 public class PublisherAssertion implements java.io.Serializable {
 
@@ -46,6 +48,8 @@ public class PublisherAssertion implements java.io.Serializable {
 	private String keyValue;
 	private String fromCheck;
 	private String toCheck;
+	private Date modified;
+        private List<Signature> signatures = new ArrayList<Signature>(0);
 
 	public PublisherAssertion() {
 	}
@@ -63,6 +67,20 @@ public class PublisherAssertion implements java.io.Serializable {
 		this.fromCheck = fromCheck;
 		this.toCheck = toCheck;
 	}
+        
+	public void setModified(Date created) {
+		this.modified = created;
+	}
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "modified", nullable = false, length = 29)
+	public Date getModified() {
+		if (modified!=null) {
+			return new Date(modified.getTime());
+		} else {
+			return null;
+		}
+	}
 
 	@EmbeddedId
 	@AttributeOverrides({
@@ -76,6 +94,8 @@ public class PublisherAssertion implements java.io.Serializable {
 	public void setId(PublisherAssertionId id) {
 		this.id = id;
 	}
+         
+        
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "to_key", nullable = false, insertable = false, updatable = false)
 
@@ -144,4 +164,22 @@ public class PublisherAssertion implements java.io.Serializable {
 	public void setToCheck(String toCheck) {
 		this.toCheck = toCheck;
 	}
+        
+        @Override
+        public boolean equals(Object compareto){
+                PublisherAssertion rhs = (PublisherAssertion) compareto;
+                return (this.id.equals(rhs.id));
+        }
+        
+        
+        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        public List<Signature> getSignatures() {
+                if (signatures==null)
+                        signatures=new ArrayList<Signature>();
+                return signatures;
+        }
+
+        public void setSignatures(List<Signature> signatures) {
+                this.signatures = signatures;
+        }
 }

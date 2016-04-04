@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 The Apache Software Foundation.
+ * Copyright 2001-2009 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,5 @@
  * limitations under the License.
  *
  */
-
 @javax.xml.bind.annotation.XmlSchema(namespace = "urn:juddi-apache-org:api_v3", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.apache.juddi.api_v3;

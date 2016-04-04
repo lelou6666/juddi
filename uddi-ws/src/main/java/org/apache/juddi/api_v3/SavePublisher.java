@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 The Apache Software Foundation.
+ * Copyright 2001-2009 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,13 @@
  * limitations under the License.
  *
  */
-
 package org.apache.juddi.api_v3;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -52,11 +49,9 @@ import javax.xml.bind.annotation.XmlType;
     "authInfo",
     "publisher"
 })
-public class SavePublisher implements Serializable{
-	@XmlTransient
-	private static final long serialVersionUID = 3564591680538809200L;
-	@XmlElement(namespace = "urn:uddi-org:api_v3")
-	protected String authInfo;
+public class SavePublisher {
+
+    protected String authInfo;
     @XmlElement(required = true)
     protected List<Publisher> publisher;
 

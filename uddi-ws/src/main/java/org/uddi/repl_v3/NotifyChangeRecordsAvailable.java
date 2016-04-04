@@ -55,6 +55,16 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlRootElement(name = "notify_changeRecordsAvailable")
 public class NotifyChangeRecordsAvailable implements Serializable{
+        public NotifyChangeRecordsAvailable(){}
+        /**
+         * 
+         * @param node notifying node
+         * @param changesAvailable latest record available
+         */
+        public NotifyChangeRecordsAvailable(String node, HighWaterMarkVectorType changesAvailable){
+                this.notifyingNode = node;
+                this.changesAvailable = changesAvailable;
+        }
 	@XmlTransient
 	private static final long serialVersionUID = -8280288001706059769L;
 	@XmlElement(required = true)
@@ -111,4 +121,3 @@ public class NotifyChangeRecordsAvailable implements Serializable{
     }
 
 }
-

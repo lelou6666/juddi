@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 The Apache Software Foundation.
+ * Copyright 2001-2009 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.apache.juddi.api_v3;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -28,10 +27,16 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * <p>Java class for publisherDetail complex type.
+<<<<<<< HEAD
  *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
  *
+=======
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+>>>>>>> refs/remotes/apache/master
  * <pre>
  * &lt;complexType name="publisherDetail">
  *   &lt;complexContent>
@@ -44,13 +49,19 @@ import javax.xml.bind.annotation.XmlTransient;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+<<<<<<< HEAD
  *
  *
+=======
+ * 
+ * 
+>>>>>>> refs/remotes/apache/master
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "publisherDetail", propOrder = {
         "publisher"
 })
+<<<<<<< HEAD
 public class PublisherDetail implements Serializable {
 
         @XmlTransient
@@ -87,6 +98,40 @@ public class PublisherDetail implements Serializable {
                         publisher = new ArrayList<Publisher>();
                 }
                 return this.publisher;
+=======
+public class PublisherDetail {
+
+    @XmlElement(nillable = true)
+    protected List<Publisher> publisher;
+    @XmlAttribute(name = "truncated")
+    protected Boolean truncated;
+
+    /**
+     * Gets the value of the publisher property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the publisher property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPublisher().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Publisher }
+     * 
+     * 
+     */
+    public List<Publisher> getPublisher() {
+        if (publisher == null) {
+            publisher = new ArrayList<Publisher>();
+>>>>>>> refs/remotes/apache/master
         }
 
         /**

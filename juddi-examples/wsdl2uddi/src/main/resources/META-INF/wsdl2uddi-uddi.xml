@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-
-<uddi>
+<!--
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ -->
+<uddi xmlns="urn:juddi-apache-org:v3_client" xsi:schemaLocation="classpath:/xsd/uddi-client.xsd"  >
     <reloadDelay>5000</reloadDelay>
-    <client name="example-client">
+    <client name="example-client" callbackUrl="http://localhost:8079/subscriptionlistener_uddi_client">
 		<nodes>
 			<node>
 			    <!-- required 'default' node -->
@@ -10,6 +26,8 @@
                 <properties>
                     <property name="serverName" value="localhost"/>
                     <property name="serverPort" value="8080"/>
+                    <property name="keyDomain" value="uddi.joepublisher.com"/>
+                    <property name="businessName" value="WSDL-Business"/>
 					<!-- for UDDI nodes that use HTTP u/p, using the following 
 					<property name="basicAuthUsername" value="root" />
 					<property name="basicAuthPassword" value="password" />
@@ -31,7 +49,7 @@
 		</nodes>
 		<clerks registerOnStartup="false">
            <clerk name="joe" node="default" publisher="joepublisher" password="joepublisher" isPasswordEncrypted="false" cryptoProvider="">
-              <wsdl businessKey="uddi:uddi.joepublisher.com:business-for-wsdl">wsdl/helloworld.wsdl</wsdl>
+              <wsdl businessName="WSDL-Business">wsdl/helloworld.wsdl</wsdl>
            </clerk>
         </clerks>
 	</client>

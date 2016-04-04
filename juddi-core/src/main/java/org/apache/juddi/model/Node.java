@@ -35,12 +35,17 @@ public class Node implements java.io.Serializable {
         private String name;
         @Column(name = "client_name", nullable = false, length = 255)
         private String clientName;
+<<<<<<< HEAD
         @Column(name = "security_url", nullable = false, length = 255)
+=======
+        @Column(name = "security_url", nullable = true, length = 255)
+>>>>>>> refs/remotes/apache/master
         private String securityUrl;
         @Column(name = "inquiry_url", nullable = false, length = 255)
         private String inquiryUrl;
         @Column(name = "publish_url", nullable = false, length = 255)
         private String publishUrl;
+<<<<<<< HEAD
         @Column(name = "custody_transfer_url", nullable = false, length = 255)
         private String custodyTransferUrl;
         @Column(name = "subscription_url", nullable = false, length = 255)
@@ -51,6 +56,20 @@ public class Node implements java.io.Serializable {
         private Boolean replicationEnabled;
         @Column(name = "proxy_transport", nullable = false, length = 255)
         private String proxyTransport;
+=======
+        @Column(name = "custody_transfer_url", nullable = true, length = 255)
+        private String custodyTransferUrl;
+        @Column(name = "subscription_url", nullable = true, length = 255)
+        private String subscriptionUrl;
+
+        @Column(name = "subscriptionlist_url", nullable = true, length = 255)
+        private String subscriptionListenerUrl;
+        @Column(name = "replication_url", nullable = true, length = 255)
+        private String replicationUrl;
+        @Column(name = "proxy_transport", nullable = false, length = 255)
+        private String proxyTransport;
+
+>>>>>>> refs/remotes/apache/master
         @Column(name = "juddi_api_url", nullable = true, length = 255)
         private String juddiApiUrl;
         @Column(name = "factory_initial", nullable = true, length = 255)
@@ -76,7 +95,10 @@ public class Node implements java.io.Serializable {
                 this.securityUrl = securityUrl;
                 this.subscriptionUrl = subscriptionUrl;
                 this.replicationUrl = replicationURL;
+<<<<<<< HEAD
                 this.replicationEnabled = false;
+=======
+>>>>>>> refs/remotes/apache/master
         }
 
         public String getName() {
@@ -143,6 +165,17 @@ public class Node implements java.io.Serializable {
                 this.subscriptionUrl = subscriptionUrl;
         }
 
+<<<<<<< HEAD
+=======
+        public String getSubscriptionListenerUrl() {
+                return subscriptionListenerUrl;
+        }
+
+        public void setSubscriptionListenerUrl(String subscriptionUrl) {
+                this.subscriptionListenerUrl = subscriptionUrl;
+        }
+
+>>>>>>> refs/remotes/apache/master
         public String getReplicationUrl() {
                 return replicationUrl;
         }
@@ -178,6 +211,13 @@ public class Node implements java.io.Serializable {
         public String getFactoryNamingProvider() {
                 return factoryNamingProvider;
         }
+<<<<<<< HEAD
+=======
+
+        public void setFactoryNamingProvider(String factoryNamingProvider) {
+                this.factoryNamingProvider = factoryNamingProvider;
+        }
+>>>>>>> refs/remotes/apache/master
 
         public void setFactoryNamingProvider(String factoryNamingProvider) {
                 this.factoryNamingProvider = factoryNamingProvider;

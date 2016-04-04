@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:kstam@apache.org">Kurt T Stam</a>
@@ -33,6 +35,7 @@ public class TckPublisher {
         public final static String SAM_SYNDICATOR_XML = "uddi_data/samsyndicator/publisher.xml";
         public final static String MARY_PUBLISHER_XML = "uddi_data/marypublisher/publisher.xml";
 
+<<<<<<< HEAD
         static {
                 InputStream inputSteam = null;
                 try {
@@ -42,6 +45,28 @@ public class TckPublisher {
                                 inputSteam = new FileInputStream(f);
                         } else {
                                 inputSteam = TckPublisher.class.getResourceAsStream("/tck.properties");
+=======
+        private static Log logger = LogFactory.getLog(TckPublisher.class);
+
+        static {
+                String s = System.getProperty("tck.properties");
+                InputStream inputSteam = null;
+                try {
+                        File f = null;
+                        if (s != null && s.length() != 0) {
+                                f = new File(s);
+                        }
+                        if (f == null || !f.exists()) {
+                                f = new File("tck.properties");
+                        }
+                        if (f.exists()) {
+
+                                inputSteam = new FileInputStream(f);
+                                logger.info("Loading tck.properties from " + f.getAbsolutePath());
+                        } else {
+                                inputSteam = TckPublisher.class.getResourceAsStream("/tck.properties");
+                                logger.info("Loading tck.properties as a classpath resource, probably within uddi-tck-base.jar");
+>>>>>>> refs/remotes/apache/master
                         }
                         tckProperties.load(inputSteam);
                 } catch (IOException ioe) {
@@ -55,6 +80,17 @@ public class TckPublisher {
                         }
                 }
         }
+<<<<<<< HEAD
+=======
+        
+        /**
+         * is enabled for UDDI v3 tests
+         * @return 
+         */
+        public final static boolean isEnabled(){
+             return Boolean.parseBoolean(tckProperties.getProperty("uddiv3.enabled", "false"));
+        }
+>>>>>>> refs/remotes/apache/master
 
         public final static String getRootPublisherId() {
                 return tckProperties.getProperty(Property.ROOT_PUBLISHER);
@@ -212,7 +248,11 @@ public class TckPublisher {
         /**
          * time in seconds, default is 60
          *
+<<<<<<< HEAD
          * @return
+=======
+         * @return the subscription timeout in seconds or the default is not defined
+>>>>>>> refs/remotes/apache/master
          */
         public static int getSubscriptionTimeout() {
                 String x = tckProperties.getProperty("sub.timeout");
@@ -226,4 +266,16 @@ public class TckPublisher {
 
                 return 60;
         }
+<<<<<<< HEAD
 }
+=======
+
+        public static boolean isSMTPEnabled() {
+                String x = tckProperties.getProperty("smtp.notify.enabled");
+                if (x.equalsIgnoreCase("true")) {
+                        return true;
+                }
+                return false;
+        }
+}
+>>>>>>> refs/remotes/apache/master

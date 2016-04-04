@@ -20,7 +20,11 @@
 	<parent>
 		<groupId>org.apache.juddi</groupId>
 		<artifactId>juddi-parent</artifactId>
+<<<<<<< HEAD
 		<version>3.3.0-SNAPSHOT</version>
+=======
+		<version>3.3.3-SNAPSHOT</version>
+>>>>>>> refs/remotes/apache/master
 	</parent>
 	<artifactId>juddi-tomcat</artifactId>
 	<name>jUDDI Tomcat Packaging</name>
@@ -31,14 +35,30 @@
 			<artifactId>commons-discovery</artifactId>
 			<version>0.2</version>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<artifactId>apache-tomcat</artifactId>
 			<groupId>org.apache.juddi.bootstrap</groupId>
-			<version>6.0.26</version>
+			<version>6.0.44</version>
 			<type>zip</type>
 		</dependency>
+-->
+<dependency>
+	<groupId>org.apache.tomcat</groupId>
+	<artifactId>tomcat</artifactId>
+	<version>7.0.64</version>
+<type>zip</type>
+
+</dependency>
+
+
 		<dependency>
 			<artifactId>juddiv3-war</artifactId>
+			<groupId>org.apache.juddi</groupId>
+			<version>${project.parent.version}</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<artifactId>juddiv3-war-repl</artifactId>
 			<groupId>org.apache.juddi</groupId>
 			<version>${project.parent.version}</version>
 			<type>war</type>
@@ -75,11 +95,11 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
 		</dependency>
-<dependency>
-	<groupId>org.json</groupId>
-	<artifactId>json</artifactId>
-	<version>20090211</version>
-</dependency>
+            <dependency>
+                    <groupId>org.json</groupId>
+                    <artifactId>json</artifactId>
+                    <version>20090211</version>
+            </dependency>
                                     
 	</dependencies>
 	<build>
@@ -98,7 +118,7 @@
 						<configuration>
 							<stripVersion>true</stripVersion>
 							<includeGroupIds>org.apache.juddi</includeGroupIds>
-							<includeArtifactIds>juddiv3-war,juddi-gui-war</includeArtifactIds>
+							<includeArtifactIds>juddiv3-war,juddiv3-war-repl,juddi-gui-war</includeArtifactIds>
 							<outputDirectory>
 								${project.build.directory}
 							</outputDirectory>
@@ -132,13 +152,16 @@
 								<property name="dependency.postgres.jar" value="${maven.dependency.postgresql.postgresql.jar.path}" />
 								<property name="dependency.commons-discovery.jar" value="${maven.dependency.commons-discovery.commons-discovery.jar.path}" />
 								<property name="dependency.derby.jar" value="${maven.dependency.org.apache.derby.derby.jar.path}" />
-								<property name="dependency.tomcat.zip" value="${maven.dependency.org.apache.juddi.bootstrap.apache-tomcat.zip.path}" />
+								<property name="dependency.tomcat.zip" value="${maven.dependency.org.apache.tomcat.tomcat.zip.path}" />
 								<property name="dependency.juddiv3.war" value="${project.build.directory}/juddiv3-war.war" />
+								<property name="dependency.juddiv3replication.war" value="${project.build.directory}/juddiv3-war-repl.war" />
 								<property name="dependency.juddi-gui.war" value="${project.build.directory}/juddi-gui-war.war" />
 								<property name="dependency.jaxws.jar" value="${maven.dependency.org.apache.geronimo.specs.geronimo-jaxws_2.2_spec.jar.path}" />
+								<property name="apache.tomcat.version" value="7.0.64" />
 								<ant antfile="${basedir}/build.xml">
 									<property name="dependency.tomcat.zip" value="${dependency.tomcat.zip}" />
-									<target name="package-tomcat" />
+									<target name="threenode" />
+									
 								</ant>
 							</tasks>
 						</configuration>

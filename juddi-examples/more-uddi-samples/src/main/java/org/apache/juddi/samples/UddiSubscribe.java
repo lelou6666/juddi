@@ -16,21 +16,19 @@
  */
 package org.apache.juddi.samples;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.Holder;
+import org.apache.juddi.jaxb.PrintUDDI;
+import org.apache.juddi.v3.client.UDDIConstants;
+import org.apache.juddi.v3.client.config.UDDIClerk;
 import org.apache.juddi.v3.client.config.UDDIClient;
-import org.apache.juddi.v3.client.config.UDDIClientContainer;
+import org.apache.juddi.v3.client.subscription.ISubscriptionCallback;
+import org.apache.juddi.v3.client.subscription.SubscriptionCallbackListener;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.apache.juddi.v3_service.JUDDIApiPortType;
 import org.uddi.api_v3.*;
-import org.uddi.sub_v3.DeleteSubscription;
 import org.uddi.sub_v3.Subscription;
 import org.uddi.sub_v3.SubscriptionFilter;
+import org.uddi.sub_v3.SubscriptionResultsList;
 import org.uddi.v3_service.UDDIInquiryPortType;
 import org.uddi.v3_service.UDDIPublicationPortType;
 import org.uddi.v3_service.UDDISecurityPortType;
@@ -42,34 +40,35 @@ import org.uddi.v3_service.UDDISubscriptionPortType;
  *
  * @author <a href="mailto:alexoree@apache.org">Alex O'Ree</a>
  */
-public class UddiSubscribe {
+public class UddiSubscribe implements ISubscriptionCallback, Runnable {
 
-    private static UDDISecurityPortType security = null;
-    private static JUDDIApiPortType juddiApi = null;
-    private static UDDIPublicationPortType publish = null;
-    private static UDDIInquiryPortType uddiInquiryService = null;
-    private static UDDISubscriptionPortType uddiSubscriptionService = null;
-    boolean callbackRecieved = false;
+        private static UDDISecurityPortType security = null;
+        private static JUDDIApiPortType juddiApi = null;
+        private static UDDIPublicationPortType publish = null;
+        private static UDDIInquiryPortType uddiInquiryService = null;
+        private static UDDISubscriptionPortType uddiSubscriptionService = null;
+        boolean callbackRecieved = false;
+        private UDDIClerk clerk = null;
+        private UDDIClient client = null;
 
-    public UddiSubscribe() {
-        try {
-            // create a manager and read the config in the archive; 
-            // you can use your config file name
-            UDDIClient clerkManager = new UDDIClient("META-INF/simple-publish-uddi.xml");
-            // register the clerkManager with the client side container
-            UDDIClientContainer.addClient(clerkManager);            // a ClerkManager can be a client to multiple UDDI nodes, so 
-            // supply the nodeName (defined in your uddi.xml.
-            // The transport can be WS, inVM, RMI etc which is defined in the uddi.xml
-            Transport transport = clerkManager.getTransport("default");
-            // Now you create a reference to the UDDI API
-            security = transport.getUDDISecurityService();
-            juddiApi = transport.getJUDDIApiService();
-            publish = transport.getUDDIPublishService();
-            uddiInquiryService = transport.getUDDIInquiryService();
-            uddiSubscriptionService = transport.getUDDISubscriptionService();
-        } catch (Exception e) {
-            e.printStackTrace();
+        public UddiSubscribe() {
+                try {
+                        // create a manager and read the config in the archive; 
+                        // you can use your config file name
+                        client = new UDDIClient("META-INF/simple-publish-uddi.xml");
+                        clerk = client.getClerk("default");
+                        Transport transport = client.getTransport();
+                        // Now you create a reference to the UDDI API
+                        security = transport.getUDDISecurityService();
+                        juddiApi = transport.getJUDDIApiService();
+                        publish = transport.getUDDIPublishService();
+                        uddiInquiryService = transport.getUDDIInquiryService();
+                        uddiSubscriptionService = transport.getUDDISubscriptionService();
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
         }
+<<<<<<< HEAD
     }
 
     public static void main(String args[]) throws Exception {
@@ -146,93 +145,179 @@ public class UddiSubscribe {
         ds.setAuthInfo(rootAuthToken.getAuthInfo());
         for (int i = 0; i < subscriptions.size(); i++) {
             ds.getSubscriptionKey().add(subscriptions.get(i).getSubscriptionKey());
-        }
-        if (!ds.getSubscriptionKey().isEmpty()) {
-            System.out.println("removing " + ds.getSubscriptionKey().size() + " old subscriptions");
-            uddiSubscriptionService.deleteSubscription(ds);
-        }
-
-        // Creating the parent business entity that will contain our service.
-        myBusEntity = new BusinessEntity();
-        myBusName = new Name();
-        myBusName.setLang("en");
-        myBusName.setValue("My Business Dept 1" + " " + xcal.toString());
-        myBusEntity.getName().add(myBusName);
-        myBusEntity.setBusinessServices(new BusinessServices());
-        BusinessService bs = new BusinessService();
-        bs.getName().add(new Name());
-        bs.getName().get(0).setValue("my callback endpoint");
-
-        bs.setBindingTemplates(new BindingTemplates());
-        BindingTemplate bt = new BindingTemplate();
-        //bt.setCategoryBag(new CategoryBag());
-        //   KeyedReference kr = new KeyedReference();
-        //         kr.setTModelKey(UDDIConstants.);
-        // bt.getCategoryBag().getKeyedReference().add(kr);
-        bt.setAccessPoint(new AccessPoint());
-        bt.getAccessPoint().setValue(url);
-        bt.getAccessPoint().setUseType("endPoint");
-        //Added per Kurt
-        TModelInstanceInfo instanceInfo = new TModelInstanceInfo();
-        instanceInfo.setTModelKey("uddi:uddi.org:transport:http");
-        bt.setTModelInstanceDetails(new TModelInstanceDetails());
-        bt.getTModelInstanceDetails().getTModelInstanceInfo().add(instanceInfo);
-
-        bs.getBindingTemplates().getBindingTemplate().add(bt);
-
-
-        myBusEntity.getBusinessServices().getBusinessService().add(bs);
-        // Adding the business entity to the "save" structure, using our publisher's authentication info and saving away.
-        sb = new SaveBusiness();
-        sb.getBusinessEntity().add(myBusEntity);
-        sb.setAuthInfo(rootAuthToken.getAuthInfo());
-        bd = publish.saveBusiness(sb);
-
-        String callbackBindingTemplate = bd.getBusinessEntity().get(0).getBusinessServices().getBusinessService().get(0).getBindingTemplates().getBindingTemplate().get(0).getBindingKey();
-        System.out.println("myBusiness key:  " + bd.getBusinessEntity().get(0).getBusinessKey());
-        System.out.println("callback binding template key:  " + callbackBindingTemplate);
-
-        System.out.println("i'll stay awake until someone kills me");
-
-        Holder<List<Subscription>> subscription = new Holder<List<Subscription>>();
-        subscription.value = new ArrayList<Subscription>();
-        Subscription sub = new Subscription();
-
-        //this is required
-        sub.setBindingKey(callbackBindingTemplate);
-
-        sub.setBrief(true);
-        sub.setNotificationInterval(df.newDuration(0));
-        sub.setSubscriptionFilter(new SubscriptionFilter());
-        sub.getSubscriptionFilter().setGetBusinessDetail(new GetBusinessDetail());
-        sub.getSubscriptionFilter().getGetBusinessDetail().setAuthInfo(rootAuthToken.getAuthInfo());
-        sub.getSubscriptionFilter().getGetBusinessDetail().getBusinessKey().add(keyRootSubscribesTo);
-        subscription.value.add(sub);
-        uddiSubscriptionService.saveSubscription(rootAuthToken.getAuthInfo(), subscription);
-
-
-        //ok now we're ready to mess around with the user's "uddi" business
-        //in this case, we're just setting the lang
-        uddisBusiness.getName().get(0).setLang("en");
-        sb = new SaveBusiness();
-        sb.setAuthInfo(uddiAuthToken.getAuthInfo());
-        sb.getBusinessEntity().add(uddisBusiness);
-        publish.saveBusiness(sb);
-
-        long timer = 310000;
-        while (timer > 0 && !callbackRecieved) {
-            Thread.sleep(5000);
-            timer = timer - 5000;
-        }
-        ep.stop();
-        if (callbackRecieved) {
-            System.out.println("Callback recieved successfully");
-            System.exit(0);
-        } else {
-            System.out.println("Callback NOT recieved!");
-            System.exit(1);
+=======
+        String nodename = "default";
+        public UddiSubscribe(UDDIClient client, String nodename, Transport transport) {
+                try {
+                        // create a manager and read the config in the archive; 
+                        // you can use your config file name
+                        //client = new UDDIClient("META-INF/simple-publish-uddi.xml");
+                        clerk = client.getClerk(nodename);
+                        this.nodename = nodename;
+                        // Now you create a reference to the UDDI API
+                        security = transport.getUDDISecurityService();
+                        juddiApi = transport.getJUDDIApiService();
+                        publish = transport.getUDDIPublishService();
+                        uddiInquiryService = transport.getUDDIInquiryService();
+                        uddiSubscriptionService = transport.getUDDISubscriptionService();
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+>>>>>>> refs/remotes/apache/master
         }
 
-        //TODO clean up all the crap we just made
-    }
+        public static void main(String args[]) throws Exception {
+                UddiSubscribe sp = new UddiSubscribe();
+                sp.Fire();
+        }
+
+        public void Fire() throws Exception {
+
+                TModel createKeyGenator = UDDIClerk.createKeyGenator("somebusiness", "A test key domain SubscriptionCallbackTest1", "SubscriptionCallbackTest1");
+
+                clerk.register(createKeyGenator);
+                System.out.println("Registered tModel keygen: " + createKeyGenator.getTModelKey());
+
+                //setup the business to attach to
+                BusinessEntity be = new BusinessEntity();
+                be.setBusinessKey("uddi:somebusiness:somebusinesskey");
+                be.getName().add(new Name("somebusiness SubscriptionCallbackTest1", null));
+                be.setBusinessServices(new BusinessServices());
+                BusinessService bs = new BusinessService();
+                bs.setBusinessKey("uddi:somebusiness:somebusinesskey");
+                bs.setServiceKey("uddi:somebusiness:someservicekey");
+                bs.getName().add(new Name("service SubscriptionCallbackTest1", null));
+                be.getBusinessServices().getBusinessService().add(bs);
+                BusinessEntity register = clerk.register(be);
+                System.out.println("Registered business keygen: " + register.getBusinessKey());
+
+                //start up our listener
+                BindingTemplate start = SubscriptionCallbackListener.start(client, nodename);
+
+                //register for callbacks
+                SubscriptionCallbackListener.registerCallback(this);
+
+                Subscription sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setFindBusiness(new FindBusiness());
+                sub.getSubscriptionFilter().getFindBusiness().setFindQualifiers(new FindQualifiers());
+                sub.getSubscriptionFilter().getFindBusiness().getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                sub.getSubscriptionFilter().getFindBusiness().getName().add(new Name(UDDIConstants.WILDCARD, null));
+
+                Subscription subscriptionBiz = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered FindBusiness subscription key: " + (subscriptionBiz.getSubscriptionKey()) + " bindingkey: " + subscriptionBiz.getBindingKey());
+
+                sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setFindService(new FindService());
+                sub.getSubscriptionFilter().getFindService().setFindQualifiers(new FindQualifiers());
+                sub.getSubscriptionFilter().getFindService().getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                sub.getSubscriptionFilter().getFindService().getName().add(new Name(UDDIConstants.WILDCARD, null));
+
+                Subscription subscriptionSvc = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered FindService subscription key: " + (subscriptionSvc.getSubscriptionKey()) + " bindingkey: " + subscriptionSvc.getBindingKey());
+
+                sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setFindTModel(new FindTModel());
+                sub.getSubscriptionFilter().getFindTModel().setFindQualifiers(new FindQualifiers());
+                sub.getSubscriptionFilter().getFindTModel().getFindQualifiers().getFindQualifier().add(UDDIConstants.APPROXIMATE_MATCH);
+                sub.getSubscriptionFilter().getFindTModel().setName(new Name(UDDIConstants.WILDCARD, null));
+
+                Subscription subscriptionTM = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered FindTModel subscription key: " + (subscriptionTM.getSubscriptionKey()) + " bindingkey: " + subscriptionTM.getBindingKey());
+
+                sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setGetAssertionStatusReport(new GetAssertionStatusReport());
+                sub.getSubscriptionFilter().getGetAssertionStatusReport().setCompletionStatus(CompletionStatus.STATUS_COMPLETE);
+
+                Subscription subscriptionPA = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered Completed PublisherAssertion subscription key: " + (subscriptionPA.getSubscriptionKey()) + " bindingkey: " + subscriptionTM.getBindingKey());
+
+                sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setGetAssertionStatusReport(new GetAssertionStatusReport());
+                sub.getSubscriptionFilter().getGetAssertionStatusReport().setCompletionStatus(CompletionStatus.STATUS_FROM_KEY_INCOMPLETE);
+
+                Subscription subscriptionPA2 = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered FROM incomplete PublisherAssertion subscription key: " + (subscriptionPA2.getSubscriptionKey()) + " bindingkey: " + subscriptionTM.getBindingKey());
+
+                sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setGetAssertionStatusReport(new GetAssertionStatusReport());
+                sub.getSubscriptionFilter().getGetAssertionStatusReport().setCompletionStatus(CompletionStatus.STATUS_TO_KEY_INCOMPLETE);
+
+                Subscription subscriptionPA3 = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered TO incomplete PublisherAssertion subscription key: " + (subscriptionPA3.getSubscriptionKey()) + " bindingkey: " + subscriptionTM.getBindingKey());
+
+                sub = new Subscription();
+                sub.setNotificationInterval(DatatypeFactory.newInstance().newDuration(1000));
+                sub.setBindingKey(start.getBindingKey());
+                sub.setSubscriptionFilter(new SubscriptionFilter());
+                sub.getSubscriptionFilter().setGetAssertionStatusReport(new GetAssertionStatusReport());
+                sub.getSubscriptionFilter().getGetAssertionStatusReport().setCompletionStatus(CompletionStatus.STATUS_BOTH_INCOMPLETE);
+
+                Subscription subscriptionPA4 = clerk.register(sub, clerk.getUDDINode().getApiNode());
+
+                System.out.println("Registered recently deleted PublisherAssertion subscription key: " + (subscriptionPA4.getSubscriptionKey()) + " bindingkey: " + subscriptionTM.getBindingKey());
+
+                System.out.println("Waiting for callbacks. Now would be a good time to launch either another program or juddi-gui to make some changes. Press any key to stop!");
+                //Thread hook = new Thread(this);
+                //  Runtime.getRuntime().addShutdownHook(hook);
+
+                System.in.read();
+
+                SubscriptionCallbackListener.stop(client, nodename, start.getBindingKey());
+                clerk.unRegisterSubscription(subscriptionBiz.getSubscriptionKey());
+                clerk.unRegisterSubscription(subscriptionSvc.getSubscriptionKey());
+                clerk.unRegisterSubscription(subscriptionTM.getSubscriptionKey());
+                clerk.unRegisterSubscription(subscriptionPA.getSubscriptionKey());
+                clerk.unRegisterSubscription(subscriptionPA2.getSubscriptionKey());
+                clerk.unRegisterSubscription(subscriptionPA3.getSubscriptionKey());
+                clerk.unRegisterSubscription(subscriptionPA4.getSubscriptionKey());
+
+                clerk.unRegisterTModel(createKeyGenator.getTModelKey());
+
+                clerk.unRegisterBusiness("uddi:somebusiness:somebusinesskey");
+
+                //Runtime.getRuntime().removeShutdownHook(hook);
+        }
+
+        private boolean running = true;
+        PrintUDDI<SubscriptionResultsList> p = new PrintUDDI<SubscriptionResultsList>();
+
+        @Override
+        public void HandleCallback(SubscriptionResultsList body) {
+                System.out.println("Callback received!");
+                System.out.println(p.print(body));
+        }
+
+        @Override
+        public void NotifyEndpointStopped() {
+                System.out.println("The endpoint was stopped!");
+        }
+
+        @Override
+        public void run() {
+                running = false;
+        }
 }

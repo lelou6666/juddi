@@ -41,9 +41,14 @@ import org.uddi.subr_v3.NotifySubscriptionListener;
 import org.uddi.v3_service.DispositionReportFaultMessage;
 import org.uddi.v3_service.UDDISubscriptionListenerPortType;
 
+/**
+ * This class implements the UDDI v3 Subscription Listener API (server side) 
+ * for jUDDI. It is primarily used for server to server subscriptions.
+ * 
+ */
 @WebService(serviceName="UDDISubscriptionListenerService", 
 			endpointInterface="org.uddi.v3_service.UDDISubscriptionListenerPortType",
-			targetNamespace = "urn:uddi-org:v3_service")
+			targetNamespace = "urn:uddi-org:api_v3_portType")
 public class UDDISubscriptionListenerImpl extends AuthenticatedService implements
 		UDDISubscriptionListenerPortType {
 	
@@ -83,7 +88,7 @@ public class UDDISubscriptionListenerImpl extends AuthenticatedService implement
 					throw new InvalidKeyPassedException(new ErrorMessage("errors.invalidkey.SubscripKeyNotFound", subscriptionKey));
 				}
 				apiClientSubscriptionInfo = new org.apache.juddi.api_v3.ClientSubscriptionInfo();
-				MappingModelToApi.mapClientSubscriptionInfo(modelClientSubscriptionInfo, apiClientSubscriptionInfo);
+				MappingModelToApi.mapClientSubscriptionInfo(modelClientSubscriptionInfo, apiClientSubscriptionInfo,em);
 		
 				tx.commit();
 			} finally {

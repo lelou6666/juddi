@@ -40,6 +40,7 @@ public abstract class UddiEntity implements Comparable<UddiEntity>{
 	protected Date modifiedIncludingChildren;
 	protected String nodeId;
 	protected String authorizedName;
+        protected boolean xfer = false;
 	
 	@Id
 	@Column(name = "entity_key", nullable = false, length = 255)
@@ -90,8 +91,13 @@ public abstract class UddiEntity implements Comparable<UddiEntity>{
 	}
 	
         /**
+<<<<<<< HEAD
          * As of 3.3, node_id is a required field
          * @return 
+=======
+         * As of 3.2, node_id is a required field
+         * @return node id
+>>>>>>> refs/remotes/apache/master
          */
 	@Column(name = "node_id", nullable=false,length = 255)
 	public String getNodeId() {
@@ -115,5 +121,14 @@ public abstract class UddiEntity implements Comparable<UddiEntity>{
 		if (o.getEntityKey().equals(getEntityKey())) return 1;
 		else return 0;
 	}
+
+        public void setIsTransferInProgress(boolean b) {
+                xfer = b;
+        }
+        @Column(name="xfer", nullable=false)
+        public boolean getIsTransferInProgress()
+        {
+                return xfer;
+        }
 
 }

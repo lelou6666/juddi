@@ -1,4 +1,18 @@
-
+/*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 var offset=0; //start at the begining
 var maxrecords=10;  //record 20 at a time
 var lang="en";  //langauge english
@@ -63,12 +77,21 @@ var selectedItem=null;
 //offset, maxrecords, keyword
 function RenderTmodelListBySearch(keyword1, offset1, maxrecords1, isForChooser)
 {
-    if (keyword1 === "%")
-        keyword1 = "%25";
-    var lang = $("#lang").text();
+    
+    var    keyword =$("#name_tmodel").val();
+    var lang = $("#lang_tmodel").val();
+    if (lang==undefined)
+       lang = "";
+    if (keyword==undefined)
+       keyword = "";
+    lang = encodeURIComponent(lang);
+    keyword = encodeURIComponent(keyword);
+    offset1 = encodeURIComponent(offset1);
+    maxrecords1 = encodeURIComponent(maxrecords1);
+    isForChooser = encodeURIComponent(isForChooser);
     $("#tmodellist").html("<img src=\"img/bigrollergreen.gif\" title=\"Loading\"/>");
     var request=   $.ajax({
-        url: 'ajax/tmodelsearch.jsp?keyword=' + keyword1 + "&offset=" + offset1 + "&maxrecords=" + maxrecords1 + "&lang=" + lang + "&chooser=" + isForChooser,
+        url: 'ajax/tmodelsearch.jsp?keyword=' + keyword + "&offset=" + offset1 + "&maxrecords=" + maxrecords1 + "&lang=" + lang + "&chooser=" + isForChooser,
         type:"GET",
         cache: false
     });

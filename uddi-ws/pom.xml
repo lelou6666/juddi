@@ -20,11 +20,15 @@
 	<parent>
 		<groupId>org.apache.juddi</groupId>
 		<artifactId>juddi-parent</artifactId>
+<<<<<<< HEAD
 		<version>3.3.0-SNAPSHOT</version>
+=======
+		<version>3.3.3-SNAPSHOT</version>
+>>>>>>> refs/remotes/apache/master
 	</parent>
 	<artifactId>uddi-ws</artifactId>
 	<packaging>bundle</packaging>
-	<name>UDDI_v3 WS Stubs and Schema Bindings Generated from WSDL</name>
+	<name>UDDIv2 and v3 WS Stubs and Schema Bindings Generated from WSDL</name>
 	<profiles>
         <profile>
             <id>regenerate-source</id>
@@ -60,6 +64,12 @@
           <version>1.0</version>
           <type>jar</type>
           <scope>provided</scope>
+        </dependency>
+          <dependency>
+            <scope>test</scope>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-databinding-jaxb</artifactId>
+            <version>${cxf.version}</version>
         </dependency>
 	</dependencies>
 </project>

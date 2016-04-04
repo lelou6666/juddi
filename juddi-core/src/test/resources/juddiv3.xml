@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"  ?>
 <!--
+* Copyright 2001-2009 The Apache Software Foundation.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*      http://www.apache.org/licenses/LICenSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+*/ -->
+<!--
 ################################################################
 #                 jUDDI-v3.0 configuration.                    #
 ################################################################
@@ -140,9 +156,9 @@
 
 			<token>
 				<!-- Time in minutes to expire tokes after inactivity-->
-				<Timeout>15</Timeout>
+				<Timeout>30</Timeout>
 				<!-- As of 3.1.5 Duration of time for tokens to expire, regardless of inactivity -->
-				<Expiration>15</Expiration>
+				<Expiration>30</Expiration>
 				<!-- As of 3.2, when set to true, tokens can only be used from the same IP address they were issued to -->
 				<enforceSameIPRule>true</enforceSameIPRule>
 			</token>
@@ -154,6 +170,19 @@
 		<validation>
 			<!-- As of 3.1.5 This setting will force referential integrity for all tModels (except keyGenerators), category bags, bindingTemplate/AccessPoint/hostingRedirector (referencing another host), tModelinstanceparms and anything else that references a KeyName default value is true.  set to false for backwards compatibility or for a more lax registry-->
 			<enforceReferentialIntegrity>true</enforceReferentialIntegrity>
+                        <!-- as of 3.3, reject digitally signed items that are invalid-->
+                        <rejectInvalidSignatures>
+                            <enable>false</enable>
+                            <trustStorePath>./src/test/resources/truststore.jks</trustStorePath>
+                            <trustStoreType>JKS</trustStoreType>
+                            <trustStorePassword
+                                    isPasswordEncrypted="false" 
+                                    cryptoProvider="org.apache.juddi.v3.client.crypto.AES128Cryptor">Test</trustStorePassword>
+
+                            <checkTimestamps>true</checkTimestamps>
+                            <checkTrust>true</checkTrust>
+                            <checkRevocationCRL>false</checkRevocationCRL>
+                        </rejectInvalidSignatures>
 		</validation>
 
 		<!--As of 3.1.5 Email delivery options for subscription API functions-->
@@ -186,7 +215,7 @@
 				<auth>false</auth>-->
 
 				<!--Username used to authenticate to the SMTP server used only if mail.smtp.auth is true
-				<username>user</username>-->
+				<user>user</user>-->
 
 				<!--Password used to authenticate to the SMTP server, used only if mail.smtp.auth is true
 				<password encrypted="false">pass</password>-->

@@ -34,12 +34,20 @@ public class UDDI_030_BusinessEntityLoadIntegrationTest extends UDDI_030_Busines
 
         @BeforeClass
         public static void setup() throws ConfigurationException {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 UDDI_030_BusinessEntityIntegrationTest.startManager();
         }
 
         @Test
         @Override
         public void testJoePublisherBusinessEntity() throws Exception {
+<<<<<<< HEAD
+=======
+             if (!TckPublisher.isEnabled()) return;
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isLoadTest());
 
                 numberOfBusinesses = TckPublisher.getMaxLoadServices();
@@ -71,6 +79,10 @@ public class UDDI_030_BusinessEntityLoadIntegrationTest extends UDDI_030_Busines
         @Test
         @Override
         public void testSamSyndicatorBusiness() throws Exception {
+<<<<<<< HEAD
+=======
+             Assume.assumeTrue(TckPublisher.isEnabled());
+>>>>>>> refs/remotes/apache/master
                 Assume.assumeTrue(TckPublisher.isLoadTest());
                 logger.info("UDDI_030_BusinessEntityLoadIntegrationTest testSamSyndicatorBusiness Load test " + numberOfBusinesses);
                 numberOfBusinesses = TckPublisher.getMaxLoadServices();

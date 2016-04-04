@@ -17,12 +17,19 @@
 
 package org.apache.juddi.api.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+<<<<<<< HEAD
 
+=======
+import java.util.logging.Level;
+import java.util.logging.Logger;
+>>>>>>> refs/remotes/apache/master
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-
+import javax.xml.bind.JAXB;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,22 +66,68 @@ import org.uddi.v3_service.UDDIInquiryPortType;
 
 
 /**
+ * This implements the UDDI v3 Inquiry API web service
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
  */
 @WebService(serviceName="UDDIInquiryService",   
 			endpointInterface="org.uddi.v3_service.UDDIInquiryPortType",
-			targetNamespace = "urn:uddi-org:v3_service")
+			targetNamespace = "urn:uddi-org:api_v3_portType")
 public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiryPortType {
 
 
     private static Log log = LogFactory.getLog(UDDIInquiryImpl.class);
+
+        private static boolean isLogRequestPayloads() {
+                boolean result = false;
+		try {
+			result = AppConfig.getConfiguration().getBoolean(Property.JUDDI_LOGGING_FindApiCalls, false);
+		} catch (ConfigurationException e) {
+			log.error("Configuration exception occurred retrieving: " + Property.JUDDI_LOGGING_FindApiCalls, e);
+		}
+		return result;
+        }
     private UDDIServiceCounter serviceCounter;
         
     public UDDIInquiryImpl() {
         super();
         serviceCounter = ServiceCounterLifecycleResource.getServiceCounter(UDDIInquiryImpl.class);
     }
-	
+    
+    
+    private static void LogFindRelatedBusinessRequest(FindRelatedBusinesses request) {
+                 request.setAuthInfo(null);
+                 LogRequest(request);
+        }
+        private static void LogFindBindingRequest(FindBinding request) {
+                 request.setAuthInfo(null);
+                 LogRequest(request);
+        }
+        private static void LogFindTModelRequest(FindTModel request) {
+                 request.setAuthInfo(null);
+                 LogRequest(request);
+        }
+        private static void LogFindServiceRequest(FindService request) {
+                 request.setAuthInfo(null);
+                 LogRequest(request);
+        }
+        private static void LogFindBusinessRequest(FindBusiness request) {
+                 request.setAuthInfo(null);
+                 LogRequest(request);
+        }
+	 private static synchronized void LogRequest(Object request) {
+                 if (isLogRequestPayloads())
+                  try {
+                        File f = new File(System.currentTimeMillis()+".xml");
+                        FileOutputStream fos = new FileOutputStream(f);
+                        JAXB.marshal(request, fos);
+                        fos.close();
+                        f = null;
+                } catch (Exception ex) {
+                        logger.warn("Unable to log request payload", ex);
+                }
+         }
+         
+         
     public BindingDetail findBinding(FindBinding body)
 			throws DispositionReportFaultMessage {
                 long startTime = System.currentTimeMillis();
@@ -94,6 +147,7 @@ public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiry
 			if (isAuthenticated())
 				this.getEntityPublisher(em, body.getAuthInfo());
 
+                        LogFindBindingRequest(body);
 			org.apache.juddi.query.util.FindQualifiers findQualifiers = new org.apache.juddi.query.util.FindQualifiers();
 			findQualifiers.mapApiFindQualifiers(body.getFindQualifiers());
 
@@ -106,8 +160,8 @@ public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiry
         			String serviceKey = body.getServiceKey();
         			org.apache.juddi.model.BusinessService modelBusinessService = null;
         			try {
-        				em.find(org.apache.juddi.model.BusinessService.class, serviceKey);
-        			} catch (ClassCastException e) {}
+        				modelBusinessService=em.find(org.apache.juddi.model.BusinessService.class, serviceKey);
+        			} catch (Exception e) {}
 	                if (modelBusinessService == null)
 	                    throw new InvalidKeyPassedException(new ErrorMessage("errors.invalidkey.ServiceNotFound", serviceKey));
 
@@ -142,11 +196,19 @@ public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiry
 		EntityManager em = PersistenceManager.getEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		try {
+                        try {
+                                //AppConfig.reloadConfig();
+                                logger.info("FindBusiness with tModel bag filtering is enabled: " +
+                                        AppConfig.getConfiguration().getBoolean(Property.JUDDI_ENABLE_FIND_BUSINESS_TMODEL_BAG_FILTERING,true)
+                                + " loaded from " + AppConfig.getConfigFileURL());
+                        } catch (ConfigurationException ex) {
+                                ex.printStackTrace();
+                        }
 			tx.begin();
 
 			if (isAuthenticated())
 				this.getEntityPublisher(em, body.getAuthInfo());
-
+                        LogFindBusinessRequest(body);
 			org.apache.juddi.query.util.FindQualifiers findQualifiers = new org.apache.juddi.query.util.FindQualifiers();
 			findQualifiers.mapApiFindQualifiers(body.getFindQualifiers());
 
@@ -186,6 +248,7 @@ public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiry
 
 			if (isAuthenticated())
 				this.getEntityPublisher(em, body.getAuthInfo());
+                        LogFindRelatedBusinessRequest(body);
 
 			// TODO: findQualifiers aren't really used for this call, except maybe for sorting.  Sorting must be done in Java due to the retrieval method used.  Right now
 			// no sorting is performed.
@@ -226,7 +289,7 @@ public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiry
 
 			if (isAuthenticated())
 				this.getEntityPublisher(em, body.getAuthInfo());
-
+                        LogFindServiceRequest(body);
 			org.apache.juddi.query.util.FindQualifiers findQualifiers = new org.apache.juddi.query.util.FindQualifiers();
 			findQualifiers.mapApiFindQualifiers(body.getFindQualifiers());
 
@@ -281,7 +344,7 @@ public class UDDIInquiryImpl extends AuthenticatedService implements UDDIInquiry
 
 			if (isAuthenticated())
 				this.getEntityPublisher(em, body.getAuthInfo());
-
+                        LogFindTModelRequest(body);
 			org.apache.juddi.query.util.FindQualifiers findQualifiers = new org.apache.juddi.query.util.FindQualifiers();
 			findQualifiers.mapApiFindQualifiers(body.getFindQualifiers());
 

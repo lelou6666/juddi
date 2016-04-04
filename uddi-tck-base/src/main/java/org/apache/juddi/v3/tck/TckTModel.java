@@ -53,6 +53,10 @@ public class TckTModel {
         final static String JOE_PUBLISHER_TMODEL_KEY = "uddi:uddi.joepublisher.com:keygenerator";
         final static String MARY_PUBLISHER_TMODEL_XML = "uddi_data/marypublisher/tModelKeyGen.xml";
         final static String MARY_PUBLISHER_TMODEL_KEY = "uddi:uddi.marypublisher.com:keygenerator";
+<<<<<<< HEAD
+=======
+        public final static String MARY_KEY_PREFIX="uddi:uddi.marypublisher.com:";
+>>>>>>> refs/remotes/apache/master
         final static String SAM_SYNDICATOR_TMODEL_XML = "uddi_data/samsyndicator/tModelKeyGen.xml";
         final static String SAM_SYNDICATOR_TMODEL_KEY = "uddi:www.samco.com:keygenerator";
         final static String TMODEL_PUBLISHER_TMODEL_XML = "uddi_data/tmodels/tModelKeyGen.xml";
@@ -74,7 +78,11 @@ public class TckTModel {
         private Set<String> keyscreated = new HashSet<String>();
 
         public TckTModel(UDDIPublicationPortType publication,
+<<<<<<< HEAD
                 UDDIInquiryPortType inquiry) {
+=======
+             UDDIInquiryPortType inquiry) {
+>>>>>>> refs/remotes/apache/master
                 super();
                 this.publication = publication;
                 this.inquiry = inquiry;
@@ -93,7 +101,11 @@ public class TckTModel {
                         SaveTModel st = (org.uddi.api_v3.SaveTModel) EntityCreator.buildFromDoc(tModelXml, "org.uddi.api_v3");
 
                         for (int i = 0; i < st.getTModel().size(); i++) {
+<<<<<<< HEAD
                                 saveTModel(authInfo, st.getTModel().get(i), false);
+=======
+                                 saveTModel(authInfo, st.getTModel().get(i), false);
+>>>>>>> refs/remotes/apache/master
                         }
                         //st.setAuthInfo(authInfo);
                         //publication.saveTModel(st);
@@ -104,14 +116,26 @@ public class TckTModel {
                 }
         }
 
+<<<<<<< HEAD
         private void saveTModel(String authInfo, TModel tmIn, boolean force) {
+=======
+        public TModel saveTModel(String authInfo, TModel tmIn, boolean force) {
+>>>>>>> refs/remotes/apache/master
                 boolean exists = false;
                 GetTModelDetail gt1 = new GetTModelDetail();
                 gt1.getTModelKey().add(tmIn.getTModelKey());
                 try {
                         TModelDetail td1 = inquiry.getTModelDetail(gt1);
                         if (td1 != null && !td1.getTModel().isEmpty()) {
+<<<<<<< HEAD
                                 exists = true;
+=======
+                                if (!td1.getTModel().get(0).isDeleted()) {
+                                        exists = true;
+                                } else {
+                                        logger.info("The tModel with key " + tmIn.getTModelKey() + " exists already, but is flagged as deleted. Overwritting");
+                                }
+>>>>>>> refs/remotes/apache/master
                         }
                 } catch (Exception ex) {
                 }
@@ -146,15 +170,24 @@ public class TckTModel {
                                 if (TckCommon.isDebug()) {
                                         JAXB.marshal(tmOut, System.out);
                                 }
+<<<<<<< HEAD
 
                         } catch (Exception e) {
                                 logger.error(e.getMessage(), e);
                                 Assert.fail("No exception should be thrown");
+=======
+                                return tmOut;
+
+                        } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                                Assert.fail("No exception should be thrown" + e.getMessage());
+>>>>>>> refs/remotes/apache/master
                         }
 
                 } else {
                         logger.info("The TModel " + tmIn.getTModelKey() + " exists already, skipping");
                 }
+<<<<<<< HEAD
         }
 
         public void saveTModel(String authInfo, String tModelXml, String tModelKey) {
@@ -162,6 +195,16 @@ public class TckTModel {
         }
 
         public void saveTModel(String authInfo, String tModelXml, String tModelKey, boolean force) {
+=======
+                return tmIn;
+        }
+
+        public TModel saveTModel(String authInfo, String tModelXml, String tModelKey) {
+                return saveTModel(authInfo, tModelXml, tModelKey, false);
+        }
+
+        public TModel saveTModel(String authInfo, String tModelXml, String tModelKey, boolean force) {
+>>>>>>> refs/remotes/apache/master
                 logger.info("Loading tModel from " + tModelXml);
                 org.uddi.api_v3.TModel tmIn = null;
                 try {
@@ -172,12 +215,20 @@ public class TckTModel {
                 if (tmIn == null) {
                         Assert.fail("unable to load tmodel from file!");
                 }
+<<<<<<< HEAD
                 saveTModel(authInfo, tmIn, force);
         }
 
         public synchronized void deleteTModel(String authInfo, String tModelXml, String tModelKey) {
 
                 if (keyscreated.contains(tModelKey)) {
+=======
+                return saveTModel(authInfo, tmIn, force);
+        }
+
+        public synchronized void deleteTModel(String authInfo, String tModelXml, String tModelKey, boolean force) {
+                if (keyscreated.contains(tModelKey) || force) {
+>>>>>>> refs/remotes/apache/master
                         try {
                                 keyscreated.remove(tModelKey);
                                 //Now deleting the TModel
@@ -198,6 +249,14 @@ public class TckTModel {
                 }
         }
 
+<<<<<<< HEAD
+=======
+        public synchronized void deleteTModel(String authInfo, String tModelXml, String tModelKey) {
+
+                deleteTModel(authInfo, tModelXml, tModelKey, false);
+        }
+
+>>>>>>> refs/remotes/apache/master
         public TModelDetail getTModelDetail(String authInfo, String tModelXml, String tModelKey) {
                 try {
                         //Try to get the TModel
@@ -247,12 +306,21 @@ public class TckTModel {
                 return null;
         }
 
+<<<<<<< HEAD
         public void saveJoePublisherTmodel(String authInfoJoe) {
                 saveTModel(authInfoJoe, JOE_PUBLISHER_TMODEL_XML, JOE_PUBLISHER_TMODEL_KEY, false);
         }
 
         public void saveJoePublisherTmodel(String authInfoJoe, boolean force) {
                 saveTModel(authInfoJoe, JOE_PUBLISHER_TMODEL_XML, JOE_PUBLISHER_TMODEL_KEY, force);
+=======
+        public TModel saveJoePublisherTmodel(String authInfoJoe) {
+                return saveTModel(authInfoJoe, JOE_PUBLISHER_TMODEL_XML, JOE_PUBLISHER_TMODEL_KEY, false);
+        }
+
+        public TModel saveJoePublisherTmodel(String authInfoJoe, boolean force) {
+                return saveTModel(authInfoJoe, JOE_PUBLISHER_TMODEL_XML, JOE_PUBLISHER_TMODEL_KEY, force);
+>>>>>>> refs/remotes/apache/master
         }
 
         public void saveUDDIPublisherTmodel(String authInfoTM) {
@@ -275,16 +343,26 @@ public class TckTModel {
                 return findJoeTModelDetail();
         }
 
+<<<<<<< HEAD
         public void saveMaryPublisherTmodel(String authInfoMary) {
                 saveTModel(authInfoMary, MARY_PUBLISHER_TMODEL_XML, MARY_PUBLISHER_TMODEL_KEY, false);
+=======
+        public TModel saveMaryPublisherTmodel(String authInfoMary) {
+                return saveTModel(authInfoMary, MARY_PUBLISHER_TMODEL_XML, MARY_PUBLISHER_TMODEL_KEY, false);
+>>>>>>> refs/remotes/apache/master
         }
 
         public void deleteMaryPublisherTmodel(String authInfoMary) {
                 deleteTModel(authInfoMary, MARY_PUBLISHER_TMODEL_XML, MARY_PUBLISHER_TMODEL_KEY);
         }
 
+<<<<<<< HEAD
         public void saveSamSyndicatorTmodel(String authInfoSam) {
                 saveTModel(authInfoSam, SAM_SYNDICATOR_TMODEL_XML, SAM_SYNDICATOR_TMODEL_KEY, false);
+=======
+        public TModel saveSamSyndicatorTmodel(String authInfoSam) {
+                return saveTModel(authInfoSam, SAM_SYNDICATOR_TMODEL_XML, SAM_SYNDICATOR_TMODEL_KEY, false);
+>>>>>>> refs/remotes/apache/master
         }
 
         public void deleteSamSyndicatorTmodel(String authInfoSam) {
@@ -317,4 +395,9 @@ public class TckTModel {
                 }
 
         }
+<<<<<<< HEAD
 }
+=======
+}
+	
+>>>>>>> refs/remotes/apache/master

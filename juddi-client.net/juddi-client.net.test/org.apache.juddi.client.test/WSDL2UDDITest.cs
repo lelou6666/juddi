@@ -1,4 +1,23 @@
-﻿using net.java.dev.wadl;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+using net.java.dev.wadl;
 using NUnit.Framework;
 using org.apache.juddi.v3.client;
 using org.apache.juddi.v3.client.config;
@@ -45,6 +64,13 @@ namespace juddi_client.net.test
             runTest(path + Path.DirectorySeparatorChar + "juddi-api-flattened.wsdl");
         }
 
+        [Test]
+        public void juddiapiflattenedTestLongDescriptions()
+        {
+            Assume.That(path != null);
+            runTest(path + Path.DirectorySeparatorChar + "sample_1.wsdl");
+        }
+
 
         [Test]
         public void ReadWSDLTest1()
@@ -78,7 +104,7 @@ namespace juddi_client.net.test
         {
             Assume.That(File.Exists(pathAndFile));
 
-           
+
             ReadWSDL wsi = new ReadWSDL();
             tDefinitions wsdlDefinition = wsi.readWSDL(
                pathAndFile
@@ -110,8 +136,18 @@ namespace juddi_client.net.test
             Assert.True(businessServices.Length > 0);
             for (int i = 0; i < businessServices.Length; i++)
             {
+                foreach (description d in businessServices[i].description)
+                {
+                    if (d.lang != null)
+                        Assert.True(d.lang.Length <= UDDIConstants.MAX_xml_lang_length);
+                    if (d.Value != null)
+                        Assert.True(d.Value.Length <= UDDIConstants.MAX_description_length);
+                }
                 foreach (bindingTemplate bt in businessServices[i].bindingTemplates)
                 {
+                    
+
+
                     Assert.NotNull(bt);
                     Assert.NotNull(bt.bindingKey);
                     Assert.NotNull(bt.Item);
@@ -119,6 +155,26 @@ namespace juddi_client.net.test
                     Assert.True(bt.Item is accessPoint);
                     Assert.NotNull(((accessPoint)bt.Item).useType);
                     Assert.NotNull(((accessPoint)bt.Item).Value);
+
+                    foreach (description d in bt.description)
+                    {
+                        if (d.lang != null)
+                            Assert.True(d.lang.Length <= UDDIConstants.MAX_xml_lang_length);
+                        if (d.Value != null)
+                            Assert.True(d.Value.Length <= UDDIConstants.MAX_description_length);
+                    }
+
+                    foreach (tModelInstanceInfo tm in bt.tModelInstanceDetails)
+                    {
+                        foreach (description d in tm.description)
+                        {
+                            if (d.lang != null)
+                                Assert.True(d.lang.Length <= UDDIConstants.MAX_xml_lang_length);
+                            if (d.Value != null)
+                                Assert.True(d.Value.Length <= UDDIConstants.MAX_description_length);
+                        }
+                    }
+
                 }
                 Assert.True(businessServices[i].bindingTemplates.Length > 0);
                 Assert.NotNull(businessServices[i].description);

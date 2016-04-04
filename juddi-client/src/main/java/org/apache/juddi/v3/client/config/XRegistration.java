@@ -21,7 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.uddi.api_v3.BindingTemplate;
 import org.uddi.api_v3.BusinessEntity;
 import org.uddi.api_v3.BusinessService;
-
+/**
+ * Is used to exchange UDDI data between UDDI nodes; for example when Subscriptions are uses.
+ * 
+ * @author kstam
+ *
+ */
 public class XRegistration {
 
 	private Log log = LogFactory.getLog(this.getClass());
@@ -65,7 +70,7 @@ public class XRegistration {
 	public void xRegisterBusiness() {
 		BusinessEntity businessEntity;
 		try {
-			businessEntity = fromClerk.findBusiness(entityKey,fromClerk.getUDDINode().getApiNode());
+			businessEntity = fromClerk.getBusinessDetail(entityKey,fromClerk.getUDDINode().getApiNode());
 			log.info("xregister business " + businessEntity.getName().get(0).getValue() + " + from "
 					+ fromClerk.getName() + " to " + toClerk.getName() + ".");
 			//not bringing over the services. They need to be explicitly copied using xRegisterService.
@@ -82,7 +87,7 @@ public class XRegistration {
 	public void xRegisterBusinessAndServices() {
 		BusinessEntity businessEntity;
 		try {
-			businessEntity = fromClerk.findBusiness(entityKey,fromClerk.getUDDINode().getApiNode());
+			businessEntity = fromClerk.getBusinessDetail(entityKey,fromClerk.getUDDINode().getApiNode());
 			log.info("xregister business " + businessEntity.getName().get(0).getValue() + " + from "
 					+ fromClerk.getName() + " to " + toClerk.getName() + " including all services owned by this business.");
 			toClerk.register(businessEntity,toClerk.getUDDINode().getApiNode());
@@ -96,7 +101,7 @@ public class XRegistration {
 	public void xRegisterService() {
 		BusinessService businessService;
 		try {
-			businessService = fromClerk.findService(entityKey,fromClerk.getUDDINode().getApiNode());
+			businessService = fromClerk.getServiceDetail(entityKey,fromClerk.getUDDINode().getApiNode());
 			log.info("xregister service " + businessService.getName().get(0).getValue() + " + from "
 					+ fromClerk.getName() + " to " + toClerk.getName());
 			businessService.setBindingTemplates(null);
@@ -111,7 +116,7 @@ public class XRegistration {
 	public void xRegisterServiceAndBindings() {
 		BusinessService businessService;
 		try {
-			businessService = fromClerk.findService(entityKey,fromClerk.getUDDINode().getApiNode());
+			businessService = fromClerk.getServiceDetail(entityKey,fromClerk.getUDDINode().getApiNode());
 			log.info("xregister service " + businessService.getName().get(0).getValue() + " + from "
 					+ fromClerk.getName() + " to " + toClerk.getName());
 			toClerk.register(businessService,toClerk.getUDDINode().getApiNode());
@@ -124,7 +129,7 @@ public class XRegistration {
 	 */
 	public void xRegisterServiceBinding() {
 		try {
-			BindingTemplate bindingTemplate = fromClerk.findServiceBinding(entityKey,fromClerk.getUDDINode().getApiNode());
+			BindingTemplate bindingTemplate = fromClerk.getServiceBindingDetail(entityKey,fromClerk.getUDDINode().getApiNode());
 			log.info("xregister binding " + bindingTemplate.getBindingKey()+ " + from "
 					+ fromClerk.getName() + " to " + toClerk.getName());
 			toClerk.register(bindingTemplate,toClerk.getUDDINode().getApiNode());

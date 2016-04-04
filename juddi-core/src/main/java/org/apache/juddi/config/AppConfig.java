@@ -21,8 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -31,7 +29,6 @@ import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.MapConfiguration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
@@ -41,10 +38,6 @@ import org.apache.juddi.ClassUtil;
 import org.apache.juddi.Registry;
 import org.apache.juddi.keygen.KeyGenerator;
 import org.apache.juddi.model.UddiEntityPublisher;
-import org.apache.juddi.query.FindBusinessByCategoryQuery;
-import org.apache.juddi.query.util.FindQualifiers;
-import org.uddi.api_v3.CategoryBag;
-import org.uddi.api_v3.KeyedReference;
 
 /**
  * Handles the application level configuration for jUDDI. By default it first
@@ -66,12 +59,13 @@ public class AppConfig
 	private Configuration config;
 	private static AppConfig instance=null;
         private static URL loadedFrom=null;
+        private static XMLConfiguration propConfig=null;
         
         /**
          * Enables an administrator to identify the physical location of the configuration file from which it was loaded.<br>
          * Always call via the singleton function AppConfig.getInstance().getConfigFileURL()
          * @since 3.2
-         * @return, may return null if no config file was found
+         * @return may return null if no config file was found
          */
         public static  URL getConfigFileURL()
         {
@@ -86,9 +80,23 @@ public class AppConfig
 	{
 		loadConfiguration();
 	}
+        public static void setJuddiProperty(String key, Object val) throws ConfigurationException{
+                if (instance==null) {
+			instance = new AppConfig();
+		}
+                propConfig.setProperty(key, val);
+                propConfig.save();
+        }
+        
+        public static void saveConfiguration() throws ConfigurationException{
+                Configuration configuration = getConfiguration();
+                propConfig.save();
+        }
+       
+        
 	/**
 	 * Does the actual work of reading the configuration from System
-	 * Properties and/or juddiv3.properties file. When the juddiv3.properties
+	 * Properties and/or juddiv3.xml file. When the juddiv3.xml
 	 * file is updated the file will be reloaded. By default the reloadDelay is
 	 * set to 1 second to prevent excessive date stamp checking.
 	 */
@@ -99,7 +107,7 @@ public class AppConfig
 		compositeConfig.addConfiguration(new SystemConfiguration());
 		//Properties from file
                 //changed 7-19-2013 AO for JUDDI-627
-		XMLConfiguration propConfig = null;
+		propConfig = null;
 	        final String filename = System.getProperty(JUDDI_CONFIGURATION_FILE_SYSTEM_PROPERTY);
 		if (filename != null) {
                   propConfig = new XMLConfiguration (filename); 
@@ -120,8 +128,8 @@ public class AppConfig
 		}
                 //Hey! this may break things
                 propConfig.setAutoSave(true);
-		
-		log.info("Reading from properties file:  " + loadedFrom);
+
+		log.info("Reading from jUDDI config file from:  " + loadedFrom);
 		long refreshDelay = propConfig.getLong(Property.JUDDI_CONFIGURATION_RELOAD_DELAY, 1000l);
 		log.debug("Setting refreshDelay to " + refreshDelay);
 		FileChangedReloadingStrategy fileChangedReloadingStrategy = new FileChangedReloadingStrategy();
@@ -195,24 +203,42 @@ public class AppConfig
 			
 			// The node Id is defined as the business key of the business entity categorized as a node.  This entity is saved as part of the install.
 			// Only one business entity should be categorized as a node.
-			String nodeId = "";
-			CategoryBag categoryBag = new CategoryBag();
+			String nodeId = config.getString(Property.JUDDI_NODE_ID);
+                        if (nodeId==null)
+                                log.fatal("Error! " + Property.JUDDI_NODE_ID + " is not defined in the config!");
+                        else
+                                result.setProperty(Property.JUDDI_NODE_ID, nodeId);
+			/*
+                        CategoryBag categoryBag = new CategoryBag();
 			KeyedReference keyedRef = new KeyedReference();
 			keyedRef.setTModelKey(Constants.NODE_CATEGORY_TMODEL);
 			keyedRef.setKeyValue(Constants.NODE_KEYVALUE);
 			categoryBag.getKeyedReference().add(keyedRef);
 			List<?> keyList = FindBusinessByCategoryQuery.select(em, new FindQualifiers(), categoryBag, null);
 			if (keyList != null && keyList.size() > 1)
-				throw new ConfigurationException("Only one business entity can be categorized as the node.");
-			
+                        {
+                                StringBuilder sb = new StringBuilder();
+                                Iterator<?> iterator = keyList.iterator();
+                                while(iterator.hasNext()){
+                                        sb.append(iterator.next()).append(",");
+                                }
+				//
+                                //throw new ConfigurationException("Only one business entity can be categorized as the node. Config loaded from " + loadedFrom + " Key's listed at the node: " + sb.toString());
+                                //unless of course, we are in a replicated environment
+                        }
 			if (keyList != null && keyList.size() > 0) {
 				nodeId = (String)keyList.get(0);
 			}
 			else
 				throw new ConfigurationException("A node business entity was not found.  Please make sure that the application is properly installed.");
-			result.setProperty(Property.JUDDI_NODE_ID, nodeId);
+			*/
+                        String rootbiz=config.getString(Property.JUDDI_NODE_ROOT_BUSINESS);
+                        if (rootbiz==null)
+                                log.fatal("Error! " + Property.JUDDI_NODE_ROOT_BUSINESS + " is not defined in the config");
+                        else
+                                result.setProperty(Property.JUDDI_NODE_ROOT_BUSINESS, rootbiz);
                         
-                        //result.setProperty(Property.JUDDI_NODE_ROOT_BUSINESS, nodeId);
+                        
 			
 			tx.commit();
 			return result;
@@ -249,6 +275,10 @@ public class AppConfig
 		getInstance().loadConfiguration();
 		Registry.start();
 	}
+        
+        public static void triggerReload() throws ConfigurationException{
+                getInstance().loadConfiguration();
+        }
 	/**
 	 * The object from which property values can be obtained.
 	 * @return the commons Configuration interface

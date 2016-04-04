@@ -15,7 +15,6 @@
  *
  */
 
-
 package org.uddi.repl_v3;
 
 import java.io.Serializable;
@@ -26,6 +25,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.uddi.api_v3.Contact;
@@ -79,11 +79,21 @@ import org.w3._2000._09.xmldsig_.SignatureType;
     "maximumTimeToGetChanges",
     "signature"
 })
+@XmlSeeAlso({
+        org.uddi.api_v3.ObjectFactory.class,
+        org.uddi.custody_v3.ObjectFactory.class,
+        org.apache.juddi.ObjectFactory.class,
+        org.apache.juddi.api_v3.ObjectFactory.class,
+        org.uddi.repl_v3.ObjectFactory.class,
+        org.w3._2000._09.xmldsig_.ObjectFactory.class
+        
+        }
+)
 @XmlRootElement(name = "replicationConfiguration")
 public class ReplicationConfiguration implements Serializable{
 	@XmlTransient
 	private static final long serialVersionUID = 621260248291581845L;
-	protected long serialNumber;
+    protected long serialNumber;
     @XmlElement(required = true)
     protected String timeOfConfigurationUpdate;
     @XmlElement(required = true)
@@ -214,6 +224,9 @@ public class ReplicationConfiguration implements Serializable{
     }
 
     /**
+     * The element, maximumTimeToSyncRegistry, allows for the specification of when (in hours) a change made at any single node in the Registry is expected to be visible at all nodes within the registry.  The element, maximumTimeToGetChanges, allows for the specification of the maximum amount of time (in hours) that an individual node may wait to request changes.  Use of this element is determined by registry policy as detailed in Section 9.6.4 Replication Policies.
+
+
      * Gets the value of the maximumTimeToSyncRegistry property.
      * 
      * @return
@@ -238,6 +251,9 @@ public class ReplicationConfiguration implements Serializable{
     }
 
     /**
+     * The element, maximumTimeToGetChanges, allows for the specification of the maximum amount of time (in hours) that an individual node may wait to request changes. Nodes MUST perform a get_changeRecords replication message within the time frame defined by the value of the maximumTimeToGetChanges element defined within the Replication Configuration Structure.  Thus, change data can always be propagated throughout the UDDI registry within a finite amount of time, while at the same time changes will often propagate quickly. Use of this element is determined by registry policy as detailed in Section 9.6.4 Replication Policies. 
+
+
      * Gets the value of the maximumTimeToGetChanges property.
      * 
      * @return
@@ -311,7 +327,7 @@ public class ReplicationConfiguration implements Serializable{
      * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
+    @XmlType(name = "", namespace="urn:uddi-org:repl_v3", propOrder = {
         "contact"
     })
     public static class RegistryContact {
@@ -346,4 +362,3 @@ public class ReplicationConfiguration implements Serializable{
     }
 
 }
-

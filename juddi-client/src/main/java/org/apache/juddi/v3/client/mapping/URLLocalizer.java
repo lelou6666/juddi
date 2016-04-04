@@ -21,5 +21,6 @@ import java.net.URL;
 public interface URLLocalizer {
 
 	public String rewrite (URL urlIn);
+	public URL rewriteURL(URL urlIn);
 	public String rewriteToWSDLURL (URL urlIn);
 }

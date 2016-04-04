@@ -17,6 +17,7 @@ package org.apache.juddi.v3.bpel;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -33,9 +34,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.v3.client.config.UDDIClerk;
 import org.apache.juddi.v3.client.config.UDDIClient;
-import org.apache.juddi.v3.client.mapping.BPEL2UDDI;
-import org.apache.juddi.v3.client.mapping.ReadWSDL;
 import org.apache.juddi.v3.client.mapping.URLLocalizerDefaultImpl;
+import org.apache.juddi.v3.client.mapping.wsdl.BPEL2UDDI;
+import org.apache.juddi.v3.client.mapping.wsdl.ReadWSDL;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.apache.juddi.v3.client.transport.TransportException;
 import org.apache.juddi.v3.tck.TckBusiness;
@@ -74,7 +75,11 @@ public class BPEL_020_IntegrationTest {
 
                 logger.debug("Getting auth token for user riftsaw/riftsaw..");
                 try {
+<<<<<<< HEAD
                         Transport transport = manager.getTransport();
+=======
+                        Transport transport = manager.getTransport("uddiv3");
+>>>>>>> refs/remotes/apache/master
 
                         UDDISecurityPortType security = transport.getUDDISecurityService();
                         authInfoRiftSaw = TckSecurity.getAuthToken(security, TckPublisher.getRiftSawPublisherId(), TckPublisher.getRiftSawPassword());
@@ -124,18 +129,37 @@ public class BPEL_020_IntegrationTest {
                 String ns = wsdlDefinition.getTargetNamespace();
                 System.out.println("Namespace: " + ns);
 
+<<<<<<< HEAD
                 int i = 0;
                 for (QName qName : portTypes.keySet()) {
+=======
+                boolean foundInterfaceOfTravelAgent=false;
+                boolean foundInterfaceOfCustomer=false;
+          
+                Iterator<QName> iterator = portTypes.keySet().iterator();
+                while (iterator.hasNext()) {
+                        QName qName = iterator.next();
+>>>>>>> refs/remotes/apache/master
                         String nsp = qName.getNamespaceURI();
                         String localpart = qName.getLocalPart();
                         System.out.println("Namespace: " + nsp);
                         System.out.println("LocalPart: " + localpart);
+<<<<<<< HEAD
                         if (i++ == 0) {
                                 Assert.assertEquals("InterfaceOfTravelAgent", localpart);
                         } else {
                                 Assert.assertEquals("InterfaceOfCustomer", localpart);
                         }
                 }
+=======
+                        if (localpart.equals("InterfaceOfTravelAgent"))
+                                foundInterfaceOfTravelAgent=true;
+                        if (localpart.equals("InterfaceOfCustomer"))
+                                foundInterfaceOfCustomer=true;
+                }
+                org.junit.Assert.assertTrue("InterfaceOfCustomer wasn't found, wsdl parsing error", foundInterfaceOfCustomer);
+                org.junit.Assert.assertTrue("InterfaceOfTravelAgent wasn't found, wsdl parsing error", foundInterfaceOfTravelAgent);
+>>>>>>> refs/remotes/apache/master
         }
 
         @Test

@@ -20,6 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
+<<<<<<< HEAD
+=======
+import javax.persistence.Column;
+>>>>>>> refs/remotes/apache/master
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -36,6 +40,7 @@ import javax.persistence.Table;
 public class Edge {
 
         private Long id;
+<<<<<<< HEAD
         private Set<ReplicationMessage>  message;
         private Node messageSender;
         private Node messageReceiver;
@@ -52,10 +57,29 @@ public class Edge {
                 parent = val;
         }
 
+=======
+        private List<ControlMessage>  message;
+        private String messageSender;
+        private String messageReceiver;
+        private List<EdgeReceiverAlternate> messageReceiverAlternate;
+        private ReplicationConfiguration parent;
+
+         @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ReplicationConfiguration", nullable = false)
+        public ReplicationConfiguration getReplicationConfiguration() {
+                return parent;
+        }
+        
+        public void setReplicationConfiguration(ReplicationConfiguration p){
+                parent = p;
+        }
+        
+>>>>>>> refs/remotes/apache/master
         /**
          * The message elements contain the local name of the Replication API message elements
          * @return 
          */
+<<<<<<< HEAD
         @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = ReplicationMessage.class)
         public Set<ReplicationMessage> getMessages() {
                 if (message == null) {
@@ -74,6 +98,26 @@ public class Edge {
         }
 
         public void setMessageSender(Node value) {
+=======
+        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = ControlMessage.class)
+        public List<ControlMessage> getMessages() {
+                if (message == null) {
+                        message = new ArrayList<ControlMessage>();
+                }
+                return this.message;
+        }
+        public void setMessages(List<ControlMessage>  values) {
+                this.message = values;
+        }
+
+        
+        @Column
+        public String getMessageSender() {
+                return messageSender;
+        }
+
+        public void setMessageSender(String value) {
+>>>>>>> refs/remotes/apache/master
                 this.messageSender = value;
         }
 
@@ -82,6 +126,7 @@ public class Edge {
                  *
          * @return
          */
+<<<<<<< HEAD
         @JoinColumn(referencedColumnName ="name" )
         @ManyToOne(targetEntity = Node.class)
         public Node getMessageReceiver() {
@@ -89,6 +134,14 @@ public class Edge {
         }
 
         public void setMessageReceiver(Node value) {
+=======
+        @Column
+        public String getMessageReceiver() {
+                return messageReceiver;
+        }
+
+        public void setMessageReceiver(String value) {
+>>>>>>> refs/remotes/apache/master
                 this.messageReceiver = value;
         }
 
@@ -99,10 +152,19 @@ public class Edge {
          *
          * @return
          */
+<<<<<<< HEAD
         @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = Node.class)
         public Set<Node> getMessageReceiverAlternate() {
                 if (messageReceiverAlternate == null) {
                         messageReceiverAlternate = new HashSet<Node>();
+=======
+        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = EdgeReceiverAlternate.class
+                //, mappedBy = "messageReceiverAlternate"
+        )
+        public List<EdgeReceiverAlternate> getMessageReceiverAlternate() {
+                if (messageReceiverAlternate == null) {
+                        messageReceiverAlternate = new ArrayList<EdgeReceiverAlternate>();
+>>>>>>> refs/remotes/apache/master
                 }
                 return this.messageReceiverAlternate;
         }
@@ -113,6 +175,7 @@ public class Edge {
                 return id;
         }
 
+<<<<<<< HEAD
         public void setMessage(Set<ReplicationMessage> message) {
                 this.message = message;
         }
@@ -124,6 +187,17 @@ public class Edge {
         public void setParent(CommunicationGraph parent) {
                 this.parent = parent;
         }
+=======
+        public void setMessage(List<ControlMessage> message) {
+                this.message = message;
+        }
+
+        public void setMessageReceiverAlternate(List<EdgeReceiverAlternate> messageReceiverAlternate) {
+                this.messageReceiverAlternate = messageReceiverAlternate;
+        }
+
+     
+>>>>>>> refs/remotes/apache/master
 
         public void setId(Long id) {
                 this.id = id;

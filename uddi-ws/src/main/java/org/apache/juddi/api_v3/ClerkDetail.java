@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 The Apache Software Foundation.
+ * Copyright 2001-2009 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.apache.juddi.api_v3;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -27,10 +26,16 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * <p>Java class for clerkDetail complex type.
+<<<<<<< HEAD
  *
  * <p>The following schema fragment specifies the expected content contained
  * within this class.
  *
+=======
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+>>>>>>> refs/remotes/apache/master
  * <pre>
  * &lt;complexType name="clerkDetail">
  *   &lt;complexContent>
@@ -42,13 +47,19 @@ import javax.xml.bind.annotation.XmlTransient;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+<<<<<<< HEAD
  *
  *
+=======
+ * 
+ * 
+>>>>>>> refs/remotes/apache/master
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "clerkDetail", propOrder = {
         "clerk"
 })
+<<<<<<< HEAD
 public class ClerkDetail implements Serializable {
 
         @XmlTransient
@@ -84,4 +95,40 @@ public class ClerkDetail implements Serializable {
                 }
                 return this.clerk;
         }
+=======
+public class ClerkDetail {
+
+    @XmlElement(nillable = true)
+    protected List<Clerk> clerk;
+
+    /**
+     * Gets the value of the clerk property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the clerk property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getClerk().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Clerk }
+     * 
+     * 
+     */
+    public List<Clerk> getClerk() {
+        if (clerk == null) {
+            clerk = new ArrayList<Clerk>();
+        }
+        return this.clerk;
+    }
+
+>>>>>>> refs/remotes/apache/master
 }

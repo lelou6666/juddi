@@ -35,7 +35,6 @@ namespace org.apache.juddi.client.sample.juddi
             try
             {
                 clerkManager = new UDDIClient("uddi.xml");
-                UDDIClientContainer.addClient(clerkManager);
 
                 transport = clerkManager.getTransport("default");
 
@@ -56,7 +55,7 @@ namespace org.apache.juddi.client.sample.juddi
                 UDDIClerk cc =new UDDIClerk(newclerk);
 
 
-                  save_clerkInfo saveClerk = new save_clerkInfo();
+                  save_clerk saveClerk = new save_clerk();
                 saveClerk.authInfo = clerk.getAuthToken(clerk.getUDDINode().getSecurityUrl());
                 saveClerk.clerk = new clerk[] { newclerk };
               clerk[] ret=  juddi.save_Clerk(saveClerk);

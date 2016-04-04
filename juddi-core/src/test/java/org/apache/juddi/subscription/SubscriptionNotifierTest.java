@@ -63,7 +63,11 @@ public class SubscriptionNotifierTest {
     private static TckBusiness tckBusiness = new TckBusiness(new UDDIPublicationImpl(), new UDDIInquiryImpl());
     private static TckBusinessService tckBusinessService = new TckBusinessService(new UDDIPublicationImpl(), new UDDIInquiryImpl());
     private static TckBindingTemplate tckBindingTemplate = new TckBindingTemplate(new UDDIPublicationImpl(), new UDDIInquiryImpl());
+<<<<<<< HEAD
     private static TckSubscription tckSubscription = new TckSubscription(new UDDISubscriptionImpl());
+=======
+    private static TckSubscription tckSubscription = new TckSubscription(new UDDISubscriptionImpl(), new UDDISecurityImpl(), new UDDIInquiryImpl());
+>>>>>>> refs/remotes/apache/master
     private static String authInfoJoe = null;
 
     @BeforeClass

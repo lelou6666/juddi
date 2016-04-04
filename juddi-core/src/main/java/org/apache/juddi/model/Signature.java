@@ -49,6 +49,8 @@ public class Signature implements java.io.Serializable {
     private ReplicationConfiguration replConfig;
     private Tmodel tmodel;
     private String xmlID;
+    private String assertionFromKey;
+    private String assertionToKey;
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -71,6 +73,27 @@ public class Signature implements java.io.Serializable {
     }
     
     
+<<<<<<< HEAD
+=======
+    
+    @Column(nullable = true, length = 255, name = "passertionfrom")
+    public String getPublisherAssertionFromKey() {
+        return assertionFromKey;
+    }
+
+    public void setPublisherAssertionFromKey(String item) {
+        this.assertionFromKey = item;
+    }
+    @Column(nullable = true, length = 255, name = "passertionto")
+    public String getPublisherAssertionToKey() {
+        return assertionFromKey;
+    }
+    public void setPublisherAssertionToKey(String item) {
+        this.assertionToKey = item;
+    }
+ 
+    
+>>>>>>> refs/remotes/apache/master
      @ManyToOne
     @JoinColumn(name = "repl_config_key", nullable = true)
     public ReplicationConfiguration getReplicationConfiguration() {

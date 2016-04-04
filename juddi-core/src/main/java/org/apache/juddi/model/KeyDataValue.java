@@ -142,9 +142,16 @@ public class KeyDataValue implements java.io.Serializable {
 
     @Override
     public String toString() {
+<<<<<<< HEAD
         return "KeyDataValue{" + "id=" +getId() + ", keyDataType=" +getKeyDataType()  +
                 ", keyDataName=" + getKeyDataName() + ", keyDataValueBytes=" + 
                 getKeyDataValueBytes() + ", keyDataValueString=" + getKeyDataValueString() 
                 + ", keyDataValueList=" + getKeyDataValueList() + '}';
+=======
+        return "KeyDataValue{" + "id=" + getId() + ", keyDataType=" + getKeyDataType() +
+                ", keyDataName=" + getKeyDataName() + ", keyDataValueBytes=" 
+                + getKeyDataValueBytes() + ", keyDataValueString=" + getKeyDataValueString()
+                + ", keyDataValueList=" +getKeyDataValueList()  + '}';
+>>>>>>> refs/remotes/apache/master
     }
 }

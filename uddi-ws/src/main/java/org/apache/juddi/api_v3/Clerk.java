@@ -16,10 +16,15 @@
  */
 package org.apache.juddi.api_v3;
 
+<<<<<<< HEAD
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+=======
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+>>>>>>> refs/remotes/apache/master
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -52,11 +57,15 @@ import javax.xml.bind.annotation.XmlType;
     "publisher",
     "password"
 })
+<<<<<<< HEAD
 public class Clerk implements Serializable {
 
 @XmlTransient
 	private static final long serialVersionUID = 2723174126266580550L;
 	
+=======
+public class Clerk {
+>>>>>>> refs/remotes/apache/master
 
     protected String name;
     protected Node node;

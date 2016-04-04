@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    /*
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+-->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" 
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence classpath:schemas/persistence_1_0.xsd" 
@@ -59,6 +77,7 @@
     <class>org.apache.juddi.model.SubscriptionChunkToken</class>
     <class>org.apache.juddi.model.SubscriptionMatch</class>
     <class>org.apache.juddi.model.TempKey</class>
+<<<<<<< HEAD
 	<class>org.apache.juddi.model.TempKeyPK</class>
     <class>org.apache.juddi.model.Tmodel</class>
     <class>org.apache.juddi.model.TmodelCategoryBag</class>
@@ -74,12 +93,33 @@
 	<class>org.apache.juddi.model.ValueSetValue</class>
 	<class>org.apache.juddi.model.ChangeRecord</class>
 	<class>org.apache.juddi.model.CommunicationGraph</class>
+=======
+	<class>org.apache.juddi.model.TempKeyPK</class>
+    <class>org.apache.juddi.model.Tmodel</class>
+    <class>org.apache.juddi.model.TmodelCategoryBag</class>
+    <class>org.apache.juddi.model.TmodelDescr</class>
+    <class>org.apache.juddi.model.TmodelIdentifier</class>
+    <class>org.apache.juddi.model.TmodelInstanceInfo</class>
+    <class>org.apache.juddi.model.TmodelInstanceInfoDescr</class>
+    <class>org.apache.juddi.model.TransferToken</class>
+    <class>org.apache.juddi.model.TransferTokenKey</class>
+    <class>org.apache.juddi.model.UddiEntity</class>
+    <class>org.apache.juddi.model.UddiEntityPublisher</class>
+	<class>org.apache.juddi.model.ValueSetValues</class>
+
+	<class>org.apache.juddi.model.ChangeRecord</class>
+>>>>>>> refs/remotes/apache/master
 	<class>org.apache.juddi.model.Operator</class>
 	<class>org.apache.juddi.model.ReplicationConfiguration</class>
 	<class>org.apache.juddi.model.Edge</class>
 	<class>org.apache.juddi.model.ControlMessage</class>
+<<<<<<< HEAD
 	<class>org.apache.juddi.model.ReplicationMessage</class>
 	
+=======
+    <class>org.apache.juddi.model.ReplicationConfigurationNode</class>
+    <class>org.apache.juddi.model.EdgeReceiverAlternate</class>
+>>>>>>> refs/remotes/apache/master
 
     <properties>
       <property name="hibernate.archive.autodetection" value="class"/>

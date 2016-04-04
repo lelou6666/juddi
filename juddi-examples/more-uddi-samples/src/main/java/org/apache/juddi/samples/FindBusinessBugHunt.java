@@ -1,36 +1,33 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2001-2008 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.juddi.samples;
 
-import java.io.File;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.namespace.QName;
 import org.apache.juddi.jaxb.PrintUDDI;
-import static org.apache.juddi.samples.WadlImport.properties;
 import org.apache.juddi.v3.client.UDDIConstants;
 import org.apache.juddi.v3.client.config.UDDIClerk;
 import org.apache.juddi.v3.client.config.UDDIClient;
-import org.apache.juddi.v3.client.config.UDDIClientContainer;
-import org.apache.juddi.v3.client.mapping.URLLocalizerDefaultImpl;
-import org.apache.juddi.v3.client.mapping.WADL2UDDI;
-import org.apache.juddi.v3.client.mappings.wadl.Application;
 import org.apache.juddi.v3.client.transport.Transport;
 import org.apache.juddi.v3_service.JUDDIApiPortType;
-import org.uddi.api_v3.AuthToken;
 import org.uddi.api_v3.BusinessDetail;
 import org.uddi.api_v3.BusinessEntity;
 import org.uddi.api_v3.BusinessInfos;
 import org.uddi.api_v3.BusinessList;
-import org.uddi.api_v3.BusinessService;
-import org.uddi.api_v3.BusinessServices;
 import org.uddi.api_v3.Contact;
 import org.uddi.api_v3.Contacts;
 import org.uddi.api_v3.DeleteBusiness;
@@ -45,7 +42,6 @@ import org.uddi.api_v3.PersonName;
 import org.uddi.api_v3.SaveBusiness;
 import org.uddi.api_v3.SaveTModel;
 import org.uddi.api_v3.TModel;
-import org.uddi.v3_service.DispositionReportFaultMessage;
 import org.uddi.v3_service.UDDIInquiryPortType;
 import org.uddi.v3_service.UDDIPublicationPortType;
 import org.uddi.v3_service.UDDISecurityPortType;
@@ -70,12 +66,10 @@ public class FindBusinessBugHunt {
         // you can use your config file name
         UDDIClient clerkManager = new UDDIClient("META-INF/simple-publish-uddi.xml");
         UDDIClerk clerk = clerkManager.getClerk("default");
-        // register the clerkManager with the client side container
-        UDDIClientContainer.addClient(clerkManager);            // a ClerkManager can be a client to multiple UDDI nodes, so 
         // a ClerkManager can be a client to multiple UDDI nodes, so 
         // supply the nodeName (defined in your uddi.xml.
         // The transport can be WS, inVM, RMI etc which is defined in the uddi.xml
-        Transport transport = clerkManager.getTransport("default");
+        Transport transport = clerkManager.getTransport();
         // Now you create a reference to the UDDI API
         security = transport.getUDDISecurityService();
         publish = transport.getUDDIPublishService();

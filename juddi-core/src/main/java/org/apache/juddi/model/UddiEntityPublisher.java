@@ -94,23 +94,37 @@ public class UddiEntityPublisher {
         /**
          * Determines if *this publisher owns a specific key
          * @param entity
+<<<<<<< HEAD
          * @return 
          */
 	public boolean isOwner(UddiEntity entity){
             boolean ret = false;
+=======
+         * @return true/false
+         */
+	public boolean isOwner(UddiEntity entity){
+>>>>>>> refs/remotes/apache/master
             try {
                 AppConfig instance = AppConfig.getInstance();
 
                 if (entity != null) {
                     if (entity.getAuthorizedName().equals(getAuthorizedName())
                             && entity.getNodeId().equals((AppConfig.getConfiguration().getString(Property.JUDDI_NODE_ID)))) {
+<<<<<<< HEAD
                         ret = true;
+=======
+                        return true;
+>>>>>>> refs/remotes/apache/master
                     }
                 }
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Error caught determining node id! Defaulting to access denied", ex);
             }
+<<<<<<< HEAD
             return ret;
+=======
+            return false;
+>>>>>>> refs/remotes/apache/master
 	}
 
 	
