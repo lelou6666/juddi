@@ -17,15 +17,23 @@ package org.apache.juddi.api.impl;
 import java.rmi.RemoteException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.Registry;
-import org.apache.log4j.Logger;
+import org.apache.juddi.v3.tck.TckPublisher;
+import org.apache.juddi.v3.tck.TckSecurity;
+import org.apache.juddi.v3.tck.TckTModel;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.uddi.api_v3.tck.TckPublisher;
-import org.uddi.api_v3.tck.TckSecurity;
-import org.uddi.api_v3.tck.TckTModel;
+import org.uddi.api_v3.CategoryBag;
+import org.uddi.api_v3.KeyedReference;
+import org.uddi.api_v3.Name;
+import org.uddi.api_v3.TModel;
+import org.uddi.api_v3.TModelDetail;
+import org.uddi.api_v3.TModelInfo;
+import org.uddi.api_v3.TModelList;
 import org.uddi.v3_service.DispositionReportFaultMessage;
 import org.uddi.v3_service.UDDISecurityPortType;
 
@@ -36,7 +44,7 @@ import org.uddi.v3_service.UDDISecurityPortType;
 public class API_020_TmodelTest {
 	
 	private static TckTModel tckTModel                = new TckTModel(new UDDIPublicationImpl(), new UDDIInquiryImpl());
-	private static Logger logger                      = Logger.getLogger(API_020_TmodelTest.class);
+	private static Log logger                         = LogFactory.getLog(API_020_TmodelTest.class);
 	private static API_010_PublisherTest api010       = new API_010_PublisherTest();
 	private static String authInfoJoe                 = null;
 	private static String authInfoSam                 = null;
@@ -49,8 +57,8 @@ public class API_020_TmodelTest {
 			api010.saveJoePublisher();
 			api010.saveSamSyndicator();
 			UDDISecurityPortType security      = new UDDISecurityImpl();
-			authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.JOE_PUBLISHER_ID,  TckPublisher.JOE_PUBLISHER_CRED);
-			authInfoSam = TckSecurity.getAuthToken(security, TckPublisher.SAM_SYNDICATOR_ID,  TckPublisher.SAM_SYNDICATOR_CRED);
+			authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(),  TckPublisher.getJoePassword());
+			authInfoSam = TckSecurity.getAuthToken(security, TckPublisher.getSamPublisherId(),  TckPublisher.getSamPassword());
 		} catch (DispositionReportFaultMessage e) {
 			logger.error(e.getMessage(), e);
 			Assert.fail("Could not obtain authInfo token.");
@@ -64,8 +72,27 @@ public class API_020_TmodelTest {
 	
 	@Test
 	public void testJoePublisherTmodel() {
-		tckTModel.saveJoePublisherTmodel(authInfoJoe);
+		tckTModel.saveJoePublisherTmodel(authInfoJoe, true);
+		
+		//Now if we use a finder it should be found.
+		TModelList tModelList = tckTModel.findJoeTModelDetail();
+		Assert.assertNotNull(tModelList.getTModelInfos());
+		
 		tckTModel.deleteJoePublisherTmodel(authInfoJoe);
+		
+		//Even if it deleted you should still be able to access it through a getTModelDetail
+		TModelDetail detail = tckTModel.getJoePublisherTmodel(authInfoJoe);
+		Assert.assertNotNull(detail.getTModel());
+		
+		//However if we use a finder it should not be found.
+		TModelList tModelList2 = tckTModel.findJoeTModelDetail();
+		Assert.assertNull(tModelList2.getTModelInfos());
+		
+		//Make sure none of the found key generators is Joe's key generator
+		TModelList tModelList3 = tckTModel.findJoeTModelDetailByCategoryBag();
+		for (TModelInfo tModelInfo : tModelList3.getTModelInfos().getTModelInfo()) {
+			Assert.assertFalse("uddi:uddi.joepublisher.com:keygenerator".equals(tModelInfo.getTModelKey()));
+		}
 	}
 	
 	@Test
@@ -74,4 +101,25 @@ public class API_020_TmodelTest {
 		tckTModel.deleteSamSyndicatorTmodel(authInfoSam);
 	}	
 	
+     
+     @Test
+     public void testJUDDI956Test(){
+          tckTModel.saveJoePublisherTmodel(authInfoJoe, true);
+          TModel one = new TModel();
+          one.setTModelKey("uddi:uddi.joepublisher.com:juddi956");
+          one.setName(new Name("JUDDI-956 Test case", "EN"));
+          
+          tckTModel.saveTModel(authInfoJoe, one, false);
+          TModel two = new TModel();
+          two.setTModelKey("uddi:uddi.joepublisher.com:juddi956-2");
+          two.setName(new Name("JUDDI-956 Test case", "EN"));
+          two.setCategoryBag(new CategoryBag());
+          two.getCategoryBag().getKeyedReference().add(new KeyedReference("uddi:uddi.joepublisher.com:juddi956", "juddi956", "a value"));
+          tckTModel.saveTModel(authInfoJoe, one, false);
+          
+          tckTModel.deleteTModel(authInfoJoe, null, "uddi:uddi.joepublisher.com:juddi956-2");
+          tckTModel.deleteTModel(authInfoJoe, null, "uddi:uddi.joepublisher.com:juddi956");
+          tckTModel.deleteJoePublisherTmodel(authInfoJoe);
+          
+     }
 }

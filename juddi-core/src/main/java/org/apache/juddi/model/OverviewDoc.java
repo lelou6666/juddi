@@ -39,7 +39,7 @@ import javax.persistence.Table;
 @Table(name = "j3_overview_doc")
 public class OverviewDoc implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4560091663915489899L;
 	private Long id;
 	private TmodelInstanceInfo tmodelInstanceInfo;
 	private Tmodel tmodel;
@@ -97,7 +97,7 @@ public class OverviewDoc implements java.io.Serializable {
 		this.tmodel = tmodel;
 	}
 
-	@Column(name = "overview_url", nullable = false)
+	@Column(name = "overview_url", nullable = true)
 	public String getOverviewUrl() {
 		return this.overviewUrl;
 	}

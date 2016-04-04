@@ -35,7 +35,7 @@ import javax.persistence.Table;
 @Table(name = "j3_business_entity")
 public class BusinessEntity extends UddiEntity implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7353389848796421619L;
 	private List<Contact> contacts = new ArrayList<Contact>(0);
 	private List<BusinessIdentifier> businessIdentifiers = new ArrayList<BusinessIdentifier>(0);
 	private List<PublisherAssertion> publisherAssertionsForFromKey = new ArrayList<PublisherAssertion>(0);
@@ -45,8 +45,8 @@ public class BusinessEntity extends UddiEntity implements java.io.Serializable {
 	private BusinessCategoryBag categoryBag;
 	private List<BusinessService> businessServices = new ArrayList<BusinessService>(0);
 	private List<BusinessDescr> businessDescrs = new ArrayList<BusinessDescr>(0);
-	
 	private List<ServiceProjection> serviceProjections = new ArrayList<ServiceProjection>(0);
+        private List<Signature> signatures = new ArrayList<Signature>(0);
 
 	public BusinessEntity() {
 	}
@@ -82,6 +82,8 @@ public class BusinessEntity extends UddiEntity implements java.io.Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "businessEntity")
 	@OrderBy
 	public List<Contact> getContacts() {
+                if (this.contacts==null)
+                        this.contacts = new ArrayList<Contact>();
 		return this.contacts;
 	}
 	public void setContacts(List<Contact> contacts) {
@@ -169,6 +171,16 @@ public class BusinessEntity extends UddiEntity implements java.io.Serializable {
 	public void setServiceProjections(List<ServiceProjection> serviceProjections) {
 		this.serviceProjections = serviceProjections;
 	}
+
+        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "businessEntity")
+	@OrderBy
+        public List<Signature> getSignatures() {
+                return signatures;
+        }
+
+        public void setSignatures(List<Signature> signatures) {
+                this.signatures = signatures;
+        }
 	
 	
 }

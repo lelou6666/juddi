@@ -32,7 +32,7 @@ import javax.persistence.Table;
 @Table(name = "j3_person_name")
 public class PersonName implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7595828394786128290L;
 	private Long id;
 	private Contact contact;
 	private String langCode;
@@ -70,7 +70,7 @@ public class PersonName implements java.io.Serializable {
 		this.contact = contact;
 	}
 
-	@Column(name = "lang_code", length = 5)
+	@Column(name = "lang_code", length = 26)
 	public String getLangCode() {
 		return this.langCode;
 	}

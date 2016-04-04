@@ -24,6 +24,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -52,11 +53,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "tModelDetail", propOrder = {
     "tModel"
 })
+@XmlRootElement
 public class TModelDetail implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected List<TModel> tModel;
+	private static final long serialVersionUID = -6177395088071260965L;
+	protected List<TModel> tModel;
     @XmlAttribute
     protected Boolean truncated;
 
@@ -114,4 +115,3 @@ public class TModelDetail implements Serializable{
     }
 
 }
-

@@ -33,7 +33,7 @@ import javax.persistence.Table;
 @Table(name = "j3_business_descr")
 public class BusinessDescr implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1940688895315958818L;
 	private Long id;
 	private BusinessEntity businessEntity;
 	private String langCode;
@@ -72,7 +72,7 @@ public class BusinessDescr implements java.io.Serializable {
 		this.businessEntity = businessEntity;
 	}
 
-	@Column(name = "lang_code", length = 5)
+	@Column(name = "lang_code", length = 26)
 	public String getLangCode() {
 		return this.langCode;
 	}
@@ -80,7 +80,7 @@ public class BusinessDescr implements java.io.Serializable {
 		this.langCode = langCode;
 	}
 
-	@Column(name = "descr", nullable = false, length = 1024)
+	@Column(name = "descr", nullable = false, length = 255)
 	public String getDescr() {
 		return this.descr;
 	}

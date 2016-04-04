@@ -20,6 +20,8 @@ package org.apache.juddi.model;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -27,6 +29,8 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Query;
 import javax.persistence.Transient;
+import org.apache.juddi.config.AppConfig;
+import org.apache.juddi.config.Property;
 
 import org.apache.juddi.keygen.KeyGenerator;
 import org.apache.juddi.query.util.DynamicQuery;
@@ -39,7 +43,7 @@ import org.uddi.v3_service.DispositionReportFaultMessage;
 @MappedSuperclass
 public class UddiEntityPublisher {
 	
-
+        private transient static final Logger logger = Logger.getLogger(UddiEntityPublisher.class.getCanonicalName());
 	protected String authorizedName;
 	private List<String> keyGeneratorKeys = null;
 
@@ -87,13 +91,25 @@ public class UddiEntityPublisher {
 		keyGeneratorKeys = qry.getResultList();
 	}
 	
+        /**
+         * Determines if *this publisher owns a specific key
+         * @param entity
+         * @return true/false
+         */
 	public boolean isOwner(UddiEntity entity){
-		boolean ret = false;
-		if (entity != null) {
-			if (entity.getAuthorizedName().equals(getAuthorizedName()))
-				ret = true;
-		}
-		return ret;
+            try {
+                AppConfig instance = AppConfig.getInstance();
+
+                if (entity != null) {
+                    if (entity.getAuthorizedName().equals(getAuthorizedName())
+                            && entity.getNodeId().equals((AppConfig.getConfiguration().getString(Property.JUDDI_NODE_ID)))) {
+                        return true;
+                    }
+                }
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, "Error caught determining node id! Defaulting to access denied", ex);
+            }
+            return false;
 	}
 
 	
@@ -104,11 +120,11 @@ public class UddiEntityPublisher {
 		if (keyGeneratorKeys == null)
 			populateKeyGeneratorKeys(em);
 		
-
+		if (! key.contains(KeyGenerator.PARTITION_SEPARATOR)) return true; //v2 style key
 		String keyPartition = key.substring(0, key.lastIndexOf(KeyGenerator.PARTITION_SEPARATOR));
 		
 		for (String keyGenKey : keyGeneratorKeys) {
-			String keyGenPartition = keyGenKey.substring(0, key.lastIndexOf(KeyGenerator.PARTITION_SEPARATOR));
+			String keyGenPartition = keyGenKey.substring(0, keyGenKey.lastIndexOf(KeyGenerator.PARTITION_SEPARATOR));
 			if (keyGenPartition.equalsIgnoreCase(keyPartition))
 				return true;
 		}

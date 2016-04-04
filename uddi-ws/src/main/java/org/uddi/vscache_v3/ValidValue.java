@@ -51,12 +51,18 @@ import javax.xml.bind.annotation.XmlType;
     "keyValue"
 })
 public class ValidValue implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlElement(required = true)
+	private static final long serialVersionUID = 7673085230286980915L;
+	@XmlElement(required = true)
     protected String keyValue;
 
+        public ValidValue() {
+        }
+
+        public ValidValue(String val) {
+
+                this.keyValue = val;
+        }
     /**
      * Gets the value of the keyValue property.
      * 
@@ -82,4 +88,3 @@ public class ValidValue implements Serializable{
     }
 
 }
-

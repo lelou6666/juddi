@@ -31,7 +31,26 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.ws.Holder;
 
-import org.uddi.api_v3.AssertionStatusItem;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.juddi.api.util.QueryStatus;
+import org.apache.juddi.api.util.SubscriptionQuery;
+import org.apache.juddi.config.AppConfig;
+import org.apache.juddi.config.PersistenceManager;
+import org.apache.juddi.config.Property;
+import org.apache.juddi.jaxb.JAXBMarshaller;
+import org.apache.juddi.mapping.MappingApiToModel;
+import org.apache.juddi.mapping.MappingModelToApi;
+import org.apache.juddi.model.SubscriptionChunkToken;
+import org.apache.juddi.model.SubscriptionMatch;
+import org.apache.juddi.model.UddiEntityPublisher;
+import org.apache.juddi.query.FindBusinessByPublisherQuery;
+import org.apache.juddi.query.FindSubscriptionByPublisherQuery;
+import org.apache.juddi.v3.error.ErrorMessage;
+import org.apache.juddi.v3.error.FatalErrorException;
+import org.apache.juddi.v3.error.InvalidValueException;
+import org.apache.juddi.validation.ValidateSubscription;
 import org.uddi.api_v3.AssertionStatusReport;
 import org.uddi.api_v3.BindingDetail;
 import org.uddi.api_v3.BusinessDetail;
@@ -59,38 +78,33 @@ import org.uddi.sub_v3.SubscriptionFilter;
 import org.uddi.sub_v3.SubscriptionResultsList;
 import org.uddi.v3_service.DispositionReportFaultMessage;
 import org.uddi.v3_service.UDDISubscriptionPortType;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.juddi.config.AppConfig;
-import org.apache.juddi.config.PersistenceManager;
-import org.apache.juddi.config.Property;
-import org.apache.juddi.error.ErrorMessage;
-import org.apache.juddi.error.FatalErrorException;
-import org.apache.juddi.error.InvalidValueException;
-import org.apache.juddi.mapping.MappingApiToModel;
-import org.apache.juddi.mapping.MappingModelToApi;
-import org.apache.juddi.model.SubscriptionChunkToken;
-import org.apache.juddi.model.SubscriptionMatch;
-import org.apache.juddi.model.UddiEntityPublisher;
-import org.apache.juddi.query.FindSubscriptionByPublisherQuery;
-import org.apache.juddi.util.JAXBMarshaller;
-import org.apache.juddi.validation.ValidateSubscription;
-import org.apache.log4j.Logger;
 
-
+/**
+ * This is jUDDI's implementation of the UDDIv3 Subscription API
+ */
 @WebService(serviceName="UDDISubscriptionService", 
 			endpointInterface="org.uddi.v3_service.UDDISubscriptionPortType",
-			targetNamespace = "urn:uddi-org:sub_v3_portType")
+			targetNamespace = "urn:uddi-org:api_v3_portType")
 public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISubscriptionPortType {
 
-	private static Logger logger = Logger.getLogger(UDDISubscriptionImpl.class);
+	private static Log logger = LogFactory.getLog(UDDISubscriptionImpl.class);
 
 	public static final int DEFAULT_SUBSCRIPTIONEXPIRATION_DAYS = 30;
 	public static final int DEFAULT_CHUNKEXPIRATION_MINUTES = 5;
 
 	public static final String CHUNK_TOKEN_PREFIX = "chunktoken:";
 
+        private UDDIServiceCounter serviceCounter;
+
+        public UDDISubscriptionImpl() {
+            super();
+            serviceCounter = ServiceCounterLifecycleResource.getServiceCounter(this.getClass());
+        }
+	
 	public void deleteSubscription(DeleteSubscription body)
 			throws DispositionReportFaultMessage {
+	        long startTime = System.currentTimeMillis();
+
 		EntityManager em = PersistenceManager.getEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		try {
@@ -106,6 +120,14 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	        }
 	
 	        tx.commit();
+                long procTime = System.currentTimeMillis() - startTime;
+                serviceCounter.update(SubscriptionQuery.DELETE_SUBSCRIPTION, 
+                        QueryStatus.SUCCESS, procTime);
+                } catch (DispositionReportFaultMessage drfm) {
+                    long procTime = System.currentTimeMillis() - startTime;
+                    serviceCounter.update(SubscriptionQuery.DELETE_SUBSCRIPTION, 
+                            QueryStatus.FAILED, procTime);                      
+                    throw drfm;                                                                                                 
 		} finally {
 			if (tx.isActive()) {
 				tx.rollback();
@@ -130,10 +152,11 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	 */
 	@SuppressWarnings("unchecked")
 	public SubscriptionResultsList getSubscriptionResults(GetSubscriptionResults body, UddiEntityPublisher publisher) throws DispositionReportFaultMessage {
-
+                long startTime = System.currentTimeMillis();
+            
 		EntityManager em = PersistenceManager.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
+		EntityTransaction tx = em.getTransaction();
+                try {
 	        tx.begin();
 	        
 			if (publisher==null) {
@@ -150,8 +173,11 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 				logger.error("JAXB Exception while unmarshalling subscription filter", e);
 				throw new FatalErrorException(new ErrorMessage("errors.Unspecified"));
 			}
+			if (logger.isDebugEnabled()) logger.debug("filter=" + modelSubscription.getSubscriptionFilter());
 			
 			SubscriptionResultsList result = new SubscriptionResultsList();
+                        result.setChunkToken("0");
+                        //chunkToken:  Optional element used to retrieve subsequent groups of data when the first invocation of this API indicates more data is available.  This occurs when a chunkToken is returned whose value is not "0" in the validValuesList structure described in the next section.  To retrieve the next chunk of data, the chunkToken returned should be used as an argument to the next invocation of this API.
 			result.setCoveragePeriod(body.getCoveragePeriod());
 	
 			// The subscription structure is required output for the results
@@ -186,7 +212,6 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			if (subscriptionFilter.getFindBinding() != null) {
 				//Get the current matching keys
 				List<?> currentMatchingKeys = getSubscriptionMatches(subscriptionFilter, em);
-	
 				// See if there's any missing keys by comparing against the previous matches.  If so, they missing keys are added to the KeyBag and
 				// then added to the result
 				List<String> missingKeys = getMissingKeys(currentMatchingKeys, modelSubscription.getSubscriptionMatches());
@@ -226,8 +251,8 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 					// Setting the start index to the chunkData
 					Holder<Integer> subscriptionStartIndex = new Holder<Integer>(chunkData);
 					
-					BindingDetail bindingDetail = InquiryHelper.getBindingDetailFromKeys(fb, findQualifiers, em, currentMatchingKeys,
-																						 startPointDate, endPointDate, subscriptionStartIndex, modelSubscription.getMaxEntities());
+					BindingDetail bindingDetail = InquiryHelper.getBindingDetailFromKeys(fb, findQualifiers, em, currentMatchingKeys,              
+						startPointDate, endPointDate, subscriptionStartIndex, modelSubscription.getMaxEntities());
 							
 					// Upon exiting above function, if more results are to be had, the subscriptionStartIndex will contain the latest value (or null
 					// if no more results)
@@ -290,7 +315,7 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			if (subscriptionFilter.getFindService() != null) {
 				//Get the current matching keys
 				List<?> currentMatchingKeys = getSubscriptionMatches(subscriptionFilter, em);
-	
+				if (logger.isDebugEnabled()) logger.debug("current matching keys=" + currentMatchingKeys);
 				List<String> missingKeys = getMissingKeys(currentMatchingKeys, modelSubscription.getSubscriptionMatches());
 				if (missingKeys != null && missingKeys.size() > 0) {
 					KeyBag missingKeyBag = new KeyBag();
@@ -330,7 +355,9 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	
 					ServiceList serviceList = InquiryHelper.getServiceListFromKeys(fs, findQualifiers, em, currentMatchingKeys,
 																				   startPointDate, endPointDate, subscriptionStartIndex, modelSubscription.getMaxEntities());
-	
+					if (serviceList.getServiceInfos()==null || serviceList.getServiceInfos().getServiceInfo().size()==0) {
+						serviceList=null;
+					}
 					// Upon exiting above function, if more results are to be had, the subscriptionStartIndex will contain the latest value (or null
 					// if no more results)
 					chunkData = subscriptionStartIndex.value;
@@ -696,14 +723,32 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			}
 			if (subscriptionFilter.getGetAssertionStatusReport() != null) {
 				// The coverage period doesn't apply here (basically because publisher assertions don't keep operational info).
-				
+				// TODO, JUDDI-873 edit they do now, rewrite this query
 				GetAssertionStatusReport getAssertionStatusReport = subscriptionFilter.getGetAssertionStatusReport();
-				
-				List<AssertionStatusItem> assertionList = PublicationHelper.getAssertionStatusItemList(publisher, getAssertionStatusReport.getCompletionStatus(), em);
-	
-				AssertionStatusReport assertionStatusReport  = new AssertionStatusReport();
-				for(AssertionStatusItem asi : assertionList)
-					assertionStatusReport.getAssertionStatusItem().add(asi);
+                                List<?> businessKeysFound = null;
+                                businessKeysFound = FindBusinessByPublisherQuery.select(em, null, publisher, businessKeysFound);
+		
+                                AssertionStatusReport assertionStatusReport  = new AssertionStatusReport();
+                                
+				List<org.apache.juddi.model.PublisherAssertion> pubAssertionList = org.apache.juddi.query.FindPublisherAssertionByBusinessQuery.select(em, businessKeysFound, getAssertionStatusReport.getCompletionStatus());
+                                //if (pubAssertionList==null)
+                                //    return result;
+                                for (org.apache.juddi.model.PublisherAssertion modelPubAssertion : pubAssertionList) {
+
+                                        if (startPointDate.after(modelPubAssertion.getModified())) {
+                                                continue;
+                                        }
+
+                                        if (endPointDate.before(modelPubAssertion.getModified())) {
+                                                continue;
+                                        }
+                                        org.uddi.api_v3.AssertionStatusItem apiAssertionStatusItem = new org.uddi.api_v3.AssertionStatusItem();
+
+                                        MappingModelToApi.mapAssertionStatusItem(modelPubAssertion, apiAssertionStatusItem, businessKeysFound);
+
+                                        assertionStatusReport.getAssertionStatusItem().add(apiAssertionStatusItem);
+                                }
+
 				
 				result.setAssertionStatusReport(assertionStatusReport);
 			}
@@ -724,7 +769,7 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 				catch(ConfigurationException ce) { 
 					throw new FatalErrorException(new ErrorMessage("errors.configuration.Retrieval"));
 				}
-				newChunkToken.setExpiresAfter(new Date(System.currentTimeMillis() + chunkExpirationMinutes * 60 * 1000));
+				newChunkToken.setExpiresAfter(new Date(System.currentTimeMillis() + ((long)chunkExpirationMinutes * 60L * 1000L)));
 				
 				em.persist(newChunkToken);
 				
@@ -732,7 +777,16 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			}
 			
 	        tx.commit();
+                long procTime = System.currentTimeMillis() - startTime;
+                serviceCounter.update(SubscriptionQuery.GET_SUBSCRIPTIONRESULTS, 
+                        QueryStatus.SUCCESS, procTime);
+
 	        return result;
+        } catch (DispositionReportFaultMessage drfm) {
+            long procTime = System.currentTimeMillis() - startTime;
+            serviceCounter.update(SubscriptionQuery.GET_SUBSCRIPTIONRESULTS, 
+                    QueryStatus.FAILED, procTime);                      
+            throw drfm;                                                                                                 
         } finally {
 			if (tx.isActive()) {
 				tx.rollback();
@@ -744,10 +798,11 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	@SuppressWarnings("unchecked")
 	public List<Subscription> getSubscriptions(String authInfo)
 			throws DispositionReportFaultMessage {
+	        long startTime = System.currentTimeMillis();
 		EntityManager em = PersistenceManager.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-	        tx.begin();
+		EntityTransaction tx = em.getTransaction();
+                try {
+                        tx.begin();
 	
 			UddiEntityPublisher publisher = this.getEntityPublisher(em, authInfo);
 			
@@ -766,7 +821,16 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			}
 	        
 	        tx.commit();
-			return result;
+                long procTime = System.currentTimeMillis() - startTime;
+                serviceCounter.update(SubscriptionQuery.GET_SUBSCRIPTIONS, 
+                        QueryStatus.SUCCESS, procTime);
+
+		return result;
+        } catch (DispositionReportFaultMessage drfm) {
+                    long procTime = System.currentTimeMillis() - startTime;
+                    serviceCounter.update(SubscriptionQuery.GET_SUBSCRIPTIONS, 
+                            QueryStatus.FAILED, procTime);                      
+                    throw drfm;                                                                                                 		
         } finally {
 			if (tx.isActive()) {
 				tx.rollback();
@@ -776,7 +840,7 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	}
 
 
-	/* (non-Javadoc)
+	/* 
 	 * @see org.uddi.v3_service.UDDISubscriptionPortType#saveSubscription(java.lang.String, javax.xml.ws.Holder)
 	 * 
 	 * Notes: The matching keys are saved on a new subscription (or renewed subscription) for the find_* filters only.  With the other filter 
@@ -786,6 +850,7 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	public void saveSubscription(String authInfo,
 			Holder<List<Subscription>> subscription)
 			throws DispositionReportFaultMessage {
+	        long startTime = System.currentTimeMillis();
 
 		EntityManager em = PersistenceManager.getEntityManager();
 		EntityTransaction tx = em.getTransaction();
@@ -793,26 +858,32 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			tx.begin();
 	
 			UddiEntityPublisher publisher = this.getEntityPublisher(em, authInfo);
-			new ValidateSubscription(publisher).validateSubscriptions(em, subscription.value);
+			publisher.populateKeyGeneratorKeys(em);
+			new ValidateSubscription(publisher).validateSubscriptions(em, subscription.value, publisher);
 			
 			List<org.uddi.sub_v3.Subscription> apiSubscriptionList = subscription.value;
 			for (org.uddi.sub_v3.Subscription apiSubscription : apiSubscriptionList) {
 				
 				org.apache.juddi.model.Subscription modelSubscription = new org.apache.juddi.model.Subscription();
 				
-				Object existingEntity = em.find(org.apache.juddi.model.Subscription.class, apiSubscription.getSubscriptionKey());
-				if (existingEntity != null) {
-					doRenewal((org.apache.juddi.model.Subscription)existingEntity, apiSubscription);
-					em.remove(existingEntity);
+				Object existing = em.find(org.apache.juddi.model.Subscription.class, apiSubscription.getSubscriptionKey());
+				if (existing != null) {
+					org.apache.juddi.model.Subscription existingEntity = (org.apache.juddi.model.Subscription) existing;
+					doRenewal(existingEntity, apiSubscription);
+					//carrying over the created and last notified dates if this is a renewal.
+					modelSubscription.setCreateDate(existingEntity.getCreateDate());
+					modelSubscription.setLastNotified(existingEntity.getLastNotified());
+					em.remove(existing);
+				} else {
+					modelSubscription.setCreateDate(new Date());
 				}
-	
+                              
 				doSubscriptionExpirationDate(apiSubscription);
 				
 				MappingApiToModel.mapSubscription(apiSubscription, modelSubscription);
 				
 				modelSubscription.setAuthorizedName(publisher.getAuthorizedName());
-				modelSubscription.setCreateDate(new Date());
-	
+				
 				// Add the matching keys to the match collection
 				List<?> keys = getSubscriptionMatches(apiSubscription.getSubscriptionFilter(), em);
 				if (keys != null && keys.size() > 0) {
@@ -826,6 +897,14 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 			}
 	
 			tx.commit();
+	                long procTime = System.currentTimeMillis() - startTime;
+	                serviceCounter.update(SubscriptionQuery.SAVE_SUBSCRIPTION, 
+	                        QueryStatus.SUCCESS, procTime);
+	        } catch (DispositionReportFaultMessage drfm) {
+                    long procTime = System.currentTimeMillis() - startTime;
+                    serviceCounter.update(SubscriptionQuery.SAVE_SUBSCRIPTION, 
+                            QueryStatus.FAILED, procTime);                      
+                    throw drfm;                                                                                                                 
 		} finally {
 			if (tx.isActive()) {
 				tx.rollback();
@@ -842,7 +921,7 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	 * @param apiSubscription - renewal subscription request
 	 * @throws DispositionReportFaultMessage 
 	 */
-	private void doRenewal(org.apache.juddi.model.Subscription existingSubscription, org.uddi.sub_v3.Subscription apiSubscription) throws DispositionReportFaultMessage {
+	protected void doRenewal(org.apache.juddi.model.Subscription existingSubscription, org.uddi.sub_v3.Subscription apiSubscription) throws DispositionReportFaultMessage {
 		if (apiSubscription.getSubscriptionFilter() == null) {
 			String rawFilter = existingSubscription.getSubscriptionFilter();
 			try {
@@ -863,7 +942,7 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	 * @param apiSubscription
 	 * @throws DispositionReportFaultMessage
 	 */
-	private void doSubscriptionExpirationDate(org.uddi.sub_v3.Subscription apiSubscription) throws DispositionReportFaultMessage {
+	protected void doSubscriptionExpirationDate(org.uddi.sub_v3.Subscription apiSubscription) throws DispositionReportFaultMessage {
 
 		int subscriptionExpirationDays = DEFAULT_SUBSCRIPTIONEXPIRATION_DAYS;
 		try { 
@@ -899,10 +978,10 @@ public class UDDISubscriptionImpl extends AuthenticatedService implements UDDISu
 	 * 
 	 * @param subscriptionFilter
 	 * @param em
-	 * @return
+	 * @return a list of subscription matches
 	 * @throws DispositionReportFaultMessage
 	 */
-	private List<?> getSubscriptionMatches(SubscriptionFilter subscriptionFilter, EntityManager em) 
+	protected List<?> getSubscriptionMatches(SubscriptionFilter subscriptionFilter, EntityManager em) 
 			 throws DispositionReportFaultMessage {
 		
 		

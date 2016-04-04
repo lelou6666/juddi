@@ -18,11 +18,13 @@
 package org.apache.juddi.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.Name;
 
 /**
@@ -47,11 +49,11 @@ import org.uddi.api_v3.Name;
 public class FindTModelByNameQuery extends TModelQuery {
 
 	@SuppressWarnings("unused")
-	private static Logger log = Logger.getLogger(FindTModelByNameQuery.class);
+	private static Log log = LogFactory.getLog(FindTModelByNameQuery.class);
 
 	public static List<?> select(EntityManager em, FindQualifiers fq, Name name, List<?> keysIn, DynamicQuery.Parameter... restrictions) {
 		// If keysIn is not null and empty, then search is over.
-		if ((keysIn != null) && (keysIn.size() == 0))
+		if ((keysIn != null) && (keysIn.isEmpty()))
 			return keysIn;
 		
 		if (name == null)
@@ -60,7 +62,7 @@ public class FindTModelByNameQuery extends TModelQuery {
 		DynamicQuery dynamicQry = new DynamicQuery(selectSQL);
 		appendConditions(dynamicQry, fq, name);
 		// Since this is a tModel, don't need to search the lazily deleted ones.
-		dynamicQry.AND().pad().appendGroupedAnd(new DynamicQuery.Parameter(ENTITY_ALIAS + ".deleted", new Boolean(false), DynamicQuery.PREDICATE_EQUALS));
+		dynamicQry.AND().pad().appendGroupedAnd(new DynamicQuery.Parameter(ENTITY_ALIAS + ".deleted", false, DynamicQuery.PREDICATE_EQUALS));
 		if (restrictions != null && restrictions.length > 0)
 			dynamicQry.AND().pad().appendGroupedAnd(restrictions);
 		
@@ -69,7 +71,7 @@ public class FindTModelByNameQuery extends TModelQuery {
 	
 	public static void appendConditions(DynamicQuery qry, FindQualifiers fq, Name name) {
 		String namePredicate = DynamicQuery.PREDICATE_EQUALS;
-		if (fq.isApproximateMatch()) {
+		if (fq!=null && fq.isApproximateMatch()) {
 			namePredicate = DynamicQuery.PREDICATE_LIKE;
 		}
 
@@ -77,7 +79,7 @@ public class FindTModelByNameQuery extends TModelQuery {
 
 		String nameTerm = ENTITY_ALIAS + ".name";
 		String nameValue = name.getValue();
-		if (fq.isCaseInsensitiveMatch()) {
+		if (fq!=null && fq.isCaseInsensitiveMatch()) {
 			nameTerm = "upper(" + ENTITY_ALIAS + ".name)";
 			nameValue = name.getValue().toUpperCase();
 		}
@@ -95,7 +97,9 @@ public class FindTModelByNameQuery extends TModelQuery {
 		}
 
 		qry.closeParen().pad();
-		
+		if (fq!=null && fq.isSignaturePresent()) {
+			qry.AND().pad().openParen().pad().append(TModelQuery.SIGNATURE_PRESENT).pad().closeParen().pad();
+		}
 	}
 	
 }

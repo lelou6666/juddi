@@ -36,9 +36,13 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "j3_subscription")
+<<<<<<< HEAD
 public class Subscription implements java.io.Serializable {
+=======
+public class Subscription implements java.io.Serializable, Comparable<Subscription> {
+>>>>>>> refs/remotes/apache/master
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2271361594186854662L;
 	private String subscriptionKey;
 	private String authorizedName;
 	private String subscriptionFilter;
@@ -95,7 +99,7 @@ public class Subscription implements java.io.Serializable {
 		this.bindingKey = bindingKey;
 	}
 
-	@Column(name = "notification_interval", nullable = false)
+	@Column(name = "notification_interval")
 	public String getNotificationInterval() {
 		return this.notificationInterval;
 	}
@@ -154,5 +158,11 @@ public class Subscription implements java.io.Serializable {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public int compareTo(Subscription o) {
+		if (o==null || o.getSubscriptionKey()==null) return 0;
+		if (o.getSubscriptionKey().equals(getSubscriptionKey())) return 1;
+		else return 0;
 	}
 }

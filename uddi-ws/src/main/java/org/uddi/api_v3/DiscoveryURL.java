@@ -50,13 +50,21 @@ import javax.xml.bind.annotation.XmlValue;
     "value"
 })
 public class DiscoveryURL implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlValue
+	private static final long serialVersionUID = -5505306334751016327L;
+	@XmlValue
     protected String value;
     @XmlAttribute
     protected String useType;
+
+    public DiscoveryURL(String useType, String value) {
+        this.useType = useType;
+        this.value = value;
+    }
+    
+     public DiscoveryURL() {
+     
+    }
 
     /**
      * Gets the value of the value property.
@@ -111,4 +119,3 @@ public class DiscoveryURL implements Serializable{
     }
 
 }
-

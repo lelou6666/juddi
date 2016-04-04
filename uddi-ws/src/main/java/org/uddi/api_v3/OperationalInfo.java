@@ -23,6 +23,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -60,11 +61,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "nodeID",
     "authorizedName"
 })
+@XmlRootElement
 public class OperationalInfo implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected XMLGregorianCalendar created;
+	private static final long serialVersionUID = -3112659463581534112L;
+	protected XMLGregorianCalendar created;
     protected XMLGregorianCalendar modified;
     protected XMLGregorianCalendar modifiedIncludingChildren;
     protected String nodeID;
@@ -221,4 +222,3 @@ public class OperationalInfo implements Serializable{
     }
 
 }
-

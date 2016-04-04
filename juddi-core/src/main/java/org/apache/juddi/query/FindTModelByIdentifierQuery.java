@@ -47,11 +47,12 @@ public class FindTModelByIdentifierQuery {
 													TModelQuery.ENTITY_ALIAS, 
 													TModelQuery.KEY_NAME, 
 													TModelQuery.ENTITY_FIELD, 
-													ENTITY_NAME_CHILD);
+													ENTITY_NAME_CHILD,
+													TModelQuery.SIGNATURE_PRESENT);
 	}
 	
 	public static List<?> select(EntityManager em, FindQualifiers fq, IdentifierBag identifiers, List<?> keysIn) {
-		return findQuery.select(em, fq, identifiers, keysIn, new DynamicQuery.Parameter(TModelQuery.ENTITY_ALIAS + ".deleted", new Boolean(false), DynamicQuery.PREDICATE_EQUALS));
+		return findQuery.select(em, fq, identifiers, keysIn, new DynamicQuery.Parameter(TModelQuery.ENTITY_ALIAS + ".deleted", Boolean.FALSE, DynamicQuery.PREDICATE_EQUALS));
 	}
 	
 }

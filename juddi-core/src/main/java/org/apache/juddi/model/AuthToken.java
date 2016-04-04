@@ -16,14 +16,12 @@ package org.apache.juddi.model;
  */
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
 /**
  * @author <a href="mailto:kurt@apache.org">Kurt T Stam</a>
  */
@@ -31,14 +29,15 @@ import javax.persistence.TemporalType;
 @Table(name = "j3_auth_token")
 public class AuthToken implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1147567747533293480L;
 	private String authToken;
+        private String ipaddress;
 	private String authorizedName;
-	private String publisherName;
 	private Date created;
 	private Date lastUsed;
 	private int numberOfUses;
 	private int tokenState;
+	
 
 	public AuthToken() {
 	}
@@ -48,7 +47,6 @@ public class AuthToken implements java.io.Serializable {
 			int numberOfUses, int tokenState) {
 		this.authToken = authToken;
 		this.authorizedName = authorizedName;
-		this.publisherName = publisherName;
 		this.created = created;
 		this.lastUsed = lastUsed;
 		this.numberOfUses = numberOfUses;
@@ -64,20 +62,12 @@ public class AuthToken implements java.io.Serializable {
 		this.authToken = authToken;
 	}
 
-	@Column(name = "authorized_name", nullable = false, length = 20)
+	@Column(name = "authorized_name", nullable = false, length = 255)
 	public String getAuthorizedName() {
 		return this.authorizedName;
 	}
 	public void setAuthorizedName(String authorizedName) {
 		this.authorizedName = authorizedName;
-	}
-
-	@Column(name = "publisher_name")
-	public String getPublisherName() {
-		return this.publisherName;
-	}
-	public void setPublisherName(String publisherName) {
-		this.publisherName = publisherName;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -88,7 +78,7 @@ public class AuthToken implements java.io.Serializable {
 	public void setCreated(Date created) {
 		this.created = created;
 	}
-
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_used", nullable = false, length = 29)
 	public Date getLastUsed() {
@@ -112,6 +102,18 @@ public class AuthToken implements java.io.Serializable {
 	}
 	public void setTokenState(int tokenState) {
 		this.tokenState = tokenState;
+	}
+
+        /**
+         * @since 3.2
+         * @return ip address
+         */
+	@Column(name = "ipaddress", nullable = true, length = 51)
+	public String getIPAddress() {
+		return this.ipaddress;
+	}
+	public void setIPAddress(String ip) {
+		this.ipaddress=ip;
 	}
 
 }

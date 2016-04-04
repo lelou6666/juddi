@@ -24,6 +24,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -52,11 +53,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "serviceDetail", propOrder = {
     "businessService"
 })
+@XmlRootElement
 public class ServiceDetail implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected List<BusinessService> businessService;
+	private static final long serialVersionUID = 7659347852244620056L;
+	protected List<BusinessService> businessService;
     @XmlAttribute
     protected Boolean truncated;
 
@@ -114,4 +115,3 @@ public class ServiceDetail implements Serializable{
     }
 
 }
-

@@ -20,9 +20,10 @@ package org.apache.juddi.query;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.DiscoveryURLs;
 import org.uddi.api_v3.DiscoveryURL;
 
@@ -43,7 +44,7 @@ import org.uddi.api_v3.DiscoveryURL;
 public class FindBusinessByDiscoveryURLQuery extends BusinessEntityQuery {
 
 	@SuppressWarnings("unused")
-	private static Logger log = Logger.getLogger(FindBusinessByDiscoveryURLQuery.class);
+	private static Log log = LogFactory.getLog(FindBusinessByDiscoveryURLQuery.class);
 
 	private static final String ENTITY_NAME_CHILD = "DiscoveryUrl";
 
@@ -53,7 +54,8 @@ public class FindBusinessByDiscoveryURLQuery extends BusinessEntityQuery {
 		entityAliasChild = buildAlias(ENTITY_NAME_CHILD);
 	}
 
-	public static List<?> select(EntityManager em, FindQualifiers fq, DiscoveryURLs discURLs, List<?> keysIn, DynamicQuery.Parameter... restrictions) {
+	public static List<?> select(EntityManager em, FindQualifiers fq, DiscoveryURLs discURLs, 
+			List<?> keysIn, DynamicQuery.Parameter... restrictions) {
 		// If keysIn is not null and empty, then search is over.
 		if ((keysIn != null) && (keysIn.size() == 0))
 			return keysIn;

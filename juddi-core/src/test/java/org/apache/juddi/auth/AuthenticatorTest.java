@@ -14,20 +14,38 @@
  */
 package org.apache.juddi.auth;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.security.InvalidKeyException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.api.impl.API_010_PublisherTest;
-import org.apache.juddi.cryptor.Cryptor;
+import org.apache.juddi.config.AppConfig;
+import org.apache.juddi.config.Property;
+import org.apache.juddi.v3.client.cryptor.AES128Cryptor;
+import org.apache.juddi.v3.client.cryptor.AES256Cryptor;
+import org.apache.juddi.v3.client.cryptor.Cryptor;
 import org.apache.juddi.cryptor.CryptorFactory;
-import org.apache.juddi.error.AuthenticationException;
-import org.apache.juddi.error.FatalErrorException;
-import org.apache.juddi.error.UnknownUserException;
-import org.apache.log4j.Logger;
+import org.apache.juddi.v3.client.cryptor.DefaultCryptor;
+import org.apache.juddi.v3.client.cryptor.TripleDESCrytor;
+import org.apache.juddi.v3.auth.Authenticator;
+import org.apache.juddi.v3.auth.CryptedXMLDocAuthenticator;
+import org.apache.juddi.v3.auth.JUDDIAuthenticator;
+import org.apache.juddi.v3.auth.JuddiUsers;
+import org.apache.juddi.v3.auth.MD5XMLDocAuthenticator;
+import org.apache.juddi.v3.auth.User;
+import org.apache.juddi.v3.auth.XMLDocAuthenticator;
+import org.apache.juddi.v3.error.AuthenticationException;
+import org.apache.juddi.v3.error.FatalErrorException;
+import org.apache.juddi.v3.error.UnknownUserException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,7 +54,7 @@ import org.junit.Test;
  */
 public class AuthenticatorTest 
 {
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Log logger = LogFactory.getLog(this.getClass());
 	/**
 	 * The DefaultAuthenticator is basically a pass-through.
 	 * @throws ConfigurationException
@@ -44,6 +62,7 @@ public class AuthenticatorTest
 	@Test
 	public void testDefaultAuthenticator()
 	{
+            System.out.println("testDefaultAuthenticator");
 		Authenticator auth = new JUDDIAuthenticator();
 		try {
 			API_010_PublisherTest api010 = new API_010_PublisherTest();
@@ -61,6 +80,7 @@ public class AuthenticatorTest
 	@Test
 	public void testCreateJuddiUsers() throws Exception
 	{
+            System.out.println("testCreateJuddiUsers");
 		try {
 			JuddiUsers juddiUsers = new JuddiUsers();
 			juddiUsers.getUser().add(new User("anou_mana","password"));
@@ -85,6 +105,7 @@ public class AuthenticatorTest
 	@Test
 	public void testXMLDocAuthenticator() 
 	{
+            System.out.println("testXMLDocAuthenticator");
 		try {
 			Authenticator auth = new XMLDocAuthenticator();
 			auth.authenticate("anou_mana","password");
@@ -108,14 +129,16 @@ public class AuthenticatorTest
 	@Test(expected=UnknownUserException.class) 
 	public void testBadXMLDocAuthenticator() throws Exception
 	{
+            System.out.println("testBadXMLDocAuthenticator");
 		Authenticator auth = new XMLDocAuthenticator();
 		auth.authenticate("anou_mana","badpass");
 	}
 	@Test
 	public void testCreateJuddiUsersEncrypted() throws Exception
 	{
+            System.out.println("testCreateJuddiUsersEncrypted");
 		try {
-			Cryptor cryptor = (Cryptor) CryptorFactory.getCryptor();
+			Cryptor cryptor = CryptorFactory.getCryptor();
 			JuddiUsers juddiUsers = new JuddiUsers();
 			juddiUsers.getUser().add(new User("anou_mana",cryptor.encrypt("password")));
 			juddiUsers.getUser().add(new User("bozo",cryptor.encrypt("clown")));
@@ -139,6 +162,7 @@ public class AuthenticatorTest
 	@Test
 	public void testCryptedXMLDocAuthenticator() 
 	{
+            System.out.println("testCryptedXMLDocAuthenticator");
 		try {
 			Authenticator auth = new CryptedXMLDocAuthenticator();
 			auth.authenticate("anou_mana","password");
@@ -161,8 +185,288 @@ public class AuthenticatorTest
 	 */
 	@Test(expected=UnknownUserException.class) 
 	public void testBadCryptedXMLDocAuthenticator() throws Exception
+                
 	{
-		Authenticator auth = new CryptedXMLDocAuthenticator();
+            System.out.println("testBadCryptedXMLDocAuthenticator");
+ 		Authenticator auth = new CryptedXMLDocAuthenticator();
 		auth.authenticate("anou_mana","badpass");
 	}
+        
+        
+        @Test
+	public void testMD5XMLDocAuthenticator() 
+	{
+            System.out.println("testMD5XMLDocAuthenticator");
+		try {
+			Authenticator auth = new MD5XMLDocAuthenticator();
+			auth.authenticate("anou_mana","password");
+			auth.authenticate("bozo","clown");
+			auth.authenticate("sviens","password");
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+        
+        
+        @Test(expected=UnknownUserException.class) 
+	public void testBadMD5XMLDocAuthenticator() throws Exception
+	{
+		Authenticator auth = new MD5XMLDocAuthenticator();
+		auth.authenticate("anou_mana","badpass");
+	}
+        
+        
+        @Test
+	public void testAES128Cryptor() 
+	{
+            System.out.println("testAES128Cryptor");
+		try {
+			Cryptor auth = new AES128Cryptor();
+                        String encrypt = auth.encrypt("test");
+                        Assert.assertNotNull(encrypt);
+                        Assert.assertNotSame(encrypt, "test");
+                        String test=auth.decrypt(encrypt);
+                        Assert.assertEquals(test, "test");
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+        
+        @Test
+	public void testTripleDESCryptor() 
+	{
+            System.out.println("testTripleDESCryptor");
+		try {
+			Cryptor auth = new TripleDESCrytor();
+                        String encrypt = auth.encrypt("test");
+                        Assert.assertNotNull(encrypt);
+                        Assert.assertNotSame(encrypt, "test");
+                        String test=auth.decrypt(encrypt);
+                        Assert.assertEquals(test, "test");
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+        
+        @Test
+	public void testDefaultCryptor() 
+	{
+            System.out.println("testDefaultCryptor");
+		try {
+			Cryptor auth = new DefaultCryptor();
+                        String encrypt = auth.encrypt("test");
+                        Assert.assertNotNull(encrypt);
+                        Assert.assertNotSame(encrypt, "test");
+                        String test=auth.decrypt(encrypt);
+                        Assert.assertEquals(test, "test");
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+        
+        @Test
+	public void testAES256Cryptor() 
+	{
+                System.out.println("testAES256Cryptor");
+		try {
+			Cryptor auth = new AES256Cryptor();
+                        String encrypt = auth.encrypt("test");
+                        Assert.assertNotNull(encrypt);
+                        Assert.assertNotSame(encrypt, "test");
+                        String test=auth.decrypt(encrypt);
+                        Assert.assertEquals(test, "test");
+                }
+                catch (InvalidKeyException e)
+                {
+                    logger.error("Hey, you're probably using the Oracle JRE without the Unlimited Strength Java Crypto Extensions installed. AES256 won't work until you download and install it", e);
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+         @Test
+	public void testDecryptFromConfigXML_InMemory() 
+	{
+                System.out.println("testDecryptFromConfigXML_InMemory");
+		try {
+                    Configuration config =AppConfig.getConfiguration();
+                    
+			Cryptor auth = new AES128Cryptor();
+                        String encrypt = auth.encrypt("test");
+                        Assert.assertNotNull(encrypt);
+                        Assert.assertNotSame(encrypt, "test");
+                        
+                        //add to the config
+                        config.addProperty("testDecryptFromConfigXML", encrypt);
+                        config.addProperty("testDecryptFromConfigXML"+ Property.ENCRYPTED_ATTRIBUTE, "true");
+                        
+                        //retrieve it
+                        String pwd = config.getString("testDecryptFromConfigXML");
+                        Assert.assertNotNull(pwd);
+                        //test for encryption
+                        if (config.getBoolean("testDecryptFromConfigXML" + Property.ENCRYPTED_ATTRIBUTE, false))
+                        {
+                            String test=auth.decrypt(pwd);
+                            Assert.assertEquals(test, "test");
+                        }
+                        else
+                        {
+                            Assert.fail("config reports that the setting is not encrypted");
+                       }
+                }
+                catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+         
+        @Test
+	public void testDecryptFromConfigXML_Disk_Default() 
+	{
+                System.out.println("testDecryptFromConfigXML_Disk_Default");
+		try {
+                    File f = new File(".");
+                    System.out.println("Current working dir is " + f.getAbsolutePath());
+                    System.setProperty(AppConfig.JUDDI_CONFIGURATION_FILE_SYSTEM_PROPERTY,f.getAbsolutePath() + "/src/test/resources/juddiv3-enc-default.xml");
+                    AppConfig.reloadConfig();
+                    Configuration config =AppConfig.getConfiguration();
+                    
+			Cryptor auth = new DefaultCryptor();
+                        
+                        //retrieve it
+                        String pwd = config.getString("juddi.mail.smtp.password");
+                        Assert.assertNotNull(pwd);
+                        //test for encryption
+                        if (config.getBoolean("juddi.mail.smtp.password" + Property.ENCRYPTED_ATTRIBUTE, false))
+                        {
+                            String test=auth.decrypt(pwd);
+                            Assert.assertEquals(test, "password");
+                        }
+                        else
+                        {
+                            Assert.fail("config reports that the setting is not encrypted");
+                       }
+                }
+                catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+        
+        @Test
+	public void testDecryptFromConfigXML_Disk_3DES() 
+	{
+                System.out.println("testDecryptFromConfigXML_Disk_3DES");
+		try {
+                    File f = new File(".");
+                    System.out.println("Current working dir is " + f.getAbsolutePath());
+                    System.setProperty(AppConfig.JUDDI_CONFIGURATION_FILE_SYSTEM_PROPERTY, f.getAbsolutePath() +"/src/test/resources/juddiv3-enc-3des.xml");
+                    AppConfig.reloadConfig();
+                    Configuration config =AppConfig.getConfiguration();
+                    
+			Cryptor auth = new TripleDESCrytor();
+                        
+                        //retrieve it
+                        String pwd = config.getString("juddi.mail.smtp.password");
+                        Assert.assertNotNull(pwd);
+                        //test for encryption
+                        if (config.getBoolean("juddi.mail.smtp.password" + Property.ENCRYPTED_ATTRIBUTE, false))
+                        {
+                            String test=auth.decrypt(pwd);
+                            Assert.assertEquals(test, "password");
+                        }
+                        else
+                        {
+                            Assert.fail("config reports that the setting is not encrypted");
+                       }
+                }
+                catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+        
+        
+         @Test
+	public void testDecryptFromConfigXML_Disk_AES128() 
+	{
+                System.out.println("testDecryptFromConfigXML_Disk_AES128");
+		try {
+                    File f = new File(".");
+                    System.out.println("Current working dir is " + f.getAbsolutePath());
+                    
+                    System.setProperty(AppConfig.JUDDI_CONFIGURATION_FILE_SYSTEM_PROPERTY, f.getAbsolutePath() +"/src/test/resources/juddiv3-enc-aes128.xml");
+                    AppConfig.reloadConfig();
+                    Configuration config =AppConfig.getConfiguration();
+                    
+			Cryptor auth = new AES128Cryptor();
+                        
+                        //retrieve it
+                        String pwd = config.getString("juddi.mail.smtp.password");
+                        Assert.assertNotNull(pwd);
+                        //test for encryption
+                        if (config.getBoolean("juddi.mail.smtp.password" + Property.ENCRYPTED_ATTRIBUTE, false))
+                        {
+                            String test=auth.decrypt(pwd);
+                            Assert.assertEquals(test, "password");
+                        }
+                        else
+                        {
+                            Assert.fail("config reports that the setting is not encrypted");
+                       }
+                }
+                catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+         
+         
+         
+         @Test
+	public void testDecryptFromConfigXML_Disk_AES256() 
+	{
+                System.out.println("testDecryptFromConfigXML_Disk_AES256");
+		try {
+                    File f = new File(".");
+                    System.out.println("Current working dir is " + f.getAbsolutePath());
+                    System.setProperty(AppConfig.JUDDI_CONFIGURATION_FILE_SYSTEM_PROPERTY, f.getAbsolutePath() + "/src/test/resources/juddiv3-enc-aes256.xml");
+                    AppConfig.reloadConfig();
+                    Configuration config =AppConfig.getConfiguration();
+                    
+			Cryptor auth = new AES256Cryptor();
+                        
+                        //retrieve it
+                        String pwd = config.getString("juddi.mail.smtp.password");
+                        Assert.assertNotNull(pwd);
+                        //test for encryption
+                        if (config.getBoolean("juddi.mail.smtp.password" + Property.ENCRYPTED_ATTRIBUTE, false))
+                        {
+                            String test=auth.decrypt(pwd);
+                            Assert.assertEquals(test, "password");
+                        }
+                        else
+                        {
+                            Assert.fail("config reports that the setting is not encrypted");
+                       }
+                } catch (InvalidKeyException e)
+                {
+                    logger.error("Hey, you're probably using the Oracle JRE without the Unlimited Strength Java Crypto Extensions installed. AES256 won't work until you download and install it", e);
+		}
+                catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			Assert.fail("unexpected");
+		}
+	}
+
 }

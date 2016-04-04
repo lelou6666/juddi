@@ -54,10 +54,10 @@ import javax.xml.bind.annotation.XmlType;
     "entityKey"
 })
 public class GetOperationalInfo implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected String authInfo;
+	private static final long serialVersionUID = 1728909231280549786L;
+
+	protected String authInfo;
     @XmlElement(required = true)
     protected List<String> entityKey;
 
@@ -115,4 +115,3 @@ public class GetOperationalInfo implements Serializable{
     }
 
 }
-

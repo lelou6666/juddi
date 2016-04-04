@@ -24,8 +24,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.juddi.error.ErrorMessage;
-import org.apache.juddi.error.FatalErrorException;
+import org.apache.juddi.v3.error.ErrorMessage;
+import org.apache.juddi.v3.error.FatalErrorException;
 import org.uddi.v3_service.DispositionReportFaultMessage;
 /**
  * 
@@ -34,11 +34,13 @@ public class TypeConvertor {
 	public static XMLGregorianCalendar convertDateToXMLGregorianCalendar(Date date) throws DispositionReportFaultMessage {
 		XMLGregorianCalendar result = null;
 		try { 
-			GregorianCalendar gc = new GregorianCalendar();
-			gc.setTimeInMillis(date.getTime());
-			
-			DatatypeFactory df = DatatypeFactory.newInstance();
-			result = df.newXMLGregorianCalendar(gc);
+			if (date!=null) {
+				GregorianCalendar gc = new GregorianCalendar();
+				gc.setTimeInMillis(date.getTime());
+				
+				DatatypeFactory df = DatatypeFactory.newInstance();
+				result = df.newXMLGregorianCalendar(gc);
+			}
 		}
 		catch(DatatypeConfigurationException ce) { 
 			throw new FatalErrorException(new ErrorMessage("errors.Unspecified"));
@@ -48,6 +50,7 @@ public class TypeConvertor {
 	}
 	
 	public static Duration convertStringToDuration(String duration) throws DispositionReportFaultMessage {
+		if (duration==null) return null;
 		Duration result = null;
 		try { 
 			

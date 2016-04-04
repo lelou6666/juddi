@@ -71,13 +71,13 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlRootElement(name = "communicationGraph")
 public class CommunicationGraph implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlElement(required = true)
+	private static final long serialVersionUID = -2640578798126913062L;
+	@XmlElement(required = true)
     protected List<String> node;
     @XmlElement(required = true)
     protected List<String> controlledMessage;
+    @XmlElement(required = false)
     protected List<CommunicationGraph.Edge> edge;
 
     /**
@@ -316,4 +316,3 @@ public class CommunicationGraph implements Serializable{
     }
 
 }
-

@@ -32,7 +32,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "j3_uddi_entity")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class UddiEntity {
+public abstract class UddiEntity implements Comparable<UddiEntity>{
 
 	protected String entityKey;
 	protected Date created;
@@ -40,6 +40,7 @@ public abstract class UddiEntity {
 	protected Date modifiedIncludingChildren;
 	protected String nodeId;
 	protected String authorizedName;
+        protected boolean xfer = false;
 	
 	@Id
 	@Column(name = "entity_key", nullable = false, length = 255)
@@ -53,7 +54,11 @@ public abstract class UddiEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created", length = 29)
 	public Date getCreated() {
-		return created;
+		if (created!=null) {
+			return new Date(created.getTime());
+		} else {
+			return null;
+		}
 	}
 	public void setCreated(Date created) {
 		this.created = created;
@@ -62,7 +67,11 @@ public abstract class UddiEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified", nullable = false, length = 29)
 	public Date getModified() {
-		return this.modified;
+		if (modified!=null) {
+			return new Date(modified.getTime());
+		} else {
+			return null;
+		}
 	}
 	public void setModified(Date modified) {
 		this.modified = modified;
@@ -71,13 +80,21 @@ public abstract class UddiEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified_including_children", length = 29)
 	public Date getModifiedIncludingChildren() {
-		return modifiedIncludingChildren;
+		if (modifiedIncludingChildren!=null) {
+			return new Date(modifiedIncludingChildren.getTime());
+		} else {
+			return null;
+		}
 	}
 	public void setModifiedIncludingChildren(Date modifiedIncludingChildren) {
 		this.modifiedIncludingChildren = modifiedIncludingChildren;
 	}
 	
-	@Column(name = "node_id", length = 255)
+        /**
+         * As of 3.2, node_id is a required field
+         * @return node id
+         */
+	@Column(name = "node_id", nullable=false,length = 255)
 	public String getNodeId() {
 		return nodeId;
 	}
@@ -93,5 +110,20 @@ public abstract class UddiEntity {
 	public void setAuthorizedName(String authorizedName) {
 		this.authorizedName = authorizedName;
 	}
+	
+	public int compareTo(UddiEntity o) {
+		if (o==null || o.getEntityKey()==null) return 0;
+		if (o.getEntityKey().equals(getEntityKey())) return 1;
+		else return 0;
+	}
+
+        public void setIsTransferInProgress(boolean b) {
+                xfer = b;
+        }
+        @Column(name="xfer", nullable=false)
+        public boolean getIsTransferInProgress()
+        {
+                return xfer;
+        }
 
 }

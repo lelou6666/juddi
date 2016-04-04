@@ -18,11 +18,13 @@
 package org.apache.juddi.query;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.TModelBag;
 
 /**
@@ -45,11 +47,12 @@ import org.uddi.api_v3.TModelBag;
  * match (logical OR)."
  *  
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
+ * @author <a href="mailto:tcunning@apache.org">Tom Cunningham</a>
  */
 public class FindServiceByTModelKeyQuery extends BusinessServiceQuery {
 	
 	@SuppressWarnings("unused")
-	private static Logger log = Logger.getLogger(FindServiceByTModelKeyQuery.class);
+	private static Log log = LogFactory.getLog(FindServiceByTModelKeyQuery.class);
 
 	public static final String ENTITY_NAME_CHILD = "TmodelInstanceInfo";
 
@@ -61,20 +64,21 @@ public class FindServiceByTModelKeyQuery extends BusinessServiceQuery {
 
 	public static List<?> select(EntityManager em, FindQualifiers fq, TModelBag tModels, String parentKey, List<?> keysIn, DynamicQuery.Parameter... restrictions) {
 		// If keysIn is not null and empty, then search is over.
-		if ((keysIn != null) && (keysIn.size() == 0))
+		if ((keysIn != null) && (keysIn.isEmpty()))
 			return keysIn;
 		
 		if (tModels == null)
 			return keysIn;
 		
 		List<String> tmodelKeys = tModels.getTModelKey();
-		if (tmodelKeys == null || tmodelKeys.size() == 0)
+		if (tmodelKeys == null || tmodelKeys.isEmpty())
 			return keysIn;
 		
 		DynamicQuery dynamicQry = new DynamicQuery(selectSQL);
 		appendConditions(dynamicQry, fq, tmodelKeys);
 		if (parentKey != null && parentKey.length() > 0)
-			dynamicQry.AND().pad().appendGroupedAnd(new DynamicQuery.Parameter(BindingTemplateQuery.ENTITY_ALIAS + "." + BindingTemplateQuery.KEY_NAME_PARENT, parentKey, DynamicQuery.PREDICATE_EQUALS));
+			dynamicQry.AND().pad().appendGroupedAnd(new DynamicQuery.Parameter(BusinessServiceQuery.ENTITY_ALIAS + "." + BusinessServiceQuery.KEY_NAME_PARENT, parentKey, DynamicQuery.PREDICATE_EQUALS));
+			//dynamicQry.AND().pad().appendGroupedAnd(new DynamicQuery.Parameter(BindingTemplateQuery.ENTITY_ALIAS + "." + BindingTemplateQuery.KEY_NAME_PARENT, parentKey, DynamicQuery.PREDICATE_EQUALS));
 		
 		if (restrictions != null && restrictions.length > 0)
 			dynamicQry.AND().pad().appendGroupedAnd(restrictions);
@@ -122,23 +126,23 @@ public class FindServiceByTModelKeyQuery extends BusinessServiceQuery {
 	public static void appendJoinTables(DynamicQuery qry, FindQualifiers fq, List<String> tmodelKeys) {
 		
 
-		if (tmodelKeys != null & tmodelKeys.size() > 0) {
+		if (tmodelKeys != null && tmodelKeys.size() > 0) {
 			qry.comma().pad().append(BindingTemplateQuery.ENTITY_NAME + " " + BindingTemplateQuery.ENTITY_ALIAS).pad();
 			
-			StringBuffer thetaJoins = new StringBuffer(200);
+			StringBuilder thetaJoins = new StringBuilder(200);
 			int tblCount = 0;
 			for(int count = 0; count < tmodelKeys.size(); count++) {
 				if (count != 0) {
 					if (!fq.isOrAllKeys()) {
 						tblCount++;
 						qry.comma().pad().append(ENTITY_NAME_CHILD + " " + entityAliasChild + tblCount).pad();
-						thetaJoins.append(entityAliasChild + (tblCount - 1) + "." + BindingTemplateQuery.ENTITY_FIELD + "." + BindingTemplateQuery.KEY_NAME + " = " + entityAliasChild + tblCount + "." + BindingTemplateQuery.ENTITY_FIELD + "." + BindingTemplateQuery.KEY_NAME + " ");
+						thetaJoins.append(entityAliasChild).append(tblCount - 1).append("." + BindingTemplateQuery.ENTITY_FIELD + "." + BindingTemplateQuery.KEY_NAME + " = ").append(entityAliasChild).append(tblCount).append("." + BindingTemplateQuery.ENTITY_FIELD + "." + BindingTemplateQuery.KEY_NAME + " ");
 						thetaJoins.append(DynamicQuery.OPERATOR_AND + " ");
 					}
 				}
 				else {
 					qry.comma().pad().append(ENTITY_NAME_CHILD + " " + entityAliasChild + tblCount).pad();
-					thetaJoins.append(BindingTemplateQuery.ENTITY_ALIAS + "." + BindingTemplateQuery.KEY_NAME + " = " + entityAliasChild + tblCount + "." + BindingTemplateQuery.ENTITY_FIELD + "." + BindingTemplateQuery.KEY_NAME + " ");
+					thetaJoins.append(BindingTemplateQuery.ENTITY_ALIAS + "." + BindingTemplateQuery.KEY_NAME + " = ").append(entityAliasChild).append(tblCount).append("." + BindingTemplateQuery.ENTITY_FIELD + "." + BindingTemplateQuery.KEY_NAME + " ");
 					thetaJoins.append(DynamicQuery.OPERATOR_AND + " ");
 				}
 			}
@@ -154,6 +158,9 @@ public class FindServiceByTModelKeyQuery extends BusinessServiceQuery {
 			qry.append(thetaJoinsStr);
 
 			qry.closeParen().pad();
+			if (fq!=null && fq.isSignaturePresent()) {
+				qry.AND().pad().openParen().pad().append(BusinessServiceQuery.SIGNATURE_PRESENT).pad().closeParen().pad();
+			}
 		}
 	}
 	

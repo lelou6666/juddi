@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
+ * @see org.apache.juddi.v3.client.UDDIConstants
  * <p>Java class for findQualifiers complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -52,10 +53,9 @@ import javax.xml.bind.annotation.XmlType;
     "findQualifier"
 })
 public class FindQualifiers implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlElement(required = true)
+	private static final long serialVersionUID = 434280754172817782L;
+	@XmlElement(required = true)
     protected List<String> findQualifier;
 
     /**
@@ -88,4 +88,3 @@ public class FindQualifiers implements Serializable{
     }
 
 }
-

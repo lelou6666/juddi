@@ -33,7 +33,7 @@ import javax.persistence.Table;
 @Table(name = "j3_email")
 public class Email implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6699730616675634879L;
 	private Long id;
 	private Contact contact;
 	private String useType;
@@ -71,7 +71,7 @@ public class Email implements java.io.Serializable {
 		this.contact = contact;
 	}
 
-	@Column(name = "use_type")
+	@Column(name = "use_type", length=255)
 	public String getUseType() {
 		return this.useType;
 	}
@@ -79,7 +79,7 @@ public class Email implements java.io.Serializable {
 		this.useType = useType;
 	}
 
-	@Column(name = "email_address", nullable = false)
+	@Column(name = "email_address", nullable = false, length=4096)
 	public String getEmailAddress() {
 		return this.emailAddress;
 	}

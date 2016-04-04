@@ -33,7 +33,7 @@ import javax.persistence.Table;
 @Table(name = "j3_discovery_url")
 public class DiscoveryUrl implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1672224929919830852L;
 	private Long id;
 	private BusinessEntity businessEntity;
 	private String useType;
@@ -67,7 +67,7 @@ public class DiscoveryUrl implements java.io.Serializable {
 		this.businessEntity = businessEntity;
 	}
 
-	@Column(name = "use_type", nullable = false)
+	@Column(name = "use_type", nullable = false, length=255)
 	public String getUseType() {
 		return this.useType;
 	}
@@ -75,7 +75,7 @@ public class DiscoveryUrl implements java.io.Serializable {
 		this.useType = useType;
 	}
 
-	@Column(name = "url", nullable = false)
+	@Column(name = "url", nullable = false, length=4096)
 	public String getUrl() {
 		return this.url;
 	}

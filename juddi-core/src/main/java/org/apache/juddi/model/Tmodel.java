@@ -37,7 +37,7 @@ import javax.persistence.Table;
 @Table(name = "j3_tmodel")
 public class Tmodel extends UddiEntity implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4577524699559324289L;
 	private String name;
 	private String langCode;
 	private boolean deleted;
@@ -45,6 +45,7 @@ public class Tmodel extends UddiEntity implements java.io.Serializable {
 	private List<TmodelDescr> tmodelDescrs = new ArrayList<TmodelDescr>(0);
 	private List<TmodelIdentifier> tmodelIdentifiers = new ArrayList<TmodelIdentifier>(0);
 	private TmodelCategoryBag categoryBag;
+    private List<Signature> signatures = new ArrayList<Signature>(0);
 
 	public Tmodel() {
 	}
@@ -72,7 +73,7 @@ public class Tmodel extends UddiEntity implements java.io.Serializable {
 		this.categoryBag = categoryBag;
 	}
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, length = 255)
 	public String getName() {
 		return this.name;
 	}
@@ -80,7 +81,7 @@ public class Tmodel extends UddiEntity implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "lang_code", length = 5)
+	@Column(name = "lang_code", length = 26)
 	public String getLangCode() {
 		return this.langCode;
 	}
@@ -132,4 +133,13 @@ public class Tmodel extends UddiEntity implements java.io.Serializable {
 		this.categoryBag = categoryBag;
 	}
 
+        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "tmodel")
+	@OrderBy
+        public List<Signature> getSignatures() {
+                return signatures;
+        }
+
+        public void setSignatures(List<Signature> signatures) {
+                this.signatures = signatures;
+        }
 }

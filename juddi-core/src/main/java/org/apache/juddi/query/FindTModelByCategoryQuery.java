@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
 import org.uddi.api_v3.CategoryBag;
 
@@ -47,10 +48,12 @@ public class FindTModelByCategoryQuery {
 												  TModelQuery.ENTITY_ALIAS, 
 												  TModelQuery.KEY_NAME, 
 												  TModelQuery.ENTITY_FIELD, 
-												  ENTITY_NAME_CHILD);
+												  ENTITY_NAME_CHILD,
+												  TModelQuery.SIGNATURE_PRESENT);
 	}
 	
 	public static List<?> select(EntityManager em, FindQualifiers fq, CategoryBag categoryBag, List<?> keysIn) {
-		return findQuery.select(em, fq, categoryBag, keysIn);
+		return findQuery.select(em, fq, categoryBag, keysIn, new DynamicQuery.Parameter(TModelQuery.ENTITY_ALIAS 
+				+ ".deleted", Boolean.FALSE, DynamicQuery.PREDICATE_EQUALS));
 	}
 }

@@ -51,12 +51,15 @@ import javax.xml.bind.annotation.XmlType;
     "authInfo"
 })
 public class DiscardAuthToken implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlElement(required = true)
+	private static final long serialVersionUID = 2971695770912470622L;
+	@XmlElement(required = true)
     protected String authInfo;
 
+        public DiscardAuthToken(){}
+        public DiscardAuthToken(String token){
+                this.authInfo = token;
+        }
     /**
      * Gets the value of the authInfo property.
      * 
@@ -82,4 +85,3 @@ public class DiscardAuthToken implements Serializable{
     }
 
 }
-

@@ -33,7 +33,7 @@ import javax.persistence.Table;
 @Table(name = "j3_tmodel_identifier")
 public class TmodelIdentifier implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1601849737660400357L;
 	private Long id;
 	private Tmodel tmodel;
 	private String tmodelKeyRef;
@@ -75,7 +75,7 @@ public class TmodelIdentifier implements java.io.Serializable {
 		this.tmodel = tmodel;
 	}
 
-	@Column(name = "tmodel_key_ref")
+	@Column(name = "tmodel_key_ref", length = 255)
 	public String getTmodelKeyRef() {
 		return this.tmodelKeyRef;
 	}
@@ -83,7 +83,7 @@ public class TmodelIdentifier implements java.io.Serializable {
 		this.tmodelKeyRef = tmodelKeyRef;
 	}
 
-	@Column(name = "key_name")
+	@Column(name = "key_name", length = 255)
 	public String getKeyName() {
 		return this.keyName;
 	}
@@ -91,7 +91,7 @@ public class TmodelIdentifier implements java.io.Serializable {
 		this.keyName = keyName;
 	}
 
-	@Column(name = "key_value", nullable = false)
+	@Column(name = "key_value", nullable = false, length = 255)
 	public String getKeyValue() {
 		return this.keyValue;
 	}

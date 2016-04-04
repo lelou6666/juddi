@@ -20,28 +20,39 @@ package org.apache.juddi.api.impl;
 import java.io.StringWriter;
 
 import javax.jws.WebService;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.juddi.error.ErrorMessage;
-import org.apache.juddi.error.FatalErrorException;
-import org.apache.juddi.util.NotificationList;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.juddi.config.PersistenceManager;
+import org.apache.juddi.mapping.MappingModelToApi;
+import org.apache.juddi.subscription.NotificationList;
+import org.apache.juddi.v3.error.ErrorMessage;
+import org.apache.juddi.v3.error.FatalErrorException;
+import org.apache.juddi.v3.error.InvalidKeyPassedException;
 import org.apache.juddi.validation.ValidateSubscriptionListener;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.DispositionReport;
 import org.uddi.api_v3.Result;
 import org.uddi.subr_v3.NotifySubscriptionListener;
 import org.uddi.v3_service.DispositionReportFaultMessage;
 import org.uddi.v3_service.UDDISubscriptionListenerPortType;
 
+/**
+ * This class implements the UDDI v3 Subscription Listener API (server side) 
+ * for jUDDI. It is primarily used for server to server subscriptions.
+ * 
+ */
 @WebService(serviceName="UDDISubscriptionListenerService", 
 			endpointInterface="org.uddi.v3_service.UDDISubscriptionListenerPortType",
-			targetNamespace = "urn:uddi-org:subr_v3_portType")
+			targetNamespace = "urn:uddi-org:api_v3_portType")
 public class UDDISubscriptionListenerImpl extends AuthenticatedService implements
 		UDDISubscriptionListenerPortType {
 	
-	private static Logger logger = Logger.getLogger(UDDISubscriptionListenerImpl.class);
+	private static Log logger = LogFactory.getLog(UDDISubscriptionListenerImpl.class);
 		
 	@SuppressWarnings("unchecked")
 	public DispositionReport notifySubscriptionListener(
@@ -55,11 +66,40 @@ public class UDDISubscriptionListenerImpl extends AuthenticatedService implement
 
 			logger.info("Notification received by UDDISubscriptionListenerService : " + sw.toString());
 			
+			@SuppressWarnings("rawtypes")
 			NotificationList nl = NotificationList.getInstance();
 			nl.getNotifications().add(sw.toString());
 			
-			logger.info("Notification received by UDDISubscriptionListenerService : " 
-					+ sw.toString());
+			org.apache.juddi.api_v3.ClientSubscriptionInfo apiClientSubscriptionInfo = null;
+			
+			//find the clerks to go with this subscription
+			EntityManager em = PersistenceManager.getEntityManager();
+			EntityTransaction tx = em.getTransaction();
+			try {
+				tx.begin();
+		
+				this.getEntityPublisher(em, body.getAuthInfo());
+				String subscriptionKey = body.getSubscriptionResultsList().getSubscription().getSubscriptionKey();
+				org.apache.juddi.model.ClientSubscriptionInfo modelClientSubscriptionInfo = null;
+				try {
+					modelClientSubscriptionInfo = em.find(org.apache.juddi.model.ClientSubscriptionInfo.class, subscriptionKey);
+				} catch (ClassCastException e) {}
+				if (modelClientSubscriptionInfo == null) {
+					throw new InvalidKeyPassedException(new ErrorMessage("errors.invalidkey.SubscripKeyNotFound", subscriptionKey));
+				}
+				apiClientSubscriptionInfo = new org.apache.juddi.api_v3.ClientSubscriptionInfo();
+				MappingModelToApi.mapClientSubscriptionInfo(modelClientSubscriptionInfo, apiClientSubscriptionInfo,em);
+		
+				tx.commit();
+			} finally {
+				if (tx.isActive()) {
+					tx.rollback();
+				}
+				em.close();
+			}
+			
+			XRegisterHelper.handle(apiClientSubscriptionInfo.getFromClerk(),apiClientSubscriptionInfo.getToClerk(), body.getSubscriptionResultsList());
+			
 		} catch (JAXBException jaxbe) {
 			logger.error("", jaxbe);
 			throw new FatalErrorException(new ErrorMessage("errors.subscriptionnotifier.client"));

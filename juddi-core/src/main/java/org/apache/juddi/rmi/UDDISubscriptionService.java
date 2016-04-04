@@ -38,11 +38,11 @@ import org.uddi.v3_service.UDDISubscriptionPortType;
  */
 public class UDDISubscriptionService extends UnicastRemoteObject implements UDDISubscriptionPortType {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3534214581063707293L;
 	private UDDISubscriptionPortType subscription = new UDDISubscriptionImpl();
 	
-	protected UDDISubscriptionService() throws RemoteException {
-		super();
+	protected UDDISubscriptionService(int port) throws RemoteException {
+		super(port);
 	}
 
 	public void deleteSubscription(DeleteSubscription body)
@@ -64,7 +64,7 @@ public class UDDISubscriptionService extends UnicastRemoteObject implements UDDI
 	public void saveSubscription(String authInfo,
 			Holder<List<Subscription>> subscription)
 			throws DispositionReportFaultMessage, RemoteException {
-		this.saveSubscription(authInfo, subscription);
+		this.subscription.saveSubscription(authInfo, subscription);
 		
 	}
 

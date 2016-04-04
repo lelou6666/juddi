@@ -34,7 +34,7 @@ import javax.persistence.Table;
 @Table(name = "j3_overview_doc_descr")
 public class OverviewDocDescr implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2042879910362134248L;
 	private Long id;
 	private OverviewDoc overviewDoc;
 	private String langCode;
@@ -73,7 +73,7 @@ public class OverviewDocDescr implements java.io.Serializable {
 		this.overviewDoc = overviewDoc;
 	}
 	
-	@Column(name = "lang_code", length = 5)
+	@Column(name = "lang_code", length = 26)
 	public String getLangCode() {
 		return this.langCode;
 	}

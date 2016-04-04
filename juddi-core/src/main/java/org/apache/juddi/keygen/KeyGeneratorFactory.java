@@ -18,9 +18,11 @@
 package org.apache.juddi.keygen;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.juddi.ClassUtil;
 import org.apache.juddi.config.AppConfig;
 import org.apache.juddi.config.Property;
-import org.apache.log4j.Logger;
 
 /**
  * Used to create the org.apache.juddi.keygen.KeyGenerator implementation
@@ -31,10 +33,10 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
  */
 public abstract class KeyGeneratorFactory {
-	private static Logger log = Logger.getLogger(KeyGeneratorFactory.class);
+	private static Log log = LogFactory.getLog(KeyGeneratorFactory.class);
 
 	// Key Generator default implementation
-	private static final String DEFAULT_IMPL = "org.apache.juddi.keygen.DefaultKeyGenerator";
+	public static final String DEFAULT_IMPL = "org.apache.juddi.keygen.DefaultKeyGenerator";
 
 	// the shared Key Generator instance
 	private static KeyGenerator keyGenerator = null;
@@ -44,9 +46,15 @@ public abstract class KeyGeneratorFactory {
 	 * 
 	 * @return KeyGenerator
 	 */
-	public static KeyGenerator getKeyGenerator() {
+	public static synchronized KeyGenerator getKeyGenerator() {
 		if (keyGenerator == null)
 			keyGenerator = createKeyGenerator();
+		return keyGenerator;
+	}
+	
+	public static synchronized KeyGenerator forceNewKeyGenerator() {
+		keyGenerator = null;
+		keyGenerator = createKeyGenerator();
 		return keyGenerator;
 	}
 
@@ -60,35 +68,38 @@ public abstract class KeyGeneratorFactory {
 			return keyGenerator;
 	
 		// grab class name of the Cryptor implementation to create
-		String className = DEFAULT_IMPL;
-		try {
-			// grab class name of the Authenticator implementation to create
-			className = AppConfig.getConfiguration().getString(Property.JUDDI_KEYGENERATOR, DEFAULT_IMPL);
-		}
-		catch(ConfigurationException ce) {
-			log.error("Configuration exception occurred retrieving: " + Property.JUDDI_KEYGENERATOR);
-		}
-		
-		// write the Cryptor implementation name to the log
-		log.debug("Key Generator Implementation = " + className);
+		String className = System.getProperty(Property.JUDDI_KEYGENERATOR);
+                if (className==null){
+                    try {
+                            // grab class name of the Authenticator implementation to create
+                            className = AppConfig.getConfiguration().getString(Property.JUDDI_KEYGENERATOR, DEFAULT_IMPL);
+                    }
+                    catch(ConfigurationException ce) {
+                            log.error("Configuration exception occurred retrieving: " + Property.JUDDI_KEYGENERATOR);
+                    }
+                }
+                try {
+                    // write the Cryptor implementation name to the log
+                    log.debug("Configuration Key Generator Implementation = " + AppConfig.getConfiguration().getString(Property.JUDDI_KEYGENERATOR));
+                } catch (ConfigurationException ex) {
+                }
+                log.debug("SysProp Key Generator Implementation = " + System.getProperty(Property.JUDDI_KEYGENERATOR));
+                log.debug("Using Key Generator Implementation = " + className);
 	
 		Class<?> keygenClass = null;
 		try {
 			// Use Loader to locate & load the Key Generator implementation
-			keygenClass = org.apache.log4j.helpers.Loader.loadClass(className);
-		}
-		catch(ClassNotFoundException e) {
-			log.error("The specified Key Generator class '" + className + "' was not found in classpath.");
-			log.error(e);
-		}
-	
-		try {
+			keygenClass = ClassUtil.forName(className,KeyGeneratorFactory.class);
 			// try to instantiate the Key Generator implementation
 			keyGenerator = (KeyGenerator)keygenClass.newInstance();
-		}
-		catch(Exception e) {
-			log.error("Exception while attempting to instantiate the implementation of Key Generator: " + keygenClass.getName() + "\n" + e.getMessage());
-			log.error(e);
+		} catch(ClassNotFoundException cnfe) {
+			throw new RuntimeException("The specified Key Generator class '" + className + "' was not found on classpath.",cnfe);
+		} catch(InstantiationException ie) {
+			throw new RuntimeException("The specified Key Generator class '" + className + "' cannot be instantiated.",ie);
+		} catch(IllegalAccessException iae) {
+			throw new RuntimeException("The specified Key Generator class '" + className + "' cannot be instantiated due to illegal access.",iae);
+		} catch(Exception e) {
+			throw new RuntimeException("Exception while attempting to instantiate the implementation of Key Generator: " + className + "\n" + e.getMessage());
 		}
 	
 		return keyGenerator;

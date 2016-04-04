@@ -24,6 +24,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -61,11 +62,11 @@ import javax.xml.bind.annotation.XmlType;
     "serviceKey",
     "bindingKey"
 })
+ @XmlRootElement()                //required for REST APIs
 public class KeyBag implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected boolean deleted;
+	private static final long serialVersionUID = -4702163443625186185L;
+	protected boolean deleted;
     @XmlElement(namespace = "urn:uddi-org:api_v3")
     protected List<String> tModelKey;
     @XmlElement(namespace = "urn:uddi-org:api_v3")
@@ -208,4 +209,3 @@ public class KeyBag implements Serializable{
     }
 
 }
-

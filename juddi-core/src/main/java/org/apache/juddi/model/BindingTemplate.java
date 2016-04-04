@@ -18,7 +18,6 @@ package org.apache.juddi.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +37,7 @@ import javax.persistence.Table;
 @Table(name = "j3_binding_template")
 public class BindingTemplate extends UddiEntity implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -813683306021520411L;
 	private BusinessService businessService;
 	private List<BindingDescr> bindingDescrs = new ArrayList<BindingDescr>(0);
 
@@ -47,6 +46,7 @@ public class BindingTemplate extends UddiEntity implements java.io.Serializable 
 	private String hostingRedirector;
 	private BindingCategoryBag categoryBag;
 	private List<TmodelInstanceInfo> tmodelInstanceInfos = new ArrayList<TmodelInstanceInfo>(0);
+    private List<Signature> signatures = new ArrayList<Signature>(0);
 	
 	public BindingTemplate() {
 	}
@@ -81,7 +81,7 @@ public class BindingTemplate extends UddiEntity implements java.io.Serializable 
 		this.businessService = businessService;
 	}
 
-	@Column(name = "access_point_type", length = 20)
+	@Column(name = "access_point_type", length = 255)
 	public String getAccessPointType() {
 		return this.accessPointType;
 	}
@@ -89,7 +89,7 @@ public class BindingTemplate extends UddiEntity implements java.io.Serializable 
 		this.accessPointType = accessPointType;
 	}
 
-	@Column(name = "access_point_url", length = 2000)
+	@Column(name = "access_point_url", length = 4096)
 	public String getAccessPointUrl() {
 		return this.accessPointUrl;
 	}
@@ -131,4 +131,14 @@ public class BindingTemplate extends UddiEntity implements java.io.Serializable 
 	public void setBindingDescrs(List<BindingDescr> bindingDescrs) {
 		this.bindingDescrs = bindingDescrs;
 	}
+        
+        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "bindingTemplate")
+	@OrderBy
+        public List<Signature> getSignatures() {
+                return signatures;
+        }
+
+        public void setSignatures(List<Signature> signatures) {
+                this.signatures = signatures;
+        }
 }

@@ -25,11 +25,12 @@ public class TModelQuery extends EntityQuery {
 	public static final String ENTITY_NAME = "Tmodel";
 	public static final String ENTITY_ALIAS = "t";
 	public static final String ENTITY_FIELD = "tmodel";
+	public static final String SIGNATURE_PRESENT = ENTITY_ALIAS + "." + SIGNATURE_FIELD + " IS NOT EMPTY ";
 	
 	protected static String selectSQL;
 
 	static {
-		StringBuffer sql = new StringBuffer(200);
+		StringBuilder sql = new StringBuilder(200);
 		sql.append("select distinct "+ ENTITY_ALIAS + "." + KEY_NAME + " from " + ENTITY_NAME + " " + ENTITY_ALIAS + " ");
 		selectSQL = sql.toString();
 	}

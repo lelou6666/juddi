@@ -17,15 +17,17 @@
 
 package org.apache.juddi.query;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.config.Constants;
 import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
 import org.apache.juddi.query.util.KeyedRefTModelComparator;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.IdentifierBag;
 import org.uddi.api_v3.KeyedReference;
 
@@ -48,7 +50,7 @@ import org.uddi.api_v3.KeyedReference;
 public class FindEntityByIdentifierQuery extends EntityQuery {
 	
 	@SuppressWarnings("unused")
-	private Logger log = Logger.getLogger(FindEntityByIdentifierQuery.class);
+	private static Log log = LogFactory.getLog(FindEntityByIdentifierQuery.class);
 
 	private String entityName;
 	private String entityAlias;
@@ -57,14 +59,17 @@ public class FindEntityByIdentifierQuery extends EntityQuery {
 	private String entityNameChild;
 	private String entityAliasChild;
 	private String selectSQL;
+	private String signaturePresent;
 
-	public FindEntityByIdentifierQuery(String entityName, String entityAlias, String keyName, String entityField, String entityNameChild) {
+	public FindEntityByIdentifierQuery(String entityName, String entityAlias, String keyName, 
+			String entityField, String entityNameChild, String signaturePresent) {
 		this.entityName = entityName;
 		this.entityAlias = entityAlias;
 		this.keyName = keyName;
 		this.entityField = entityField;
 		this.entityNameChild = entityNameChild;
 		this.entityAliasChild = buildAlias(entityNameChild);
+		this.signaturePresent = signaturePresent;
 		
 		StringBuffer sql = new StringBuffer(200);
 		sql.append("select distinct " + entityAlias + "." + keyName + " from " + entityName + " " + entityAlias + " ");
@@ -97,6 +102,14 @@ public class FindEntityByIdentifierQuery extends EntityQuery {
 	
 	public String getSelectSQL() {
 		return selectSQL;
+	}
+	
+	public String getSignaturePresent() {
+		return signaturePresent;
+	}
+
+	public void setSignaturePresent(String signaturePresent) {
+		this.signaturePresent = signaturePresent;
 	}
 
 	
@@ -226,7 +239,7 @@ public class FindEntityByIdentifierQuery extends EntityQuery {
 	 */
 	public void appendJoinTables(DynamicQuery qry, FindQualifiers fq, List<KeyedReference> keyedRefs) {
 		
-		if (keyedRefs != null & keyedRefs.size() > 0) {
+		if (keyedRefs != null && keyedRefs.size() > 0) {
 			// Sorting the collection by tModel Key
 			Collections.sort(keyedRefs, new KeyedRefTModelComparator());
 
@@ -266,6 +279,9 @@ public class FindEntityByIdentifierQuery extends EntityQuery {
 			qry.append(thetaJoinsStr);
 
 			qry.closeParen().pad();
+			if (fq!=null && fq.isSignaturePresent()) {
+				qry.AND().pad().openParen().pad().append(getSignaturePresent()).pad().closeParen().pad();
+			}
 		}
 	}
 	

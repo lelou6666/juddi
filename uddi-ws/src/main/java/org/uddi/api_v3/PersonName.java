@@ -50,14 +50,30 @@ import javax.xml.bind.annotation.XmlValue;
     "value"
 })
 public class PersonName implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlValue
+	private static final long serialVersionUID = -7567866453877643799L;
+	@XmlValue
     protected String value;
     @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
     protected String lang;
 
+    /**
+     * default
+     */
+    public PersonName()
+    {}
+    
+    /**
+     * convenience wrapper
+     * @since 3.2
+     * @param Value
+     * @param Lang 
+     */
+    public PersonName(String Value, String Lang)
+    {
+        this.value = Value;
+        this.lang = Lang;
+    }
     /**
      * Gets the value of the value property.
      * 
@@ -107,4 +123,3 @@ public class PersonName implements Serializable{
     }
 
 }
-

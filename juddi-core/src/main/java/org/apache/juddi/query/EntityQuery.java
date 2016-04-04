@@ -20,23 +20,31 @@ package org.apache.juddi.query;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.uddi.api_v3.ListDescription;
 import org.apache.juddi.config.AppConfig;
 import org.apache.juddi.config.Property;
+import org.apache.juddi.model.TempKey;
 import org.apache.juddi.query.util.DynamicQuery;
-import org.apache.log4j.Logger;
 
 /**
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
  */
 public abstract class EntityQuery {
-	private static Logger log = Logger.getLogger(EntityQuery.class);
+	private static Log log = LogFactory.getLog(EntityQuery.class);
 
 	public static final String KEY_NAME = "entityKey";
+	public static final String TEMP_ENTITY_NAME = "TempKey";
+	public static final String TEMP_ENTITY_ALIAS = "tk";
+	public static final String TEMP_ENTITY_PK_TXID_NAME = TEMP_ENTITY_ALIAS + ".pk.txId";
+	public static final String TEMP_ENTITY_PK_KEY_NAME = TEMP_ENTITY_ALIAS + ".pk.entityKey";
+	public static final String SIGNATURE_FIELD  = "signatures";
 
 	public static final int DEFAULT_MAXROWS = 1000;
 	public static final int DEFAULT_MAXINCLAUSE = 1000;
@@ -77,7 +85,14 @@ public abstract class EntityQuery {
 		
 		
 		Query qry = dynamicQry.buildJPAQuery(em);
-		List<?> result = qry.getResultList();
+		List<Object> result = new ArrayList<Object>();
+		//Filter out non-unique results
+		for (Object object : qry.getResultList()) {
+			if (!result.contains(object)) {
+				result.add(object);
+			}
+		}
+		
 		int resultSize = result.size();
 
 		if (listDesc != null) {
@@ -115,7 +130,7 @@ public abstract class EntityQuery {
 		// If keysIn is null, then no IN list is applied to the query - we simply need to run the query.  Otherwise, the IN list is chunked based on
 		// the application property.
 		if (keysIn == null) {
-			log.debug(dynamicQry);
+			if (log.isDebugEnabled()) log.debug(dynamicQry);
 			Query qry = dynamicQry.buildJPAQuery(em);
 			result = qry.getResultList();
 		}
@@ -153,6 +168,14 @@ public abstract class EntityQuery {
 		
 
 	}
-
+	
+	public static void storeIntermediateKeySetResults (EntityManager em, String txId,  List<?> keysIn) {
+		
+		for (Object key : keysIn) {
+			TempKey tempKey = new TempKey();
+			tempKey.setPk(txId,key.toString());
+			em.persist(tempKey);
+		}
+	}
 	
 }

@@ -18,19 +18,19 @@
 package org.apache.juddi.query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.config.Constants;
 import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
 import org.apache.juddi.query.util.KeyedRefGroupTModelComparator;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.CategoryBag;
 import org.uddi.api_v3.KeyedReference;
 import org.uddi.api_v3.KeyedReferenceGroup;
@@ -54,7 +54,7 @@ import org.uddi.api_v3.KeyedReferenceGroup;
 public class FindEntityByCategoryGroupQuery extends EntityQuery {
 	
 	@SuppressWarnings("unused")
-	private Logger log = Logger.getLogger(FindEntityByCategoryGroupQuery.class);
+	private static Log log = LogFactory.getLog(FindEntityByCategoryGroupQuery.class);
 
 	private static final String ENTITY_KEYEDREFERENCEGROUP = "KeyedReferenceGroup";
 	private static final String ALIAS_KEYEDREFERENCEGROUP = "krg";
@@ -71,14 +71,17 @@ public class FindEntityByCategoryGroupQuery extends EntityQuery {
 	private String entityNameChild;
 	private String entityAliasChild;
 	private String selectSQL;
+	private String signaturePresent;
 
-	public FindEntityByCategoryGroupQuery(String entityName, String entityAlias, String keyName, String entityField, String entityNameChild) {
+	public FindEntityByCategoryGroupQuery(String entityName, String entityAlias, String keyName, 
+			String entityField, String entityNameChild, String signaturePresent) {
 		this.entityName = entityName;
 		this.entityAlias = entityAlias;
 		this.keyName = keyName;
 		this.entityField = entityField;
 		this.entityNameChild = entityNameChild;
 		this.entityAliasChild = buildAlias(entityNameChild);
+		this.signaturePresent = signaturePresent;
 		
 		StringBuffer sql = new StringBuffer(200);
 		sql.append("select distinct " + entityAlias + "." + keyName + " from " 
@@ -116,6 +119,14 @@ public class FindEntityByCategoryGroupQuery extends EntityQuery {
 		return selectSQL;
 	}
 	
+	public String getSignaturePresent() {
+		return signaturePresent;
+	}
+
+	public void setSignaturePresent(String signaturePresent) {
+		this.signaturePresent = signaturePresent;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<?> select(EntityManager em, FindQualifiers fq, CategoryBag categoryBag, List<?> keysIn, DynamicQuery.Parameter... restrictions) {
 		// If keysIn is not null and empty, then search is over.
@@ -125,14 +136,14 @@ public class FindEntityByCategoryGroupQuery extends EntityQuery {
 		if (categoryBag == null)
 			return keysIn;
 		
-		List<JAXBElement<?>> categories = categoryBag.getContent();
+		List<KeyedReferenceGroup> categories = categoryBag.getKeyedReferenceGroup();
 		if (categories == null || categories.size() == 0)
 			return keysIn;
 		
 		List<KeyedReferenceGroup> keyedRefGroups = new ArrayList<KeyedReferenceGroup>(0);
-		for (JAXBElement<?> elem : categories) {
-			if (elem.getValue() instanceof KeyedReferenceGroup)
-				keyedRefGroups.add((KeyedReferenceGroup)elem.getValue());
+		for (KeyedReferenceGroup elem : categories) {
+			if (elem instanceof KeyedReferenceGroup)
+				keyedRefGroups.add((KeyedReferenceGroup)elem);
 		}
 		if (keyedRefGroups.size() == 0)
 			return keysIn;		
@@ -305,6 +316,9 @@ public class FindEntityByCategoryGroupQuery extends EntityQuery {
 			qry.append(thetaJoinsStr);
 
 			qry.closeParen().pad();
+			if (fq!=null && fq.isSignaturePresent()) {
+				qry.AND().pad().openParen().pad().append(getSignaturePresent()).pad().closeParen().pad();
+			}
 		}
 	}
 

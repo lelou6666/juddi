@@ -50,13 +50,27 @@ import javax.xml.bind.annotation.XmlValue;
     "value"
 })
 public class Name implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlValue
+	private static final long serialVersionUID = -8258541617735086377L;
+	@XmlValue
     protected String value;
     @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
     protected String lang;
+
+    /**
+     * A simple convenience constructor
+     * @param value max length is 255 chars
+     * @param lang max length is 26 chars
+     */
+    public Name(String value, String lang) {
+        this.value = value;
+        this.lang = lang;
+    }
+
+    public Name() {
+        value=null;
+        lang=null;
+    }
 
     /**
      * Gets the value of the value property.
@@ -107,4 +121,3 @@ public class Name implements Serializable{
     }
 
 }
-

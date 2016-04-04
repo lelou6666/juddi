@@ -21,11 +21,11 @@ package org.uddi.api_v3;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -55,19 +55,27 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "overviewDoc", propOrder = {
-    "content"
+        "description", "overviewURL"
 })
-public class OverviewDoc implements Serializable{
-
+public class OverviewDoc implements Serializable {
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    @XmlElementRefs({
-        @XmlElementRef(name = "overviewURL", namespace = "urn:uddi-org:api_v3", type = JAXBElement.class),
-        @XmlElementRef(name = "description", namespace = "urn:uddi-org:api_v3", type = JAXBElement.class)
-    })
-    protected List<JAXBElement<?>> content;
+	private static final long serialVersionUID = 2375126956490542327L;
+	@XmlElement
+    protected List<Description> description;
+    @XmlElement(required = false)
+    protected OverviewURL overviewURL;
 
-    /**
+    
+    public OverviewURL getOverviewURL() {
+		return overviewURL;
+	}
+
+
+	public void setOverviewURL(OverviewURL overviewURL) {
+		this.overviewURL = overviewURL;
+	}
+
+	/**
      * Gets the rest of the content model. 
      * 
      * <p>
@@ -100,12 +108,11 @@ public class OverviewDoc implements Serializable{
      * 
      * 
      */
-    public List<JAXBElement<?>> getContent() {
-        if (content == null) {
-            content = new ArrayList<JAXBElement<?>>();
+    public List<Description> getDescription() {
+        if (description == null) {
+        	description = new ArrayList<Description>();
         }
-        return this.content;
+        return this.description;
     }
-
+    
 }
-

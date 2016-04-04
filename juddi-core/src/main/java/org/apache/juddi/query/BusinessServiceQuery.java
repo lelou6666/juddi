@@ -26,11 +26,14 @@ public class BusinessServiceQuery extends EntityQuery {
 	public static final String ENTITY_ALIAS = "bs";
 	public static final String ENTITY_FIELD = "businessService";
 	public static final String KEY_NAME_PARENT = BusinessEntityQuery.ENTITY_FIELD + "." + BusinessEntityQuery.KEY_NAME;
+	public static final String SIGNATURE_PRESENT = 
+			ENTITY_ALIAS + "." + EntityQuery.SIGNATURE_FIELD + " IS NOT EMPTY OR " +
+			ENTITY_ALIAS + ".businessEntity." + EntityQuery.SIGNATURE_FIELD + " IS NOT EMPTY ";
 	
 	protected static String selectSQL;
 
 	static {
-		StringBuffer sql = new StringBuffer(200);
+		StringBuilder sql = new StringBuilder(200);
 		sql.append("select distinct "+ ENTITY_ALIAS + "." + KEY_NAME + " from " + ENTITY_NAME + " " + ENTITY_ALIAS + " ");
 		selectSQL = sql.toString();
 	}

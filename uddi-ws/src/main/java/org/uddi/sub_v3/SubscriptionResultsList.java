@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.uddi.api_v3.AssertionStatusReport;
@@ -88,11 +89,11 @@ import org.uddi.api_v3.TModelList;
     "assertionStatusReport",
     "keyBag"
 })
+@XmlRootElement(name="subscriptionResultsList")
 public class SubscriptionResultsList implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected String chunkToken;
+	private static final long serialVersionUID = 8704510604661100139L;
+	protected String chunkToken;
     @XmlElement(required = true)
     protected CoveragePeriod coveragePeriod;
     @XmlElement(required = true)
@@ -461,4 +462,3 @@ public class SubscriptionResultsList implements Serializable{
     }
 
 }
-

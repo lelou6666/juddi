@@ -33,7 +33,7 @@ import javax.persistence.Table;
 @Table(name = "j3_address_line")
 public class AddressLine implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -306060662254773951L;
 	private Long id;
 	private Address address;
 	private String line;
@@ -81,7 +81,7 @@ public class AddressLine implements java.io.Serializable {
 		this.line = line;
 	}
 
-	@Column(name = "key_name")
+	@Column(name = "key_name", length=255)
 	public String getKeyName() {
 		return this.keyName;
 	}
@@ -89,7 +89,7 @@ public class AddressLine implements java.io.Serializable {
 		this.keyName = keyName;
 	}
 
-	@Column(name = "key_value")
+	@Column(name = "key_value", length=255)
 	public String getKeyValue() {
 		return this.keyValue;
 	}

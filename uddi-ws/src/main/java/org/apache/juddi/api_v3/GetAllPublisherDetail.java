@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 The Apache Software Foundation.
+ * Copyright 2001-2009 The Apache Software Foundation.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,41 @@
  * limitations under the License.
  *
  */
-
-
 package org.apache.juddi.api_v3;
-
-import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for get_allPublisherDetail type. Specific to juddi.
+ * <p>Java class for get_allPublisherDetail complex type.
  * 
- * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a> 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="get_allPublisherDetail">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element ref="{urn:uddi-org:api_v3}authInfo" minOccurs="0"/>
+ *       &lt;/sequence>
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "get_allPublisherDetail", propOrder = {
     "authInfo"
 })
-public class GetAllPublisherDetail implements Serializable{
+public class GetAllPublisherDetail {
 
-    @XmlTransient
-	private static final long serialVersionUID = 1L;
     @XmlElement(namespace = "urn:uddi-org:api_v3")
-	protected String authInfo;
+    protected String authInfo;
 
     /**
      * Gets the value of the authInfo property.
@@ -68,4 +75,3 @@ public class GetAllPublisherDetail implements Serializable{
     }
 
 }
-

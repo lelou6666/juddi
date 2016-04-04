@@ -17,6 +17,7 @@
 
 package org.apache.juddi.query;
 
+
 /**
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
  */
@@ -25,11 +26,12 @@ public class BusinessEntityQuery extends EntityQuery {
 	public static final String ENTITY_NAME = "BusinessEntity";
 	public static final String ENTITY_ALIAS = "be";
 	public static final String ENTITY_FIELD = "businessEntity";
-	
+	public static final String SIGNATURE_PRESENT = ENTITY_ALIAS + "." + SIGNATURE_FIELD + " IS NOT EMPTY ";
+
 	protected static String selectSQL;
 
 	static {
-		StringBuffer sql = new StringBuffer(200);
+		StringBuilder sql = new StringBuilder(200);
 		sql.append("select distinct "+ ENTITY_ALIAS + "." + KEY_NAME + " from " + ENTITY_NAME + " " + ENTITY_ALIAS + " ");
 		selectSQL = sql.toString();
 	}

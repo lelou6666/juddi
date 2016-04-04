@@ -20,31 +20,32 @@ package org.apache.juddi.validation;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.xml.bind.JAXBElement;
-
-import org.uddi.v3_service.DispositionReportFaultMessage;
 import org.apache.juddi.keygen.KeyGenerator;
-import org.apache.juddi.error.ErrorMessage;
-import org.apache.juddi.error.InvalidKeyPassedException;
-import org.apache.juddi.error.ValueNotAllowedException;
+import org.apache.juddi.v3.error.ErrorMessage;
+import org.apache.juddi.v3.error.InvalidKeyPassedException;
+import org.apache.juddi.v3.error.ValueNotAllowedException;
+import org.uddi.v3_service.DispositionReportFaultMessage;
 
 /**
  * @author <a href="mailto:jfaath@apache.org">Jeff Faath</a>
+ * @author <a href="mailto:tcunning@apache.org">Tom Cunningham</a>
  */
 public class ValidateUDDIKey {
 
 	public static void validateUDDIv3Key(String key) throws DispositionReportFaultMessage {
 		if (key == null)
 			throw new InvalidKeyPassedException(new ErrorMessage("errors.invalidkey.NullKey"));
+		if (key.toLowerCase().startsWith("uuid:")) {
+               return;
+          }
+		if (! key.contains(KeyGenerator.PARTITION_SEPARATOR)) return; //v2 style key; no other validation rules apply
 		
 		String keyToTest = key.trim();
 		if (keyToTest.endsWith(KeyGenerator.PARTITION_SEPARATOR))
 			throw new InvalidKeyPassedException(new ErrorMessage("errors.invalidkey.MalformedKey", key));
 
 		StringTokenizer tokenizer = new StringTokenizer(key.toLowerCase(), KeyGenerator.PARTITION_SEPARATOR);
-		int tokensCount = tokenizer.countTokens();
-		if(tokensCount <= 1)
-			throw new InvalidKeyPassedException(new ErrorMessage("errors.invalidkey.MalformedKey", key));
+		
 		for(int count = 0; tokenizer.hasMoreTokens(); count++) {
 			String nextToken = tokenizer.nextToken();
 
@@ -82,13 +83,12 @@ public class ValidateUDDIKey {
 		// A key generator key should have exactly one category and it's key value should be 'keyGenerator'
 		org.uddi.api_v3.CategoryBag categories = tModel.getCategoryBag();
 		if (categories != null) {
-			List<JAXBElement<?>> elems = categories.getContent();
+			List<org.uddi.api_v3.KeyedReference> elems = categories.getKeyedReference();
 			if (elems != null && elems.size() == 1) {
-				JAXBElement<?> elem = elems.get(0);
+				org.uddi.api_v3.KeyedReference elem = elems.get(0);
 				if (elem != null) {
-					Object obj = elem.getValue();
-					if (obj != null && obj instanceof org.uddi.api_v3.KeyedReference) {
-						String keyedValue = ((org.uddi.api_v3.KeyedReference)obj).getKeyValue();
+					if (elem instanceof org.uddi.api_v3.KeyedReference) {
+						String keyedValue = elem.getKeyValue();
 						if (keyedValue != null) {
 							if (keyedValue.equalsIgnoreCase(KeyGenerator.KEYGENERATOR_SUFFIX))
 								return;

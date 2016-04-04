@@ -17,17 +17,18 @@ package org.apache.juddi.api.impl;
 import java.rmi.RemoteException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.Registry;
-import org.apache.log4j.Logger;
+import org.apache.juddi.v3.tck.TckBusiness;
+import org.apache.juddi.v3.tck.TckBusinessService;
+import org.apache.juddi.v3.tck.TckPublisher;
+import org.apache.juddi.v3.tck.TckSecurity;
+import org.apache.juddi.v3.tck.TckTModel;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.uddi.api_v3.tck.TckBusiness;
-import org.uddi.api_v3.tck.TckBusinessService;
-import org.uddi.api_v3.tck.TckPublisher;
-import org.uddi.api_v3.tck.TckSecurity;
-import org.uddi.api_v3.tck.TckTModel;
 import org.uddi.v3_service.UDDISecurityPortType;
 
 /**
@@ -36,8 +37,7 @@ import org.uddi.v3_service.UDDISecurityPortType;
  */
 public class API_040_BusinessServiceTest 
 {
-	 
-    private static Logger logger                     = Logger.getLogger(API_040_BusinessServiceTest.class);
+	private static Log logger                        = LogFactory.getLog(API_040_BusinessServiceTest.class);
 	
 	private static API_010_PublisherTest api010      = new API_010_PublisherTest();
 	private static TckTModel tckTModel               = new TckTModel(new UDDIPublicationImpl(), new UDDIInquiryImpl());
@@ -50,13 +50,18 @@ public class API_040_BusinessServiceTest
 	@BeforeClass
 	public static void setup() throws ConfigurationException {
 		Registry.start();
+                logger.info("API_040_BusinessServiceTest");
 		logger.debug("Getting auth tokens..");
+                
 		try {
 			api010.saveJoePublisher();
 			api010.saveSamSyndicator();
 			UDDISecurityPortType security      = new UDDISecurityImpl();
-			authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.JOE_PUBLISHER_ID,  TckPublisher.JOE_PUBLISHER_CRED);
-			authInfoSam = TckSecurity.getAuthToken(security, TckPublisher.SAM_SYNDICATOR_ID,  TckPublisher.SAM_SYNDICATOR_CRED);
+			authInfoJoe = TckSecurity.getAuthToken(security, TckPublisher.getJoePublisherId(),  TckPublisher.getJoePassword());
+			authInfoSam = TckSecurity.getAuthToken(security, TckPublisher.getSamPublisherId(),  TckPublisher.getSamPassword());
+			String authInfoUDDI  = TckSecurity.getAuthToken(security, TckPublisher.getUDDIPublisherId(),  TckPublisher.getUDDIPassword());
+			tckTModel.saveUDDIPublisherTmodel(authInfoUDDI);
+			tckTModel.saveTModels(authInfoUDDI, TckTModel.TMODELS_XML);
 		} catch (RemoteException e) {
 			logger.error(e.getMessage(), e);
 			Assert.fail("Could not obtain authInfo token.");
@@ -65,6 +70,7 @@ public class API_040_BusinessServiceTest
 
 	@AfterClass
 	public static void stopRegistry() throws ConfigurationException {
+                tckTModel.deleteCreatedTModels(authInfoJoe);
 		Registry.stop();
 	}
 	
@@ -76,6 +82,75 @@ public class API_040_BusinessServiceTest
 			tckBusinessService.saveJoePublisherService(authInfoJoe);
 			tckBusinessService.deleteJoePublisherService(authInfoJoe);
 		} finally {
+			tckBusiness.deleteJoePublisherBusiness(authInfoJoe);
+			tckTModel.deleteJoePublisherTmodel(authInfoJoe);
+		}
+	}
+	
+	@Test
+	public void joepublisher2Services() {
+		try {
+			tckTModel.saveJoePublisherTmodel(authInfoJoe);
+			tckBusiness.saveJoePublisherBusiness(authInfoJoe);
+			tckBusinessService.saveJoePublisherService(authInfoJoe);
+			tckBusinessService.saveJoePublisherService2(authInfoJoe);
+			tckBusinessService.deleteJoePublisherService(authInfoJoe);
+			tckBusinessService.deleteJoePublisherService2(authInfoJoe);
+		} finally {
+			tckBusiness.deleteJoePublisherBusiness(authInfoJoe);
+			tckTModel.deleteJoePublisherTmodel(authInfoJoe);
+		}
+	}
+	
+	@Test
+	public void joepublisher2UpdateBusiness() {
+		try {
+			tckTModel.saveJoePublisherTmodel(authInfoJoe);
+			tckBusiness.saveJoePublisherBusiness(authInfoJoe);
+			tckBusinessService.saveJoePublisherService(authInfoJoe);
+			tckBusinessService.saveJoePublisherService2(authInfoJoe);
+			tckBusiness.updateJoePublisherBusiness(authInfoJoe);
+			tckBusinessService.deleteJoePublisherService(authInfoJoe);
+			tckBusinessService.deleteJoePublisherService2(authInfoJoe);
+		} finally {
+			tckBusiness.deleteJoePublisherBusiness(authInfoJoe);
+			tckTModel.deleteJoePublisherTmodel(authInfoJoe);
+		}
+	}
+	/**
+	 * 5.2.16.3 paragraph 4
+	 * Data contained within businessEntity structures can be rearranged with 
+	 * this API call. This can be done by redefining parent container relationships 
+	 * for other registered information. For instance, if a new businessEntity 
+	 * is saved with information about a businessService that is registered 
+	 * already as part of a different businessEntity, this results in the 
+	 * businessService being moved from its current container to the new businessEntity.	
+	 * This condition occurs when the businessKey of the businessService being 
+	 * saved matches the businessKey of the businessEntity being saved. 
+	 * An attempt to delete or move a businessService in this manner by 
+	 * a party who is not the publisher of the businessService MUST be 
+	 * rejected with an error E_userMismatch.
+	 */
+	@Test
+	public void joepublisherMoveBusinessService() {
+		try {
+			tckTModel.saveJoePublisherTmodel(authInfoJoe);
+			tckBusiness.saveJoePublisherBusiness(authInfoJoe);
+			tckBusinessService.saveJoePublisherService(authInfoJoe);
+			tckBusiness.checkServicesBusinessOne(1);
+			tckBusiness.saveJoePublisherBusiness3(authInfoJoe);
+			//check that this business has no services
+			tckBusiness.checkServicesBusinessThree(0);
+			//Now move the service from one to three
+			tckBusiness.saveJoePublisherBusiness1to3(authInfoJoe);
+			tckBusiness.checkServicesBusinessOne(0);
+			tckBusiness.checkServicesBusinessThree(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		} finally {
+			tckBusinessService.deleteJoePublisherService(authInfoJoe);
+			tckBusiness.deleteJoePublisherBusiness3(authInfoJoe);
 			tckBusiness.deleteJoePublisherBusiness(authInfoJoe);
 			tckTModel.deleteJoePublisherTmodel(authInfoJoe);
 		}
@@ -102,7 +177,5 @@ public class API_040_BusinessServiceTest
 			tckTModel.deleteJoePublisherTmodel(authInfoJoe);
 		}
 	}
-	
-	
 
 }

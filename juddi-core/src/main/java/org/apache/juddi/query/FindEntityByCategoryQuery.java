@@ -18,16 +18,17 @@
 package org.apache.juddi.query;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
-import javax.persistence.EntityManager;
-import javax.xml.bind.JAXBElement;
+import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.juddi.config.Constants;
 import org.apache.juddi.query.util.DynamicQuery;
 import org.apache.juddi.query.util.FindQualifiers;
 import org.apache.juddi.query.util.KeyedRefTModelComparator;
-import org.apache.log4j.Logger;
 import org.uddi.api_v3.CategoryBag;
 import org.uddi.api_v3.KeyedReference;
 
@@ -50,27 +51,30 @@ import org.uddi.api_v3.KeyedReference;
 public class FindEntityByCategoryQuery extends EntityQuery {
 	
 	@SuppressWarnings("unused")
-	private Logger log = Logger.getLogger(FindEntityByCategoryQuery.class);
+	private static Log log = LogFactory.getLog(FindEntityByCategoryQuery.class);
 
 	private static final String ENTITY_KEYEDREFERENCE = "KeyedReference";
 	private static final String ALIAS_KEYEDREFERENCE = buildAlias(ENTITY_KEYEDREFERENCE);
 	private static final String FIELD_CATEGORYBAG = "categoryBag";
 	
-	private String entityName;
-	private String entityAlias;
-	private String keyName;
-	private String entityField;
-	private String entityNameChild;
-	private String entityAliasChild;
-	private String selectSQL;
+	protected String entityName;
+	protected String entityAlias;
+	protected String keyName;
+	protected String entityField;
+	protected String entityNameChild;
+	protected String entityAliasChild;
+	protected String selectSQL;
+	protected String signaturePresent;
 
-	public FindEntityByCategoryQuery(String entityName, String entityAlias, String keyName, String entityField, String entityNameChild) {
+	public FindEntityByCategoryQuery(String entityName, String entityAlias, String keyName,
+			String entityField, String entityNameChild, String signaturePresent) {
 		this.entityName = entityName;
 		this.entityAlias = entityAlias;
 		this.keyName = keyName;
 		this.entityField = entityField;
 		this.entityNameChild = entityNameChild;
 		this.entityAliasChild = buildAlias(entityNameChild);
+		this.signaturePresent = signaturePresent;
 		
 		StringBuffer sql = new StringBuffer(200);
 		sql.append("select distinct " + entityAlias + "." + keyName + " from " + entityName + " " + entityAlias + " , " + entityNameChild + " " + entityAliasChild + " ");
@@ -104,7 +108,14 @@ public class FindEntityByCategoryQuery extends EntityQuery {
 	public String getSelectSQL() {
 		return selectSQL;
 	}
+	
+	public String getSignaturePresent() {
+		return signaturePresent;
+	}
 
+	public void setSignaturePresent(String signaturePresent) {
+		this.signaturePresent = signaturePresent;
+	}
 	
 	public List<?> select(EntityManager em, FindQualifiers fq, CategoryBag categoryBag, List<?> keysIn, DynamicQuery.Parameter... restrictions) {
 		// If keysIn is not null and empty, then search is over.
@@ -114,16 +125,16 @@ public class FindEntityByCategoryQuery extends EntityQuery {
 		if (categoryBag == null)
 			return keysIn;
 		
-		List<JAXBElement<?>> categories = categoryBag.getContent();
+		List<KeyedReference> categories = categoryBag.getKeyedReference();
 		if (categories == null || categories.size() == 0)
 			return keysIn;
 		
 		List<KeyedReference> keyedRefs = new ArrayList<KeyedReference>(0);
-		for (JAXBElement<?> elem : categories) {
-			if (elem.getValue() instanceof KeyedReference)
-				keyedRefs.add((KeyedReference)elem.getValue());
+		for (KeyedReference elem : categories) {
+			if (elem instanceof KeyedReference)
+				keyedRefs.add((KeyedReference)elem);
 		}
-		if (keyedRefs.size() == 0)
+		if (keyedRefs.isEmpty())
 			return keysIn;		
 		
 		DynamicQuery dynamicQry = new DynamicQuery(selectSQL);
@@ -242,7 +253,7 @@ public class FindEntityByCategoryQuery extends EntityQuery {
 	 */
 	public void appendJoinTables(DynamicQuery qry, FindQualifiers fq, List<KeyedReference> keyedRefs) {
 		
-		if (keyedRefs != null & keyedRefs.size() > 0) {
+		if (keyedRefs != null && keyedRefs.size() > 0) {
 			// Sorting the collection by tModel Key
 			Collections.sort(keyedRefs, new KeyedRefTModelComparator());
 
@@ -288,6 +299,9 @@ public class FindEntityByCategoryQuery extends EntityQuery {
 			qry.append(thetaJoinsStr);
 
 			qry.closeParen().pad();
+			if (fq!=null && fq.isSignaturePresent()) {
+				qry.AND().pad().openParen().pad().append(getSignaturePresent()).pad().closeParen().pad();
+			}
 		}
 	}
 	

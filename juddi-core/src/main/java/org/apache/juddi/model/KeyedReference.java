@@ -32,7 +32,7 @@ import javax.persistence.Table;
 @Table(name = "j3_keyed_reference")
 public class KeyedReference implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6594148893695178191L;
 	private Long id;
 	private CategoryBag categoryBag;
 	private KeyedReferenceGroup keyedReferenceGroup;
@@ -99,7 +99,7 @@ public class KeyedReference implements java.io.Serializable {
 		this.tmodelKeyRef = tmodelKeyRef;
 	}
 
-	@Column(name = "key_name")
+	@Column(name = "key_name", length = 255)
 	public String getKeyName() {
 		return this.keyName;
 	}
@@ -107,7 +107,7 @@ public class KeyedReference implements java.io.Serializable {
 		this.keyName = keyName;
 	}
 
-	@Column(name = "key_value", nullable = false)
+	@Column(name = "key_value", nullable = false, length = 255)
 	public String getKeyValue() {
 		return this.keyValue;
 	}

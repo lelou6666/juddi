@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.w3._2000._09.xmldsig_.SignatureType;
@@ -67,11 +68,11 @@ import org.w3._2000._09.xmldsig_.SignatureType;
     "categoryBag",
     "signature"
 })
+@XmlRootElement()
 public class BindingTemplate implements Serializable{
-
 	@XmlTransient
-	private static final long serialVersionUID = 1L;
-    protected List<Description> description;
+	private static final long serialVersionUID = 4486129441515025032L;
+	protected List<Description> description;
     protected AccessPoint accessPoint;
     protected HostingRedirector hostingRedirector;
     protected TModelInstanceDetails tModelInstanceDetails;
@@ -286,4 +287,3 @@ public class BindingTemplate implements Serializable{
     }
 
 }
-
