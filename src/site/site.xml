@@ -23,42 +23,69 @@
     <bannerLeft>
         <name>Apache jUDDI</name>
         <src>images/project-logo.gif</src>
+<<<<<<< HEAD
         <href>ws.apache.org/juddi/</href>
+=======
+        <href>juddi.apache.org</href>
+>>>>>>> refs/remotes/apache/master
     </bannerLeft>
     <bannerRight>
     <src>images/juddi.gif</src>
   </bannerRight>
     <skin>
+<<<<<<< HEAD
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-default-skin</artifactId>
         <version>1.0</version>
     </skin>
+=======
+	    <groupId>org.apache.juddi</groupId>
+	    <artifactId>juddi-site-style</artifactId>
+		<version>1.0</version>
+	</skin>
+>>>>>>> refs/remotes/apache/master
 
     <publishDate format="dd MMM yyyy" position="right"/>
 
     <body>
         <breadcrumbs>
       		<item name="Apache" href="http://www.apache.org/"/>
+<<<<<<< HEAD
       		<item name="WebServices" href="http://ws.apache.org/"/>
+=======
+>>>>>>> refs/remotes/apache/master
     	</breadcrumbs>
 
         <menu name="Apache jUDDI">
             <item name="Welcome" href="index.html"/>
             <item name="Get jUDDI">
                 <item name="Releases" href="releases.html"/>
+<<<<<<< HEAD
                 <item name="Interim" href="interim.html"/>
+=======
+>>>>>>> refs/remotes/apache/master
                 <item name="Source Code" href="source-repository.html"/>
             </item>
             <item name="Participation" href="participate.html" description="Participation"/>
             <item name="Documentation">
+<<<<<<< HEAD
                 <item name="User guide" href="usersguide.html"/>
                 <item name="Wiki" href="http://wiki.apache.org/ws/jUDDI"/>
                 <item name="Reference Library" href="library.html" />
                 <item name="Javadocs" href="apidocs/index.html"/>
+=======
+                <item name="jUDDI Docs" href="docs.html"/>
+                <item name="Wiki" href="http://wiki.apache.org/juddi"/>
+                <item name="UDDI Library" href="library.html" />
+                <item name="Javadocs v2" href="apidocs2/index.html"/>
+                <item name="Javadocs v3" href="apidocs/index.html"/>
+                <item name="XRef v3" href="xref/index.html"/>
+>>>>>>> refs/remotes/apache/master
             </item>
             <item name="Project Information">
                 <item name="Project Information" href="project-info.html"/>
                 <item name="Mailing Lists" href="mail-lists.html"/>
+<<<<<<< HEAD
                 <item name="Issue Tracking" href="issue-tracking.html"/>
                 <item name="Dependencies" href="dependencies.html"/>
                 <item name="Dependency Convergence" href="dependency-convergence.html"/>
@@ -69,11 +96,27 @@
     			<item name="Apache Axis" href="http://ws.apache.org/axis/" description="Apache Axis"/>
     			<item name="Apache Scout" href="http://ws.apache.org/scout/" description="Apache Scout"/>
     			<item name="UDDI4J" href="http://www-124.ibm.com/developerworks/oss/uddi4j/" description="UDDI4J"/>
+=======
+                <item name="jUDDI Blog" href="http://apachejuddi.blogspot.com/" />
+                <item name="Issue Tracking" href="issue-tracking.html"/>
+                <item name="Dependencies" href="dependencies.html"/>
+                <item name="Project Team" href="team-list.html"/>
+                <item name="Project Summary" href="project-summary.html"/>
+            </item>
+            <item name="Subprojects">
+    			<item name="Apache Scout" href="http://juddi.apache.org/scout/" description="Apache Scout"/>
+>>>>>>> refs/remotes/apache/master
   			</item>
   			<item name="Misc">
     			<item name="Who We Are" href="who.html" description="Who We Are"/>
     			<item name="Committer Notes" href="committers.html" description="Committer Notes"/>
+<<<<<<< HEAD
     			<item name="Legal" href="legal.html" description="Legal Stuff"/>
+=======
+    			<item name="Sponsors" href="thanks.html" description="Thank you"/>
+    			<item name="Legal" href="legal.html" description="Legal Stuff"/>
+    			<item name="License" href="license.html" description="Apache 2.0 License"/>
+>>>>>>> refs/remotes/apache/master
   			</item>
         </menu>
 
